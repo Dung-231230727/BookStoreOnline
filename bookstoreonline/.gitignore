@@ -1,0 +1,27 @@
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.nextSnapshot
+release.properties
+bundle.properties
+load-helper.log
+
+# IDE files
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+bin/
+
+# Log files
+*.log
+
+# Database secrets (Optional but recommended to not push real passwords)
+application.yml.local
+
+# OS files
+.DS_Store
+Thumbs.db
