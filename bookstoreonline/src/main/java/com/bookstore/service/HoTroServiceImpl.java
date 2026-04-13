@@ -5,7 +5,6 @@ import com.bookstore.entity.HoTro;
 import com.bookstore.entity.KhachHang;
 import com.bookstore.repository.HoTroRepository;
 import com.bookstore.repository.KhachHangRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,11 +13,13 @@ import java.util.stream.Collectors;
 @Service
 public class HoTroServiceImpl implements HoTroService {
 
-    @Autowired
-    private HoTroRepository hoTroRepository;
+    private final HoTroRepository hoTroRepository;
+    private final KhachHangRepository khachHangRepository;
 
-    @Autowired
-    private KhachHangRepository khachHangRepository;
+    public HoTroServiceImpl(HoTroRepository hoTroRepository, KhachHangRepository khachHangRepository) {
+        this.hoTroRepository = hoTroRepository;
+        this.khachHangRepository = khachHangRepository;
+    }
 
     @Override
     public List<HoTroDTO> layTatCaYeuCau() {

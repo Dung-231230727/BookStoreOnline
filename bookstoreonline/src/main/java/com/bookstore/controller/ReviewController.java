@@ -1,9 +1,8 @@
 package com.bookstore.controller;
 
+import com.bookstore.dto.ApiResponse;
 import com.bookstore.dto.DanhGiaDTO;
 import com.bookstore.service.DanhGiaService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,23 +12,24 @@ import java.util.List;
 @CrossOrigin("*")
 public class ReviewController {
 
-    @Autowired
-    private DanhGiaService danhGiaService;
+    private final DanhGiaService danhGiaService;
 
-    // Lấy tất cả đánh giá của một cuốn sách
-    @GetMapping("/book/{isbn}")
-    public ResponseEntity<List<DanhGiaDTO>> getReviewsByBook(@PathVariable String isbn) {
-        return ResponseEntity.ok(danhGiaService.layDanhGiaTheoSach(isbn));
+    public ReviewController(DanhGiaService danhGiaService) {
+        this.danhGiaService = danhGiaService;
     }
 
-    // Gửi đánh giá mới
+    @GetMapping("/book/{isbn}")
+    public ApiResponse<List<DanhGiaDTO>> getReviewsByBook(@PathVariable String isbn) {
+        return ApiResponse.success(danhGiaService.layDanhGiaTheoSach(isbn));
+    }
+
     @PostMapping("/submit")
-    public ResponseEntity<String> submitReview(
+    public ApiResponse<String> submitReview(
             @RequestParam String username,
             @RequestParam String isbn,
             @RequestParam Integer diem,
             @RequestParam String nhanXet) {
         danhGiaService.guiDanhGia(username, isbn, diem, nhanXet);
-        return ResponseEntity.ok("Cảm ơn bạn đã gửi đánh giá!");
+        return ApiResponse.success("Cảm ơn bạn đã gửi đánh giá!", null);
     }
 }

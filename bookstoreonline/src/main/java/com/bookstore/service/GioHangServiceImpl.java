@@ -7,7 +7,6 @@ import com.bookstore.entity.Sach;
 import com.bookstore.repository.GioHangRepository;
 import com.bookstore.repository.KhachHangRepository;
 import com.bookstore.repository.SachRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,14 +18,17 @@ import java.util.stream.Collectors;
 @Transactional
 public class GioHangServiceImpl implements GioHangService {
 
-    @Autowired
-    private GioHangRepository gioHangRepository;
+    private final GioHangRepository gioHangRepository;
+    private final KhachHangRepository khachHangRepository;
+    private final SachRepository sachRepository;
 
-    @Autowired
-    private KhachHangRepository khachHangRepository;
-
-    @Autowired
-    private SachRepository sachRepository;
+    public GioHangServiceImpl(GioHangRepository gioHangRepository, 
+                              KhachHangRepository khachHangRepository, 
+                              SachRepository sachRepository) {
+        this.gioHangRepository = gioHangRepository;
+        this.khachHangRepository = khachHangRepository;
+        this.sachRepository = sachRepository;
+    }
 
     @Override
     public List<GioHangDTO> layGioHang(String username) {

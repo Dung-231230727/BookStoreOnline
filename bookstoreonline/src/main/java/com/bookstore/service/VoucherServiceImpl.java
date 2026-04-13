@@ -3,7 +3,6 @@ package com.bookstore.service;
 import com.bookstore.dto.VoucherDTO;
 import com.bookstore.entity.Voucher;
 import com.bookstore.repository.VoucherRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,8 +11,11 @@ import java.util.stream.Collectors;
 @Service
 public class VoucherServiceImpl implements VoucherService {
 
-    @Autowired
-    private VoucherRepository voucherRepository;
+    private final VoucherRepository voucherRepository;
+
+    public VoucherServiceImpl(VoucherRepository voucherRepository) {
+        this.voucherRepository = voucherRepository;
+    }
 
     @Override
     public List<VoucherDTO> layTatCaVoucher() {

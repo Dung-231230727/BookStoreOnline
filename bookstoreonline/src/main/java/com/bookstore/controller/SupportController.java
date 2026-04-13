@@ -1,9 +1,8 @@
 package com.bookstore.controller;
 
+import com.bookstore.dto.ApiResponse;
 import com.bookstore.dto.HoTroDTO;
 import com.bookstore.service.HoTroService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,37 +12,36 @@ import java.util.List;
 @CrossOrigin("*")
 public class SupportController {
 
-    @Autowired
-    private HoTroService hoTroService;
+    private final HoTroService hoTroService;
 
-    // Lấy tất cả yêu cầu (Dành cho Admin/Staff)
+    public SupportController(HoTroService hoTroService) {
+        this.hoTroService = hoTroService;
+    }
+
     @GetMapping
-    public ResponseEntity<List<HoTroDTO>> getAllRequests() {
-        return ResponseEntity.ok(hoTroService.layTatCaYeuCau());
+    public ApiResponse<List<HoTroDTO>> getAllRequests() {
+        return ApiResponse.success(hoTroService.layTatCaYeuCau());
     }
 
-    // Lấy yêu cầu của một khách hàng cụ thể
     @GetMapping("/user/{username}")
-    public ResponseEntity<List<HoTroDTO>> getRequestsByUser(@PathVariable String username) {
-        return ResponseEntity.ok(hoTroService.layChoKhachHang(username));
+    public ApiResponse<List<HoTroDTO>> getRequestsByUser(@PathVariable String username) {
+        return ApiResponse.success(hoTroService.layChoKhachHang(username));
     }
 
-    // Gửi yêu cầu hỗ trợ mới
     @PostMapping
-    public ResponseEntity<String> createRequest(
+    public ApiResponse<String> createRequest(
             @RequestParam String username,
             @RequestParam String tieuDe,
             @RequestParam String noiDung) {
         hoTroService.guiYeuCau(username, tieuDe, noiDung);
-        return ResponseEntity.ok("Yêu cầu của bạn đã được tiếp nhận");
+        return ApiResponse.success("Yêu cầu của bạn đã được tiếp nhận", null);
     }
 
-    // Cập nhật trạng thái yêu cầu (Dành cho Admin/Staff)
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateStatus(
+    public ApiResponse<String> updateStatus(
             @PathVariable Long id,
             @RequestParam String trangThai) {
         hoTroService.capNhatTrangThai(id, trangThai);
-        return ResponseEntity.ok("Đã cập nhật trạng thái hồ sơ</strong>");
+        return ApiResponse.success("Đã cập nhật trạng thái hồ sơ", null);
     }
 }

@@ -7,7 +7,6 @@ import com.bookstore.entity.Sach;
 import com.bookstore.repository.DanhGiaRepository;
 import com.bookstore.repository.KhachHangRepository;
 import com.bookstore.repository.SachRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,14 +15,17 @@ import java.util.stream.Collectors;
 @Service
 public class DanhGiaServiceImpl implements DanhGiaService {
 
-    @Autowired
-    private DanhGiaRepository danhGiaRepository;
+    private final DanhGiaRepository danhGiaRepository;
+    private final KhachHangRepository khachHangRepository;
+    private final SachRepository sachRepository;
 
-    @Autowired
-    private KhachHangRepository khachHangRepository;
-
-    @Autowired
-    private SachRepository sachRepository;
+    public DanhGiaServiceImpl(DanhGiaRepository danhGiaRepository, 
+                              KhachHangRepository khachHangRepository, 
+                              SachRepository sachRepository) {
+        this.danhGiaRepository = danhGiaRepository;
+        this.khachHangRepository = khachHangRepository;
+        this.sachRepository = sachRepository;
+    }
 
     @Override
     public List<DanhGiaDTO> layDanhGiaTheoSach(String isbn) {

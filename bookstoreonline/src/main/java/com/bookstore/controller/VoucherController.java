@@ -1,9 +1,8 @@
 package com.bookstore.controller;
 
+import com.bookstore.dto.ApiResponse;
 import com.bookstore.dto.VoucherDTO;
 import com.bookstore.service.VoucherService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,27 +12,30 @@ import java.util.List;
 @CrossOrigin("*")
 public class VoucherController {
 
-    @Autowired
-    private VoucherService voucherService;
+    private final VoucherService voucherService;
+
+    public VoucherController(VoucherService voucherService) {
+        this.voucherService = voucherService;
+    }
 
     @GetMapping
-    public ResponseEntity<List<VoucherDTO>> getAllVouchers() {
-        return ResponseEntity.ok(voucherService.layTatCaVoucher());
+    public ApiResponse<List<VoucherDTO>> getAllVouchers() {
+        return ApiResponse.success(voucherService.layTatCaVoucher());
     }
 
     @GetMapping("/{code}")
-    public ResponseEntity<VoucherDTO> getVoucherByCode(@PathVariable String code) {
-        return ResponseEntity.ok(voucherService.layVoucherTheoMa(code));
+    public ApiResponse<VoucherDTO> getVoucherByCode(@PathVariable String code) {
+        return ApiResponse.success(voucherService.layVoucherTheoMa(code));
     }
 
     @PostMapping
-    public ResponseEntity<VoucherDTO> createVoucher(@RequestBody VoucherDTO dto) {
-        return ResponseEntity.ok(voucherService.luuVoucher(dto));
+    public ApiResponse<VoucherDTO> createVoucher(@RequestBody VoucherDTO dto) {
+        return ApiResponse.created(voucherService.luuVoucher(dto));
     }
 
     @DeleteMapping("/{code}")
-    public ResponseEntity<String> deleteVoucher(@PathVariable String code) {
+    public ApiResponse<String> deleteVoucher(@PathVariable String code) {
         voucherService.xoaVoucher(code);
-        return ResponseEntity.ok("Đã xóa mã giảm giá thành công");
+        return ApiResponse.success("Đã xóa mã giảm giá thành công", null);
     }
 }
