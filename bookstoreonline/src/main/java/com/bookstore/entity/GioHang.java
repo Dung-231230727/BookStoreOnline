@@ -7,8 +7,7 @@ import jakarta.persistence.*;
 public class GioHang {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ma_giohang")
-    private Long maGioHang;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ma_khachhang", nullable = false)
@@ -18,13 +17,13 @@ public class GioHang {
     @JoinColumn(name = "isbn", nullable = false)
     private Sach sach;
 
-    @Column(nullable = false)
-    private Integer soLuong;
+    @Column(name = "so_luong")
+    private Integer soLuong = 1;
 
     public GioHang() {}
 
-    public Long getMaGioHang() { return maGioHang; }
-    public void setMaGioHang(Long maGioHang) { this.maGioHang = maGioHang; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
     public KhachHang getKhachHang() { return khachHang; }
     public void setKhachHang(KhachHang khachHang) { this.khachHang = khachHang; }
     public Sach getSach() { return sach; }

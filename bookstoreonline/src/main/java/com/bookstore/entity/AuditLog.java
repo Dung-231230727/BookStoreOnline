@@ -8,12 +8,16 @@ import java.time.LocalDateTime;
 public class AuditLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "log_id")
+    private Long logId;
 
     @Column(name = "username", nullable = false)
     private String username;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "username", nullable = false)
+    private TaiKhoan taiKhoan;
 
-    @Column(nullable = false)
+    @Column(name = "hanh_dong", nullable = false, length = 255)
     private String hanhDong;
 
     @Column(name = "chi_tiet", columnDefinition = "NVARCHAR(MAX)")
@@ -32,6 +36,12 @@ public class AuditLog {
     public void setHanhDong(String hanhDong) { this.hanhDong = hanhDong; }
     public String getChiTiet() { return chiTiet; }
     public void setChiTiet(String chiTiet) { this.chiTiet = chiTiet; }
+    public Long getLogId() { return logId; }
+    public void setLogId(Long logId) { this.logId = logId; }
+    public TaiKhoan getTaiKhoan() { return taiKhoan; }
+    public void setTaiKhoan(TaiKhoan taiKhoan) { this.taiKhoan = taiKhoan; }
+    public String getHanhDong() { return hanhDong; }
+    public void setHanhDong(String hanhDong) { this.hanhDong = hanhDong; }
     public LocalDateTime getThoiDiem() { return thoiDiem; }
     public void setThoiDiem(LocalDateTime thoiDiem) { this.thoiDiem = thoiDiem; }
 }

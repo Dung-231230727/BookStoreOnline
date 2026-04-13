@@ -1,26 +1,15 @@
-package com.bookstore.entity;
+package com.bookstore.dto;
 
-import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "voucher")
-public class Voucher {
-    @Id
-    @Column(name = "ma_voucher", length = 20)
+public class VoucherDTO {
     private String maVoucher;
-
-    @Column(name = "gia_tri_giam", precision = 10, scale = 2, nullable = false)
     private BigDecimal giaTriGiam;
-
-    @Column(name = "dieu_kien_toi_thieu", precision = 12, scale = 2)
-    private BigDecimal dieuKienToiThieu = BigDecimal.ZERO;
-
-    @Column(name = "thoi_han", nullable = false)
+    private BigDecimal dieuKienToiThieu;
     private LocalDateTime thoiHan;
 
-    public Voucher() {}
+    public VoucherDTO() {}
 
     public String getMaVoucher() { return maVoucher; }
     public void setMaVoucher(String maVoucher) { this.maVoucher = maVoucher; }

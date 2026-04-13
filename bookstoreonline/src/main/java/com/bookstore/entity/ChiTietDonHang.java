@@ -5,28 +5,36 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "chi_tiet_don_hang")
-@IdClass(com.bookstore.entity.ChiTietDonHangId.class)
 public class ChiTietDonHang {
-    @Id
-    private Long maDonHang;
+    @EmbeddedId
+    private ChiTietDonHangId id;
 
-    @Id
-    private String isbn;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("maDonHang")
+    @JoinColumn(name = "ma_donhang")
+    private DonHang donHang;
 
-    @Column(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("isbn")
+    @JoinColumn(name = "isbn")
+    private Sach sach;
+
+    @Column(name = "so_luong", nullable = false)
     private Integer soLuong;
 
-    @Column(name = "gia_ban", precision = 18, scale = 2)
-    private BigDecimal giaBan;
+    @Column(name = "gia_ban_chot", precision = 12, scale = 2, nullable = false)
+    private BigDecimal giaBanChot;
 
     public ChiTietDonHang() {}
 
-    public Long getMaDonHang() { return maDonHang; }
-    public void setMaDonHang(Long maDonHang) { this.maDonHang = maDonHang; }
-    public String getIsbn() { return isbn; }
-    public void setIsbn(String isbn) { this.isbn = isbn; }
+    public ChiTietDonHangId getId() { return id; }
+    public void setId(ChiTietDonHangId id) { this.id = id; }
+    public DonHang getDonHang() { return donHang; }
+    public void setDonHang(DonHang donHang) { this.donHang = donHang; }
+    public Sach getSach() { return sach; }
+    public void setSach(Sach sach) { this.sach = sach; }
     public Integer getSoLuong() { return soLuong; }
     public void setSoLuong(Integer soLuong) { this.soLuong = soLuong; }
-    public BigDecimal getGiaBan() { return giaBan; }
-    public void setGiaBan(BigDecimal giaBan) { this.giaBan = giaBan; }
+    public BigDecimal getGiaBanChot() { return giaBanChot; }
+    public void setGiaBanChot(BigDecimal giaBanChot) { this.giaBanChot = giaBanChot; }
 }

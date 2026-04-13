@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/categories")
-@Tag(name = "Books & Catalog", description = "Quản lý danh mục sách (Dành cho Member B)")
+@Tag(name = "Books & Catalog", description = "Quản lý danh mục sách")
 public class DanhMucController {
 
     private final DanhMucService danhMucService;

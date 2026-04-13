@@ -47,9 +47,10 @@ public class DanhMucService {
         DanhMuc entity = new DanhMuc();
         entity.setTenDanhMuc(dto.getTenDanhMuc());
         
-        if (dto.getMaDanhMucCha() != null) {
-            DanhMuc parent = danhMucRepository.findById(dto.getMaDanhMucCha())
-                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy danh mục cha với ID: " + dto.getMaDanhMucCha()));
+        Integer maChaId = dto.getMaDanhMucCha();
+        if (maChaId != null) {
+            DanhMuc parent = danhMucRepository.findById(maChaId)
+                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy danh mục cha với ID: " + maChaId));
             entity.setDanhMucCha(parent);
         }
         

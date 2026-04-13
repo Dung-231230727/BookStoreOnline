@@ -10,18 +10,29 @@ public class KhoHang {
     @Column(name = "ma_kho")
     private Integer maKho;
 
-    @Column(name = "ten_kho", nullable = false, length = 100)
-    private String tenKho;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "isbn", unique = true, nullable = false)
+    private Sach sach;
 
-    @Column(columnDefinition = "NVARCHAR(MAX)")
-    private String viTri;
+    @Column(name = "so_luong_ton")
+    private Integer soLuongTon = 0;
+
+    @Column(name = "vi_tri_ke", length = 50)
+    private String viTriKe;
+
+    @Column(name = "nguong_bao_dong")
+    private Integer nguongBaoDong = 5;
 
     public KhoHang() {}
 
     public Integer getMaKho() { return maKho; }
     public void setMaKho(Integer maKho) { this.maKho = maKho; }
-    public String getTenKho() { return tenKho; }
-    public void setTenKho(String tenKho) { this.tenKho = tenKho; }
-    public String getViTri() { return viTri; }
-    public void setViTri(String viTri) { this.viTri = viTri; }
+    public Sach getSach() { return sach; }
+    public void setSach(Sach sach) { this.sach = sach; }
+    public Integer getSoLuongTon() { return soLuongTon; }
+    public void setSoLuongTon(Integer soLuongTon) { this.soLuongTon = soLuongTon; }
+    public String getViTriKe() { return viTriKe; }
+    public void setViTriKe(String viTriKe) { this.viTriKe = viTriKe; }
+    public Integer getNguongBaoDong() { return nguongBaoDong; }
+    public void setNguongBaoDong(Integer nguongBaoDong) { this.nguongBaoDong = nguongBaoDong; }
 }
