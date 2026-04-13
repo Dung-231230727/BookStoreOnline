@@ -8,9 +8,10 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 
 @Repository
-public interface DonHangRepository extends JpaRepository<DonHang, Long> {
+public interface DonHangRepository extends JpaRepository<DonHang, String> {
 
-    @Query("SELECT SUM(d.tongTien) FROM DonHang d WHERE d.trangThai = :trangThai")
+    // Đã đổi kiểu ID từ Long thành String và sửa d.tongTien thành d.tongThanhToan
+    @Query("SELECT SUM(d.tongThanhToan) FROM DonHang d WHERE d.trangThai = :trangThai")
     BigDecimal sumTongTienByTrangThai(@Param("trangThai") String trangThai);
 
     @Query("SELECT COUNT(d) FROM DonHang d WHERE d.trangThai = :trangThai")

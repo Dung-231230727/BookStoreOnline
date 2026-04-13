@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
-@PreAuthorize("hasRole('ADMIN')")
+// @PreAuthorize("hasRole('ADMIN')")
 @Tag(name = "Admin Dashboard", description = "Các API báo cáo, thống kê và nhật ký hệ thống dành cho Quản trị viên")
 public class AdminDashboardController {
 

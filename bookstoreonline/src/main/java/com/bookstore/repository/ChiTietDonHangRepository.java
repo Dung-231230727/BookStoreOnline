@@ -10,6 +10,8 @@ import java.util.List;
 @Repository
 public interface ChiTietDonHangRepository extends JpaRepository<ChiTietDonHang, ChiTietDonHangId> {
 
-    @Query("SELECT ct.isbn, SUM(ct.soLuong) as totalSold FROM ChiTietDonHang ct GROUP BY ct.isbn ORDER BY totalSold DESC")
+    // Sửa ct.isbn thành ct.id.isbn vì isbn nằm trong khóa chính phức hợp
+    // @EmbeddedId
+    @Query("SELECT ct.id.isbn, SUM(ct.soLuong) as totalSold FROM ChiTietDonHang ct GROUP BY ct.id.isbn ORDER BY totalSold DESC")
     List<Object[]> findTopSellingProjected();
 }
