@@ -2,60 +2,65 @@ package com.bookstore.entity;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Entity
 @Table(name = "sach")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Sach {
     @Id
-    @Column(length = 20)
+    @Column(length = 13)
     private String isbn;
 
-    @Column(nullable = false, length = 200)
-    private String tieuDe;
+    @Column(name = "ten_sach", nullable = false, length = 255)
+    private String tenSach;
+
+    @Column(name = "gia_niem_yet", precision = 10, scale = 2, nullable = false)
+    private BigDecimal giaNiemYet;
+
+    @Column(name = "so_trang")
+    private Integer soTrang;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ma_danhmuc")
     private DanhMuc danhMuc;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ma_tacgia")
-    private TacGia tacGia;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ma_nxb")
     private Nxb nxb;
 
-    @Column(name = "gia_ban", precision = 18, scale = 2)
-    private BigDecimal giaBan;
+    @Column(name = "mo_ta_ngu_nghia", columnDefinition = "NVARCHAR(MAX)")
+    private String moTaNguNghia;
 
-    @Column(name = "nam_xuat_ban")
-    private Integer namXuatBan;
+    @Column(name = "anh_bia", length = 255)
+    private String anhBia;
 
-    @Column(columnDefinition = "NVARCHAR(MAX)")
-    private String moTa;
-
-    @Column(name = "hinh_anh")
-    private String hinhAnh;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "sach_tac_gia",
+        joinColumns = @JoinColumn(name = "isbn"),
+        inverseJoinColumns = @JoinColumn(name = "ma_tacgia")
+    )
+    private Set<TacGia> danhSachTacGia;
 
     public Sach() {}
 
     public String getIsbn() { return isbn; }
     public void setIsbn(String isbn) { this.isbn = isbn; }
-    public String getTieuDe() { return tieuDe; }
-    public void setTieuDe(String tieuDe) { this.tieuDe = tieuDe; }
+    public String getTenSach() { return tenSach; }
+    public void setTenSach(String tenSach) { this.tenSach = tenSach; }
+    public BigDecimal getGiaNiemYet() { return giaNiemYet; }
+    public void setGiaNiemYet(BigDecimal giaNiemYet) { this.giaNiemYet = giaNiemYet; }
+    public Integer getSoTrang() { return soTrang; }
+    public void setSoTrang(Integer soTrang) { this.soTrang = soTrang; }
     public DanhMuc getDanhMuc() { return danhMuc; }
     public void setDanhMuc(DanhMuc danhMuc) { this.danhMuc = danhMuc; }
-    public TacGia getTacGia() { return tacGia; }
-    public void setTacGia(TacGia tacGia) { this.tacGia = tacGia; }
     public Nxb getNxb() { return nxb; }
     public void setNxb(Nxb nxb) { this.nxb = nxb; }
-    public BigDecimal getGiaBan() { return giaBan; }
-    public void setGiaBan(BigDecimal giaBan) { this.giaBan = giaBan; }
-    public Integer getNamXuatBan() { return namXuatBan; }
-    public void setNamXuatBan(Integer namXuatBan) { this.namXuatBan = namXuatBan; }
-    public String getMoTa() { return moTa; }
-    public void setMoTa(String moTa) { this.moTa = moTa; }
-    public String getHinhAnh() { return hinhAnh; }
-    public void setHinhAnh(String hinhAnh) { this.hinhAnh = hinhAnh; }
+    public String getMoTaNguNghia() { return moTaNguNghia; }
+    public void setMoTaNguNghia(String moTaNguNghia) { this.moTaNguNghia = moTaNguNghia; }
+    public String getAnhBia() { return anhBia; }
+    public void setAnhBia(String anhBia) { this.anhBia = anhBia; }
+    public Set<TacGia> getDanhSachTacGia() { return danhSachTacGia; }
+    public void setDanhSachTacGia(Set<TacGia> danhSachTacGia) { this.danhSachTacGia = danhSachTacGia; }
 }

@@ -8,31 +8,26 @@ import java.time.LocalDateTime;
 @Table(name = "voucher")
 public class Voucher {
     @Id
-    @Column(length = 50)
-    private String code;
+    @Column(name = "ma_voucher", length = 20)
+    private String maVoucher;
 
-    @Column(name = "giam_gia", precision = 18, scale = 2)
-    private BigDecimal giamGia;
+    @Column(name = "gia_tri_giam", precision = 10, scale = 2, nullable = false)
+    private BigDecimal giaTriGiam;
 
-    @Column(name = "giatri_toithieu", precision = 18, scale = 2)
-    private BigDecimal giaTriToiThieu;
+    @Column(name = "dieu_kien_toi_thieu", precision = 12, scale = 2)
+    private BigDecimal dieuKienToiThieu = BigDecimal.ZERO;
 
-    @Column(name = "ngay_het_han")
-    private LocalDateTime ngayHetHan;
-
-    @Column(name = "so_luong")
-    private Integer soLuong;
+    @Column(name = "thoi_han", nullable = false)
+    private LocalDateTime thoiHan;
 
     public Voucher() {}
 
-    public String getCode() { return code; }
-    public void setCode(String code) { this.code = code; }
-    public BigDecimal getGiamGia() { return giamGia; }
-    public void setGiamGia(BigDecimal giamGia) { this.giamGia = giamGia; }
-    public BigDecimal getGiaTriToiThieu() { return giaTriToiThieu; }
-    public void setGiaTriToiThieu(BigDecimal giaTriToiThieu) { this.giaTriToiThieu = giaTriToiThieu; }
-    public LocalDateTime getNgayHetHan() { return ngayHetHan; }
-    public void setNgayHetHan(LocalDateTime ngayHetHan) { this.ngayHetHan = ngayHetHan; }
-    public Integer getSoLuong() { return soLuong; }
-    public void setSoLuong(Integer soLuong) { this.soLuong = soLuong; }
+    public String getMaVoucher() { return maVoucher; }
+    public void setMaVoucher(String maVoucher) { this.maVoucher = maVoucher; }
+    public BigDecimal getGiaTriGiam() { return giaTriGiam; }
+    public void setGiaTriGiam(BigDecimal giaTriGiam) { this.giaTriGiam = giaTriGiam; }
+    public BigDecimal getDieuKienToiThieu() { return dieuKienToiThieu; }
+    public void setDieuKienToiThieu(BigDecimal dieuKienToiThieu) { this.dieuKienToiThieu = dieuKienToiThieu; }
+    public LocalDateTime getThoiHan() { return thoiHan; }
+    public void setThoiHan(LocalDateTime thoiHan) { this.thoiHan = thoiHan; }
 }

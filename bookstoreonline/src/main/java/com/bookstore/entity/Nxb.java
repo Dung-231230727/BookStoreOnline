@@ -10,11 +10,8 @@ public class Nxb {
     @Column(name = "ma_nxb")
     private Integer maNxb;
 
-    @Column(name = "ten_nxb", nullable = false, length = 100)
+    @Column(name = "ten_nxb", nullable = false, length = 150)
     private String tenNxb;
-
-    @Column(columnDefinition = "NVARCHAR(MAX)")
-    private String thongTin;
 
     public Nxb() {}
 
@@ -22,6 +19,4 @@ public class Nxb {
     public void setMaNxb(Integer maNxb) { this.maNxb = maNxb; }
     public String getTenNxb() { return tenNxb; }
     public void setTenNxb(String tenNxb) { this.tenNxb = tenNxb; }
-    public String getThongTin() { return thongTin; }
-    public void setThongTin(String thongTin) { this.thongTin = thongTin; }
 }

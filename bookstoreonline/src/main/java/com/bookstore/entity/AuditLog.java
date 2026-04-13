@@ -8,30 +8,27 @@ import java.time.LocalDateTime;
 public class AuditLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "log_id")
+    private Long logId;
 
-    @Column(name = "nguoi_thuc_hien")
-    private String nguoiThucHien;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "username", nullable = false)
+    private TaiKhoan taiKhoan;
 
-    @Column(nullable = false)
+    @Column(name = "hanh_dong", nullable = false, length = 255)
     private String hanhDong;
 
-    @Column(name = "chi_tiet", columnDefinition = "NVARCHAR(MAX)")
-    private String chiTiet;
-
-    @Column(name = "ngay_tao")
-    private LocalDateTime ngayTao = LocalDateTime.now();
+    @Column(name = "thoi_diem")
+    private LocalDateTime thoiDiem = LocalDateTime.now();
 
     public AuditLog() {}
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getNguoiThucHien() { return nguoiThucHien; }
-    public void setNguoiThucHien(String nguoiThucHien) { this.nguoiThucHien = nguoiThucHien; }
+    public Long getLogId() { return logId; }
+    public void setLogId(Long logId) { this.logId = logId; }
+    public TaiKhoan getTaiKhoan() { return taiKhoan; }
+    public void setTaiKhoan(TaiKhoan taiKhoan) { this.taiKhoan = taiKhoan; }
     public String getHanhDong() { return hanhDong; }
     public void setHanhDong(String hanhDong) { this.hanhDong = hanhDong; }
-    public String getChiTiet() { return chiTiet; }
-    public void setChiTiet(String chiTiet) { this.chiTiet = chiTiet; }
-    public LocalDateTime getNgayTao() { return ngayTao; }
-    public void setNgayTao(LocalDateTime ngayTao) { this.ngayTao = ngayTao; }
+    public LocalDateTime getThoiDiem() { return thoiDiem; }
+    public void setThoiDiem(LocalDateTime thoiDiem) { this.thoiDiem = thoiDiem; }
 }

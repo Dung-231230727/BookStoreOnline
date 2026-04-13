@@ -4,18 +4,18 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class ChiTietDonHangId implements Serializable {
-    private Long maDonHang;
+    private String maDonHang;
     private String isbn;
 
     public ChiTietDonHangId() {}
 
-    public ChiTietDonHangId(Long maDonHang, String isbn) {
+    public ChiTietDonHangId(String maDonHang, String isbn) {
         this.maDonHang = maDonHang;
         this.isbn = isbn;
     }
 
-    public Long getMaDonHang() { return maDonHang; }
-    public void setMaDonHang(Long maDonHang) { this.maDonHang = maDonHang; }
+    public String getMaDonHang() { return maDonHang; }
+    public void setMaDonHang(String maDonHang) { this.maDonHang = maDonHang; }
     public String getIsbn() { return isbn; }
     public void setIsbn(String isbn) { this.isbn = isbn; }
 

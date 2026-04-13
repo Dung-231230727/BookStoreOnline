@@ -13,7 +13,7 @@ public class TacGia {
     @Column(name = "ten_tacgia", nullable = false, length = 100)
     private String tenTacGia;
 
-    @Column(columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "tieu_su", columnDefinition = "NVARCHAR(MAX)")
     private String tieuSu;
 
     public TacGia() {}

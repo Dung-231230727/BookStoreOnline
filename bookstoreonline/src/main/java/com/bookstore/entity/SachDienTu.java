@@ -1,26 +1,22 @@
 package com.bookstore.entity;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "sach_dien_tu")
 @PrimaryKeyJoinColumn(name = "isbn")
 public class SachDienTu extends Sach {
-    @Column(name = "dung_luong")
-    private String dungLuong;
+    @Column(name = "dung_luong_file", precision = 10, scale = 2)
+    private BigDecimal dungLuongFile;
 
-    @Column(name = "dinh_dang")
-    private String dinhDang;
-
-    @Column(name = "duong_dan")
-    private String duongDan;
+    @Column(name = "duong_dan_tai", length = 255)
+    private String duongDanTai;
 
     public SachDienTu() {}
 
-    public String getDungLuong() { return dungLuong; }
-    public void setDungLuong(String dungLuong) { this.dungLuong = dungLuong; }
-    public String getDinhDang() { return dinhDang; }
-    public void setDinhDang(String dinhDang) { this.dinhDang = dinhDang; }
-    public String getDuongDan() { return duongDan; }
-    public void setDuongDan(String duongDan) { this.duongDan = duongDan; }
+    public BigDecimal getDungLuongFile() { return dungLuongFile; }
+    public void setDungLuongFile(BigDecimal dungLuongFile) { this.dungLuongFile = dungLuongFile; }
+    public String getDuongDanTai() { return duongDanTai; }
+    public void setDuongDanTai(String duongDanTai) { this.duongDanTai = duongDanTai; }
 }
