@@ -1,0 +1,149 @@
+/* 
+    Booksaw Standardized Style (Bootstrap 5 Foundation)
+    Cleaned, optimized and Vietnamese-supported.
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&family=Prata&family=Playfair+Display:wght@400;700&display=swap');
+
+:root {
+    --accent-color       : #C5A992;
+    --secondary-color    : #C5A992;
+    --dark-color         : #2f2f2f;
+    --light-color        : #F3F2EC;
+    --body-text-color    : #757575;
+    --dark-text-color    : #2f2f2f;
+    --body-font          : "Raleway", sans-serif;
+    --heading-font       : "Prata", serif;
+}
+
+body {
+    font-family: var(--body-font);
+    background-color: var(--light-color);
+    color: var(--body-text-color);
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: var(--heading-font);
+    color: var(--dark-text-color);
+    font-weight: 400; /* Prata looks best at 400 */
+    text-transform: capitalize;
+}
+
+/* Links */
+a {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: 0.3s;
+}
+a:hover {
+    color: var(--dark-color);
+}
+
+/* Custom Booksaw Buttons (Integrated with Bootstrap) */
+.btn-booksaw {
+    background: var(--accent-color);
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1px;
+    transition: 0.3s;
+}
+.btn-booksaw:hover {
+    background: var(--dark-text-color);
+    color: #fff;
+}
+
+/* Header Tweaks */
+#header-wrap {
+    background: #fff;
+    border-bottom: 1px solid #eee;
+}
+
+.top-content {
+    background: var(--dark-text-color);
+    color: #fff;
+    padding: 8px 0;
+    font-size: 13px;
+}
+.top-content a { color: #fff; opacity: 0.8; }
+.top-content a:hover { opacity: 1; }
+
+/* Navbar */
+.navbar-nav .nav-link {
+    font-weight: 600;
+    color: var(--dark-text-color);
+    text-transform: uppercase;
+    font-size: 14px;
+    margin: 0 10px;
+}
+.navbar-nav .nav-link.active, .navbar-nav .nav-link:hover {
+    color: var(--accent-color) !important;
+}
+
+/* Product Card (Booksaw Style) */
+.product-item {
+    background: #fff;
+    padding: 20px;
+    margin-bottom: 30px;
+    transition: 0.3s;
+    border: 1px solid transparent;
+}
+.product-item:hover {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border-color: var(--accent-color);
+}
+.product-item img {
+    margin-bottom: 20px;
+    width: 100%;
+}
+.product-item .item-title {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+.product-item .item-price {
+    color: var(--accent-color);
+    font-weight: 700;
+    font-size: 16px;
+}
+
+/* Footer */
+#footer {
+    background: #fff;
+    padding: 80px 0 30px;
+    border-top: 1px solid #eee;
+}
+.footer-logo img {
+    max-width: 150px;
+}
+
+/* Utilities */
+.bg-beige { background-color: var(--light-color); }
+.text-accent { color: var(--accent-color); }
+
+/* Cart Styling */
+.cart-table thead {
+    background: var(--dark-text-color);
+    color: #fff;
+}
+.cart-total-box {
+    background: #fff;
+    padding: 30px;
+    border: 1px solid #eee;
+}
+
+/* Dropdown Menu Visibility Fix */
+.dropdown-menu .dropdown-item {
+    color: #212529 !important;
+    font-weight: 500;
+}
+.dropdown-menu .dropdown-item:hover {
+    background-color: #f8f9fa !important;
+    color: #C5A992 !important;
+}
+.dropdown-item.text-danger {
+    color: #dc3545 !important;
+}
