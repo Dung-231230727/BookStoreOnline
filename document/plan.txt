@@ -1,0 +1,123 @@
+==============================================================================
+KẾ HOẠCH TRIỂN KHAI CHI TIẾT DỰ ÁN WEB API NHÀ SÁCH ONLINE
+==============================================================================
+
+==============================================================================
+KẾ HOẠCH TRIỂN KHAI DỰ ÁN (CHIA TẬCH BACKEND & FRONTEND)
+==============================================================================
+
+PHẦN A: PHÁT TRIỂN HỆ THỐNG BACKEND (REST WEB API) - THỰC HIỆN TRƯỚC
+------------------------------------------------------------------------------
+Giai đoạn này tập trung xây dựng "Xương sống" cho toàn bộ hệ thống.
+
+CHƯƠNG 1: KHỞI TẠO & CẤU HÌNH (JAVA 21 & MAVEN)
+1.1. Khởi tạo Project Maven, cấu hình Java 21 và Spring Boot 3.3.
+1.2. Thiết lập application.yml kết nối MySQL và cấu hình JPA/Hibernate.
+1.3. Khởi tạo cấu trúc Packge chuẩn phục vụ Web API.
+
+CHƯƠNG 2: PERSISTENCE & SECURITY (DỮ LIỆU & BẢO MẬT)
+2.1. Mapping 16 Entities từ DB SQL sang Java Classes (Inheritance Joined).
+2.2. Xây dựng Repository Layer (Spring Data JPA).
+2.3. Triển khai Spring Security 6 & JWT cho phân quyền RBAC.
+
+CHƯƠNG 3: BUSINESS LOGIC & API ENDPOINTS
+3.1. Implement Service & Controller cho 6 nhóm chức năng (49 API).
+3.2. Xử lý nghiệp vụ phức tạp: Checkout, AI Search, Barcode Stock Sync.
+3.3. Tích hợp thanh toán VNPay và Live Tracking Logistics.
+
+CHƯƠNG 4: TESTING & DOCUMENTATION (KIỂM THỬ 100% BACKEND)
+4.1. Unit Test (JUnit 5) & Integration Test.
+4.2. Kiểm thử toàn diện 49 API qua Postman & Swagger.
+4.3. Đạt yêu cầu: Backend chạy ổn định, không lỗi logic, tài liệu Swagger hoàn thiện.
+
+PHẦN B: PHÁT TRIỂN GIAO DIỆN NGƯỜI DÙNG (FRONTEND) - THỰC HIỆN SAU
+------------------------------------------------------------------------------
+Giai đoạn này chỉ bắt đầu khi Backend đã hoàn tất.
+
+CHƯƠNG 5: THIẾT KẾ UI/UX VỚI BOOTSTRAP 5
+5.1. Xây dựng cấu trúc trang bằng HTML5 & Semantic Tags.
+5.2. Áp dụng Framework Bootstrap 5 để thiết kế Responsive (Tương thích di động).
+5.3. Tùy biến giao diện Modern Aesthetics bằng CSS3 (Gradients, Glassmorphism).
+5.4. Sử dụng FontAwesome cho Icons và Google Fonts (Inter/Roboto) cho Typography.
+
+CHƯƠNG 6: KẾT NỐI REST API VỚI JAVASCRIPT
+6.1. Sử dụng JavaScript (Fetch API hoặc Axios) để gọi 49 API Backend.
+6.2. Xử lý hiển thị dữ liệu động (Render sách, Giỏ hàng, Đơn hàng) vào DOM.
+6.3. Quản lý Token JWT trong LocalStorage để duy trì trạng thái đăng nhập.
+6.4. Kiểm thử luồng trải nghiệm người dùng cuối (End-to-End).
+
+==============================================================================
+PHÂN CHIA NHIỆM VỤ NHÓM 5 NGƯỜI (TEAM WORK ASSIGNMENT)
+==============================================================================
+
+1. TRƯỞNG NHÓM (MEMBER A): INFRASTRUCTURE & SECURITY
+------------------------------------------------------------------------------
+- Trách nhiệm chính: Hoàn thiện CHƯƠNG 1 & 2 (Backend Foundation).
+- Công việc: Setup Project, Mapping 16 Entities, Cấu hình Spring Security & JWT.
+- Vai trò: Review Code của 4 thành viên khác, quản lý Merge Code trên Git, xử lý Deployment.
+
+2. THÀNH VIÊN B: MODULE CATALOG & AI SEARCH
+------------------------------------------------------------------------------
+- Đối tượng: Nhóm API II (Books, Category, Author, Publisher).
+- Công việc: 
+    + CRUD Sách/DanhMuc/TacGia (Hỗ trợ xóa mềm).
+    + Xây dựng bộ lọc tìm kiếm đa biến.
+    + Tích hợp Module AI Search (NLP) để tìm kiếm theo ngữ nghĩa.
+
+3. THÀNH VIÊN C: MODULE INVENTORY & WAREHOUSE (BARCODE)
+------------------------------------------------------------------------------
+- Đối tượng: Nhóm API V (Inventory, Supplier).
+- Công việc: 
+    + Xây dựng nghiệp vụ Nhập/Xuất kho (PhieuNhap, PhieuXuat).
+    + Xử lý logic Barcode (Tra cứu vị trí kệ, tồn kho thực tế).
+    + Quản lý cảnh báo hàng tồn kho thấp (Low-stock Alerts).
+
+4. THÀNH VIÊN D: MODULE ORDER & PAYMENT (TRỌNG TÂM)
+------------------------------------------------------------------------------
+- Đối tượng: Nhóm API IV (Order, Checkout, Payment).
+- Công việc: 
+    + Xây dựng luồng Checkout phức tạp (Kiểm kho -> Áp giá -> Phí ship).
+    + Kết hợp với Thành viên E để xử lý Voucher.
+    + Tích hợp cổng thanh toán VNPay (Callback/IPN).
+
+5. THÀNH VIÊN E: MODULE INTERACTION, LOGISTICS & VOUCHER
+------------------------------------------------------------------------------
+- Đối tượng: Nhóm API III, VI (Cart, Voucher, Shipping, Review, Chat).
+- Công việc: 
+    + Quản lý Giỏ hàng và logic mã giảm giá (Voucher).
+    + Xây dựng Live Tracking đơn hàng và hệ thống Review (Rating).
+    + Phụ trách Chapter 4 (Testing & Documentation) cho toàn nhóm.
+
+==============================================================================
+LỘ TRÌNH THẦN TỐC 7 NGÀY (CRASH TIMELINE - 1 WEEK)
+==============================================================================
+
+NGÀY 1: XÂY DỰNG NỀN TẢNG (CHẶN ĐƯỜNG SINH TỬ)
+- Member A: Hoàn thiện 100% Chapter 1 & 2 (Pom.xml, Entities, Repo, Security JWT).
+- Yêu cầu: Cuối ngày 1, các thành viên khác phải có Project Base để Code.
+
+NGÀY 2 & 3: TẤN CÔNG API (FULL FORCE BACKEND)
+- Member B, C, D, E: Viết Service & Controller cho các module đã phân chia.
+- Mục tiêu: Mỗi ngày xong tối thiểu 8-10 API. Cuối ngày 3 phải xong 49 API.
+
+NGÀY 4: ĐỐI SOÁT & KẾT NỐI (BACKEND STABILIZATION)
+- Cả nhóm: Kiểm thử chéo API của nhau qua Postman. Sửa lỗi logic Checkout/Inventory.
+- Member A: Hoàn thiện tài liệu Swagger để cả nhóm nhìn vào làm Frontend.
+
+NGÀY 5 & 6: CHIẾN DỊCH FRONTEND (HTML/BOOTSTRAP + JS)
+- Cả nhóm: Mỗi thành viên tự xây dựng giao diện HTML/Bootstrap cho Module mình đã làm.
+- Công việc: Dùng JS Fetch API để gọi dữ liệu từ Backend.
+- Yêu cầu: Cuối ngày 6, hệ thống phải chạy được luồng End-to-End (Mua hàng -> Thanh toán).
+
+NGÀY 7: TỔNG DUYỆT & ĐÓNG GÓI (FINAL REVIEW)
+- Cả nhóm: Fix lỗi UI/UX, kiểm tra tính bảo mật và Audit Log.
+- Member E: Tổng hợp báo cáo, chụp ảnh minh chứng hệ thống.
+- DEADLINE: 23:59 Ngày 7 - Đóng gói file .JAR và tệp SQL cuối cùng.
+
+==============================================================================
+CHIẾN THUẬT: "SPEED & QUALITY" - Tập trung vào MVP, bỏ qua các chi tiết phụ rườm rà.
+==============================================================================
+
+==============================================================================
+MỤC TIÊU: HOÀN THIỆN DỰ ÁN TRONG 07 NGÀY (1 TUẦN).
+==============================================================================

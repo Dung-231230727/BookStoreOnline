@@ -1,0 +1,28 @@
+# Ignore Maven build output in sub-folders
+**/target/
+**/*.tag
+**/*.releaseBackup
+**/*.versionsBackup
+**/*.nextSnapshot
+**/release.properties
+**/bundle.properties
+**/load-helper.log
+
+# IDE files
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+bin/
+
+# Log files
+*.log
+
+# Database secrets
+**/application.yml.local
+
+# OS files
+.DS_Store
+Thumbs.db
