@@ -45,21 +45,21 @@ public class ThanhToanController {
     @Value("${vnpay.return-url}")
     private String vnp_ReturnUrl;
 
-    @PostMapping("/vnpay-create")
+    @GetMapping("/vnpay/create")
     @Operation(summary = "Khởi tạo thanh toán VNPay", description = "Tạo URL thanh toán VNPay cho đơn hàng")
-    public ApiResponse<String> createPayment(@RequestParam String maDonHang, HttpServletRequest request) throws Exception {
-        DonHang donHang = donHangRepository.findById(maDonHang)
+    public ApiResponse<String> createPayment(@RequestParam String orderId, HttpServletRequest request) throws Exception {
+        DonHang donHang = donHangRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Đơn hàng không tồn tại"));
 
-        if (!"CHO_THANH_TOAN".equals(donHang.getTrangThai())) {
+        if (!"MOI".equals(donHang.getTrangThai())) {
             throw new RuntimeException("Đơn hàng không ở trạng thái chờ thanh toán");
         }
 
         long amount = donHang.getTongThanhToan().longValue() * 100;
-        String vnp_TxnRef = maDonHang + "_" + System.currentTimeMillis();
+        String vnp_TxnRef = orderId + "_" + System.currentTimeMillis();
         
         // Cập nhật mã tham chiếu cho bản ghi ThanhToan
-        ThanhToan thanhToan = thanhToanRepository.findByDonHang_MaDonHang(maDonHang)
+        ThanhToan thanhToan = thanhToanRepository.findByDonHang_MaDonHang(orderId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy thông tin thanh toán"));
         thanhToan.setMaThamChieuCong(vnp_TxnRef);
         thanhToanRepository.save(thanhToan);
@@ -71,7 +71,7 @@ public class ThanhToanController {
         vnp_Params.put("vnp_Amount", String.valueOf(amount));
         vnp_Params.put("vnp_CurrCode", "VND");
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang " + maDonHang);
+        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang " + orderId);
         vnp_Params.put("vnp_OrderType", "other");
         vnp_Params.put("vnp_Locale", "vn");
         vnp_Params.put("vnp_ReturnUrl", vnp_ReturnUrl);
@@ -153,10 +153,10 @@ public class ThanhToanController {
             if ("00".equals(responseCode)) {
                 tt.setTrangThai("SUCCESS");
                 tt.setNgayThanhToan(LocalDateTime.now());
-                dh.setTrangThai("DA_THANH_TOAN");
+                dh.setTrangThai("DA_XAC_NHAN"); // Được xác nhận sau khi thanh toán thành công
             } else {
                 tt.setTrangThai("FAILED");
-                dh.setTrangThai("THANH_TOAN_THAT_BAI");
+                dh.setTrangThai("DA_HUY"); // Tự động hủy nếu thanh toán thất bại
             }
             thanhToanRepository.save(tt);
             donHangRepository.save(dh);

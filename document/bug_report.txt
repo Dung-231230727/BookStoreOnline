@@ -1,0 +1,58 @@
+==============================================================================
+COMPREHENSIVE BUG REPORT & FIX LOG
+Dự án: Bookstore Online SPA - Phân tích static code review
+Ngày: 2026-04-15
+==============================================================================
+
+=== BUG PHÁT HIỆN QUA CODE REVIEW ===
+
+[BUG-01] ❌ CRITICAL - auth.js: Redirect sau login sai path
+  - Lỗi: layout.render('Dashboard/Admin', 'Index') → sai, phải là layout.render('Dashboard', 'Admin/Index')
+  - File: auth.js, dòng 24
+  - Fix: Đổi thành layout.render('Dashboard', 'Admin/Index')
+
+[BUG-02] ❌ CRITICAL - auth.js: Redirect homepage sai
+  - Lỗi: layout.render('', 'Home/Index') - có thể không match case trong initViewLogic
+  - File: auth.js, dòng 26  
+  - Fix: layout.render('Home', 'Index')
+
+[BUG-03] ❌ CRITICAL - Orders History: Thiếu cột "Phương thức TT" trong HTML nhưng JS vẫn render 
+  - HTML History table chỉ có 6 cột nhưng JS render đúng 6 cột → OK
+  - Tuy nhiên cột 4 render chỉ maVoucher thay vì phuongThucThanhToan
+
+[BUG-04] ❌ HIGH - Cart.html: Nút "Xóa toàn bộ" không có onclick
+  - File: Cart.html, dòng 38
+  - Fix: Thêm onclick="cart.clearAll()"
+
+[BUG-05] ❌ HIGH - Admin Orders: Stat cards hardcoded (12, 08, 145)
+  - File: Orders/Admin/Index.html
+  - Các con số không dynamic → cần bind vào API hoặc tính từ data (minor)
+
+[BUG-06] ❌ HIGH - orders.js: loadHistory ngayTao là LocalDateTime từ Java
+  - Backend trả LocalDateTime → khi JSON serialize thành array [2024,4,14,...] không phải ISO string
+  - new Date(order.ngayTao) sẽ fail với array format
+  - Fix: Cần format ngayTao
+
+[BUG-07] ❌ HIGH - cart.js: render dùng item.giaNiemYet nhưng GioHangDTO field là BigDecimal
+  - BigDecimal serialize thành number string → itemTotal = item.giaNiemYet * item.soLuong có thể NaN
+
+[BUG-08] ❌ MEDIUM - layout-manager.js: Case "Home/Index" nhưng auth.js navigate ''/'Home/Index'
+  - auth.logout() gọi layout.render('', 'Home/Index') → path = 'Home/Index' → match case "Home/Index" ✓
+  - auth.login gọi layout.render('Dashboard/Admin', 'Index') → path = 'Dashboard/Admin/Index' → NO MATCH
+
+[BUG-09] ❌ MEDIUM - users.js: toggleStatus gọi GET users để biết trạng thái → 2 API calls mỗi lần toggle
+  - Chậm và tốn bandwidth. Nên pass current status như param
+
+[BUG-10] ❌ MEDIUM - Books/Admin/Edit.html: override books.loadDetail nhưng Detail view cũng dùng loadDetail
+  - Khi Edit view override function, nếu navigate sang Detail view sau thì Detail view sẽ bị broken
+
+[BUG-11] ❌ MEDIUM - Orders/Checkout.html thiếu voucher apply form/button
+
+[BUG-12] ❌ LOW - dashboard.js: stat-books và stat-customers hiển thị '---' vì không có trong DTO
+  - Cần gọi thêm API khác hoặc ẩn card đó
+
+=== ĐÃ FIX TRONG SESSION NÀY ===
+[FIXED] BUG-01: auth.js redirect path
+[FIXED] BUG-02: auth.js logout path  
+[FIXED] BUG-06: Format ngayTao (LocalDateTime array)
+[FIXED] BUG-10: Edit.html không override loadDetail nữa - dùng hàm riêng

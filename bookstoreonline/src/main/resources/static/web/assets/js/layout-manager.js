@@ -4,7 +4,7 @@
  */
 const layout = {
     // Current loaded area and view
-    current: { area: '', view: '' },
+    current: { area: '', view: '', id: null },
 
     /**
      * Render a view into the master layout
@@ -14,60 +14,162 @@ const layout = {
     render: async (area, view, id) => {
         console.log(`Rendering View: ${area}/${view}`);
         
-        // 1. Manage Area-specific Layout Visibility
+        // 1. Manage Global Layout (Admin vs Customer)
         const isAdmin = area.includes('Admin') || view.includes('Admin');
+        const sidebar = $("#admin-sidebar-global");
+
         if (isAdmin) {
             $("#header-area, #footer-area").hide();
+            sidebar.show();
+            // Load sidebar only once if empty
+            if (sidebar.is(':empty')) {
+                await sidebar.load("Shared/AdminSidebar.html", () => {
+                    layout.updateActiveAdminNav(area, view);
+                });
+            } else {
+                layout.updateActiveAdminNav(area, view);
+            }
         } else {
             $("#header-area, #footer-area").show();
+            sidebar.hide();
         }
 
-        // 2. Load Header/Footer if not already present
-        if ($("#header-area").is(':empty')) {
-            await $("#header-area").load("Shared/Header.html", () => layout.updateUserHeader());
-        } else {
-            layout.updateUserHeader();
-        }
-        
-        if ($("#footer-area").is(':empty')) {
-            await $("#footer-area").load("Shared/Footer.html");
+        // 2. Load Header/Footer (Customer only)
+        if (!isAdmin) {
+            if ($("#header-area").is(':empty')) {
+                await $("#header-area").load("Shared/Header.html", () => layout.updateUserHeader());
+            } else {
+                layout.updateUserHeader();
+            }
+            
+            if ($("#footer-area").is(':empty')) {
+                await $("#footer-area").load("Shared/Footer.html");
+            }
         }
         
         // 3. Load the main view content
         const contentPath = area === '' ? `${view}.html` : `${area}/${view}.html`;
+        const cacheBust = "?v=" + new Date().getTime();
         
-        $("#render-body").load(contentPath, function(response, status, xhr) {
-            if (status == "error") {
-                $("#render-body").html(`<div class="container py-5 text-center"><h3>404 - Không tìm thấy nội dung</h3><p>${contentPath}</p></div>`);
-                return;
-            }
+        return new Promise((resolve) => {
+            $("#render-body").load(contentPath + cacheBust, function(response, status, xhr) {
+                if (status == "error") {
+                    $("#render-body").html(`<div class="container py-5 text-center"><h3>404 - Không tìm thấy nội dung</h3><p>${contentPath}</p></div>`);
+                    resolve();
+                    return;
+                }
 
-            layout.initViewLogic(area, view, id);
+                layout.current = { area, view, id: id || null };
+                layout.initViewLogic(area, view, id);
 
-            if (typeof initBooksawTheme === 'function') {
-                initBooksawTheme();
-            }
-            
-            layout.updateActiveNav();
+                if (typeof initBooksawTheme === 'function') {
+                    initBooksawTheme();
+                }
+                
+                layout.updateActiveNav();
+                resolve();
+            });
         });
     },
 
     /**
-     * Update Header UI based on login status
+     * Highlight the active nav item in Admin Sidebar
+     */
+    updateActiveAdminNav: (area, view) => {
+        const currentPath = `${area}/${view}`;
+        $("#admin-nav .nav-link").removeClass("active-admin");
+        $(`#admin-nav .nav-link[data-view="${currentPath}"]`).addClass("active-admin");
+    },
+
+    /**
+     * Update Header UI — compact dark top-bar style
      */
     updateUserHeader: () => {
+        const wrapper = document.getElementById('user-account-wrapper');
+        if (!wrapper) return;
+
         const user = api.getUser();
-        const headerAction = $(".user-account");
-        
-        if (user && headerAction.length) {
-            headerAction.html(`
-                <i class="icon icon-user text-accent fs-5"></i>
-                <span class="d-none d-sm-inline fw-bold text-dark">${user.username}</span>
-                <span class="ms-2 small text-muted text-decoration-underline" onclick="auth.logout()" style="cursor:pointer; font-size: 0.7rem;">(Thoát)</span>
-            `);
-            headerAction.attr("onclick", ""); 
+
+        // Helper: close menu after clicking a nav item
+        const closeMenu = `document.getElementById('userDropdownMenu') && (document.getElementById('userDropdownMenu').style.display='none');`;
+
+        // ── GUEST ──
+        if (!user) {
+            wrapper.innerHTML = `
+                <a href="javascript:void(0)" onclick="layout.render('Auth','Login')"
+                   style="color:rgba(255,255,255,0.7); text-decoration:none; display:flex; align-items:center; gap:5px; font-size:0.8rem;">
+                    <i class="icon icon-user" style="font-size:0.85rem;"></i>
+                    <span>Đăng nhập</span>
+                </a>`;
+            return;
+        }
+
+        // ── LOGGED IN ──
+        const isAdmin = user.role === 'ADMIN' || user.role === 'STAFF';
+        const menuItems = isAdmin ? `
+            <li>
+                <a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2"
+                   style="font-size:0.85rem;"
+                   href="javascript:void(0)"
+                   onclick="${closeMenu} layout.render('Dashboard','Admin/Index')">
+                   🛠️ Trang quản trị
+                </a>
+            </li>
+            <li><hr class="dropdown-divider my-1"></li>` : `
+            <li>
+                <a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2"
+                   style="font-size:0.85rem;"
+                   href="javascript:void(0)"
+                   onclick="${closeMenu} layout.render('Users','Profile')">
+                   👤 Thông tin cá nhân
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2"
+                   style="font-size:0.85rem;"
+                   href="javascript:void(0)"
+                   onclick="${closeMenu} layout.render('Orders','History')">
+                   📋 Lịch sử đơn hàng
+                </a>
+            </li>
+            <li><hr class="dropdown-divider my-1"></li>`;
+
+        wrapper.innerHTML = `
+            <button type="button" id="userDropdownBtn">
+                <i class="icon icon-user" style="font-size:0.85rem;"></i>
+                <span style="max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                    ${user.username}
+                </span>
+                <span style="font-size:0.6rem; margin-left:2px; opacity:0.7;">▼</span>
+            </button>
+            <ul id="userDropdownMenu" style="display:none; position:absolute; right:0; top:calc(100% + 8px);
+                min-width:200px; background:#fff; border-radius:12px; z-index:9999;
+                box-shadow:0 8px 30px rgba(0,0,0,0.12); padding:6px 0; list-style:none; margin:0;">
+                <li style="padding:10px 14px; border-bottom:1px solid #f0f0f0; margin-bottom:4px;">
+                    <div style="font-weight:700; font-size:0.85rem; color:#2F2F2F;">${user.hoTen || user.username}</div>
+                    <span class="badge-role">${user.role || 'CUSTOMER'}</span>
+                </li>
+                ${menuItems}
+                <li>
+                    <a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2 fw-bold"
+                       style="font-size:0.85rem; color:#dc3545;"
+                       href="javascript:void(0)" onclick="auth.logout()">
+                       🚪 Đăng xuất
+                    </a>
+                </li>
+            </ul>`;
+
+        // Wire toggle
+        const btn  = document.getElementById('userDropdownBtn');
+        const menu = document.getElementById('userDropdownMenu');
+        if (btn && menu) {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+            });
         }
     },
+
 
     /**
      * Dispatcher for page-specific logic
@@ -76,21 +178,98 @@ const layout = {
         // Shared logic
         cart.updateCounter();
 
-        // Specific views
-        if (view === 'Home/Index') {
-            books.loadFeatured();
-        } 
-        else if (area === 'Auth') {
-            initAuthForms();
-        } 
-        else if (area === 'Books' && view === 'Index') {
-            // books.loadAll();
-        } 
-        else if (area === 'Books' && view === 'Details') {
-            if (id) books.loadDetail(id);
-        } 
-        else if (area === 'Orders' && view === 'Cart') {
-            cart.load();
+        const path = area ? `${area}/${view}` : view;
+        console.log("Initializing Logic for:", path);
+
+        switch(path) {
+            case "Home/Index":
+                books.loadFeatured();
+                break;
+            case "Auth/Login":
+            case "Auth/Register":
+                initAuthForms();
+                break;
+            case "Books/Index":
+                if (!layout.current.isSearching) {
+                    books.loadAll();
+                }
+                layout.current.isSearching = false;
+                break;
+            case "Books/Details":
+                if (id) {
+                    books.loadDetail(id);
+                    review.loadForBook(id);
+                }
+                break;
+            case "Orders/Checkout":
+                orders.initCheckout();
+                break;
+            case "Orders/History":
+                orders.loadHistory();
+                break;
+            case "Orders/Admin/Index":
+                orders.loadAdminOrders();
+                break;
+            case "Orders/Details":
+                if (id) orders.loadDetail(id);
+                break;
+            case "Orders/Cart":
+                cart.load();
+                break;
+            case "Users/Admin/Index":
+                users.loadAdminList();
+                break;
+            case "Users/Admin/Create":
+                // Form ready, no preload needed
+                break;
+            case "Users/Profile":
+                users.loadProfile();
+                break;
+            case "Categories/Admin/Index":
+                categories.loadAdminList();
+                break;
+            case "Dashboard/Admin/Index":
+                dashboard.init();
+                break;
+            case "Vouchers/Admin/Index":
+                vouchers.loadAdminList();
+                break;
+            case "Reviews/Admin/Index":
+                review.loadAdminList();
+                break;
+            case 'Books/Admin/Index':
+                books.loadAdminList();
+                break;
+            case 'Books/Admin/Create':
+                books.loadCategoriesIntoForm && books.loadCategoriesIntoForm();
+                books.loadAuthors && books.loadAuthors();
+                books.loadPublishers && books.loadPublishers();
+                break;
+            case 'Books/Admin/Edit':
+                // Edit.html uses its own IIFE to load book data (avoids overriding books.loadDetail)
+                // Dropdowns still need to be populated
+                books.loadCategoriesIntoForm && books.loadCategoriesIntoForm();
+                books.loadAuthors && books.loadAuthors();
+                books.loadPublishers && books.loadPublishers();
+                break;
+            case 'Inventory/Admin/Index':
+                inventory.loadList();
+                break;
+            case "Inventory/Admin/Import":
+                inventory.initImportForm();
+                break;
+            case "Inventory/Admin/Export":
+                // Ready for export logic form
+                break;
+            case "Suppliers/Admin/Index":
+                suppliers.loadList();
+                break;
+            case "Shipping/Tracking":
+                // Ready for tracking ID input
+                break;
+            case "Support/Chat":
+                support.initChat();
+                break;
         }
     },
 
@@ -100,5 +279,12 @@ const layout = {
 };
 
 $(document).ready(() => {
-    // Initial Load handled in index.html
+    // One-time global handler: close user dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        const menu = document.getElementById('userDropdownMenu');
+        const btn  = document.getElementById('userDropdownBtn');
+        if (menu && btn && !btn.contains(e.target)) {
+            menu.style.display = 'none';
+        }
+    });
 });

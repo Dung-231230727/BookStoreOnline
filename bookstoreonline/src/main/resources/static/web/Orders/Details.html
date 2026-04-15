@@ -1,0 +1,95 @@
+<div class="invoice-page py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <div class="d-flex justify-content-between align-items-end mb-4 no-print">
+                    <button class="btn btn-outline-secondary rounded-pill px-4" onclick="window.history.back()">
+                        <i class="icon icon-arrow-left me-2"></i> Quay lại
+                    </button>
+                    <button class="btn btn-accent rounded-pill px-4 shadow-sm" onclick="window.print()">
+                        <i class="icon icon-clipboard me-2"></i> In hóa đơn
+                    </button>
+                </div>
+
+                <div class="invoice-card bg-white shadow-lg rounded-5 overflow-hidden p-5">
+                    <!-- Invoice Header -->
+                    <div class="row mb-5 align-items-center">
+                        <div class="col-sm-6">
+                            <h1 class="fw-bold text-dark mb-0">BOOKSAW</h1>
+                            <p class="text-muted mb-0">Thế giới tri thức dành cho bạn</p>
+                        </div>
+                        <div class="col-sm-6 text-sm-end mt-3 mt-sm-0">
+                            <h4 class="fw-bold mb-1">HÓA ĐƠN</h4>
+                            <div class="text-muted">Mã đơn: <span class="fw-bold text-dark" id="invoice-id">#ORD-0000</span></div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4 opacity-50">
+
+                    <!-- Customer & Order Info -->
+                    <div class="row mb-5">
+                        <div class="col-sm-6 mb-4 mb-sm-0 text-start">
+                            <h6 class="text-muted text-uppercase small fw-bold mb-3">Người mua hàng</h6>
+                            <h5 class="fw-bold mb-1" id="invoice-customer-name">---</h5>
+                            <p class="text-muted mb-1" id="invoice-customer-phone">---</p>
+                            <p class="text-muted mb-0" id="invoice-customer-address">---</p>
+                        </div>
+                        <div class="col-sm-6 text-sm-end">
+                            <h6 class="text-muted text-uppercase small fw-bold mb-3">Thông tin đơn hàng</h6>
+                            <p class="text-muted mb-1">Ngày đặt: <span class="text-dark fw-bold" id="invoice-date">---</span></p>
+                            <p class="text-muted mb-1">Thanh toán: <span class="text-dark fw-bold" id="invoice-payment">---</span></p>
+                            <p class="text-muted mb-0">Trạng thái: <span class="badge bg-success" id="invoice-status">---</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Items Table -->
+                    <div class="table-responsive mb-5">
+                        <table class="table table-borderless align-middle">
+                            <thead class="bg-light">
+                                <tr class="text-muted text-uppercase small fw-bold">
+                                    <th class="ps-4 py-3">Tên sản phẩm</th>
+                                    <th class="py-3 text-center">Số lượng</th>
+                                    <th class="py-3 text-end">Đơn giá</th>
+                                    <th class="pe-4 py-3 text-end">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoice-items" class="border-top-0">
+                                <!-- Dynamically populated -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Summary -->
+                    <div class="row justify-content-end">
+                        <div class="col-lg-5 col-sm-7">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Tạm tính:</span>
+                                <span class="fw-bold" id="invoice-subtotal">0 đ</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3 pt-2">
+                                <span class="text-muted">Phí vận chuyển:</span>
+                                <span class="fw-bold" id="invoice-shipping">0 đ</span>
+                            </div>
+                            <div class="d-flex justify-content-between pt-3 border-top">
+                                <h4 class="fw-bold">TỔNG CỘNG:</h4>
+                                <h4 class="fw-bold text-accent" id="invoice-total">0 đ</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-5 pt-5 border-top opacity-50">
+                        <p class="mb-0 small text-muted font-italic">Cảm ơn bạn đã lựa chọn Booksaw. Chúc bạn có những trải nghiệm đọc sách tuyệt vời!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@media print {
+    .no-print { display: none !important; }
+    body { background-color: #fff !important; }
+    .invoice-card { box-shadow: none !important; margin-top: 0 !important; }
+}
+</style>

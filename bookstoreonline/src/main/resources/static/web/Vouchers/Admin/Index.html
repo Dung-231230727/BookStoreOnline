@@ -1,34 +1,102 @@
-<!-- Admin Vouchers Area - List View -->
-<div class="admin-wrapper d-flex flex-column flex-lg-row bg-light min-vh-100">
-    <aside class="admin-sidebar bg-dark text-white p-4 d-flex flex-column" style="min-width: 280px;">
-        <div class="mb-5 px-3"><h4 class="fw-bold text-accent font-serif mb-0">QUẢN TRỊ VIÊN</h4></div>
-        <nav class="nav flex-column gap-2 mb-auto">
-            <a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="nav-link text-white-50 p-3 hvr-admin"><i class="icon icon-clipboard me-2"></i> Tổng quan</a>
-            <a href="javascript:void(0)" onclick="layout.render('Vouchers/Admin', 'Index')" class="nav-link text-white-50 active-admin bg-white bg-opacity-10 rounded-3 p-3"><i class="icon icon-clipboard me-2"></i> Mã giảm giá</a>
-        </nav>
-    </aside>
-
-    <main class="flex-grow-1 p-4 p-md-5">
-        <div class="d-flex justify-content-between align-items-center mb-5">
-            <h2 class="fw-bold font-serif mb-0">Quản lý Khuyến mãi</h2>
-            <button class="btn btn-accent rounded-pill px-4 fw-bold shadow-sm">Tạo mã mới</button>
+<!-- Admin Vouchers - Manage Promotions -->
+<div class="p-4 p-md-5 w-100 bg-light min-vh-100">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold font-serif mb-0 text-dark">Quản lý Khuyến mãi</h2>
+            <p class="text-muted small mb-0">Tạo và quản lý mã giảm giá cho khách hàng</p>
         </div>
-        <div class="card border-0 shadow-sm rounded-5 overflow-hidden bg-white">
-            <div class="table-responsive">
-                <table class="table align-middle">
-                    <thead class="bg-light"><tr><th class="ps-4">Mã</th><th>Giá trị</th><th>Hết hạn</th><th>Trạng thái</th><th></th></tr></thead>
-                    <tbody>
-                        <tr>
-                            <td class="ps-4 fw-bold text-accent">BOOKSAW20</td>
-                            <td>Giảm 20%</td>
-                            <td>31/12/2024</td>
-                            <td><span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">Đang chạy</span></td>
-                            <td class="text-end pe-4"><button class="btn btn-sm btn-light rounded-pill">Sửa</button></td>
-                        </tr>
-                    </tbody>
-                </table>
+        <button onclick="$('#voucher-create-section').slideToggle()" class="btn btn-accent rounded-pill px-4 fw-bold shadow-sm text-white">
+            <i class="icon icon-plus me-2"></i> Tạo mã mới
+        </button>
+    </div>
+
+    <!-- Create Form -->
+    <div id="voucher-create-section" class="card border-0 shadow-sm rounded-5 p-4 bg-white mb-4" style="display:none;">
+        <h6 class="fw-bold mb-3">Tạo mã giảm giá mới</h6>
+        <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small fw-bold">Mã Voucher <span class="text-danger">*</span></label>
+                <input type="text" id="v-code" class="form-control rounded-4 text-uppercase" placeholder="VD: SALE20">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small fw-bold">Giá trị giảm (VNĐ) <span class="text-danger">*</span></label>
+                <input type="number" id="v-value" class="form-control rounded-4" placeholder="VD: 50000">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small fw-bold">Đơn tối thiểu</label>
+                <input type="number" id="v-min" class="form-control rounded-4" placeholder="VD: 200000">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small fw-bold">Hạn sử dụng <span class="text-danger">*</span></label>
+                <input type="date" id="v-expire" class="form-control rounded-4">
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button onclick="vouchers.create()" class="btn btn-accent rounded-pill px-4 fw-bold flex-grow-1 text-white">Tạo</button>
+                <button onclick="$('#voucher-create-section').slideUp()" class="btn btn-light rounded-pill px-3">Hủy</button>
             </div>
         </div>
-    </main>
+    </div>
+
+    <!-- Edit Form -->
+    <div id="voucher-edit-section" class="card border-0 shadow-sm rounded-5 p-4 bg-white mb-4" style="display:none;">
+        <h6 class="fw-bold mb-3 text-warning">Chỉnh sửa Voucher: <span id="v-edit-code-display" class="text-accent"></span></h6>
+        <input type="hidden" id="v-edit-code">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small fw-bold">Giá trị giảm (VNĐ)</label>
+                <input type="number" id="v-edit-value" class="form-control rounded-4">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-bold">Đơn tối thiểu</label>
+                <input type="number" id="v-edit-min" class="form-control rounded-4">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-bold">Hạn sử dụng</label>
+                <input type="date" id="v-edit-expire" class="form-control rounded-4">
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button onclick="vouchers.update()" class="btn btn-warning rounded-pill px-4 fw-bold flex-grow-1">Lưu</button>
+                <button onclick="$('#voucher-edit-section').slideUp()" class="btn btn-light rounded-pill px-3">Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card border-0 shadow-sm rounded-5 overflow-hidden bg-white">
+        <div class="table-responsive">
+            <table class="table align-middle table-hover mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4 py-3 text-muted small text-uppercase fw-bold">Mã</th>
+                        <th class="py-3 text-muted small text-uppercase fw-bold">Giá trị / Điều kiện</th>
+                        <th class="py-3 text-muted small text-uppercase fw-bold">Hết hạn</th>
+                        <th class="py-3 text-muted small text-uppercase fw-bold">Trạng thái</th>
+                        <th class="text-end pe-4 py-3 text-muted small text-uppercase fw-bold">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="vouchers-admin-list">
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <div class="spinner-border spinner-border-sm text-accent" role="status"></div>
+                            <span class="ms-2 text-muted">Đang tải khuyến mãi...</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-<script>$("#header-area, #footer-area").hide();</script>
+
+<script>
+    // Wire openEdit to show display code
+    const _origOpenEdit = vouchers.openEdit;
+    vouchers.openEdit = (code, giaTriGiam, dieuKienToiThieu, thoiHan) => {
+        $('#v-edit-code-display').text(code);
+        _origOpenEdit && _origOpenEdit(code, giaTriGiam, dieuKienToiThieu, thoiHan);
+    };
+</script>
+
+<style>
+    .btn-accent { background-color: #C5A992; color: white; border: none; }
+    .btn-accent:hover { background-color: #2F2F2F; }
+</style>

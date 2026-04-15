@@ -98,7 +98,7 @@ public class DonHangServiceImpl implements DonHangService {
         donHang.setTongTienHang(tongTienHang);
         donHang.setPhiVanChuyen(phiVanChuyen);
         donHang.setTongThanhToan(tongThanhToan);
-        donHang.setTrangThai("CHO_XAC_NHAN");
+        donHang.setTrangThai("MOI");
         donHang.setDiaChiGiaoCuThe(request.getDiaChiGiaoHang());
 
         donHangRepository.save(donHang);
@@ -136,7 +136,7 @@ public class DonHangServiceImpl implements DonHangService {
             tt.setTrangThai("PENDING");
             thanhToanRepository.save(tt);
             
-            donHang.setTrangThai("CHO_THANH_TOAN");
+            donHang.setTrangThai("MOI"); // Chờ xác nhận thanh toán VNPay
             donHangRepository.save(donHang);
         } else {
             // COD
@@ -174,7 +174,7 @@ public class DonHangServiceImpl implements DonHangService {
         DonHang donHang = donHangRepository.findById(maDonHang)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng: " + maDonHang));
         
-        if (!"CHO_XAC_NHAN".equals(donHang.getTrangThai()) && !"CHO_THANH_TOAN".equals(donHang.getTrangThai())) {
+        if (!"MOI".equals(donHang.getTrangThai())) {
             throw new RuntimeException("Không thể hủy đơn hàng này ở trạng thái: " + donHang.getTrangThai());
         }
         

@@ -35,15 +35,26 @@ public class AiSearchService {
         String categoryName = null;
         String keyword = null;
 
-        // 1. RULE: Trích xuất Thể loại động từ DB
+        // 1. RULE: Trích xuất Thể loại động từ DB và Map ngữ nghĩa cơ bản
         List<String> possibleCategories = danhMucRepository.findAll().stream()
                 .map(cat -> cat.getTenDanhMuc().toLowerCase())
+                .filter(cat -> cat.length() > 2)
                 .toList();
-        for (String cat : possibleCategories) {
-            if (lowerQuery.contains(cat)) {
-                categoryName = cat;
-                lowerQuery = lowerQuery.replace(cat, "");
-                break;
+
+        // Map ngữ nghĩa thủ công (Cơ chế Semantic đơn giản)
+        if (lowerQuery.contains("khởi nghiệp") || lowerQuery.contains("startup") || lowerQuery.contains("làm giàu")) {
+            categoryName = "kinh tế"; 
+            // Nếu là tìm theo Concept rộng, ta có thể bỏ qua keyword để hiện toàn bộ sách Kinh tế
+            lowerQuery = lowerQuery.replace("khởi nghiệp", "").replace("startup", "").replace("làm giàu", "");
+        }
+
+        if (categoryName == null) {
+            for (String cat : possibleCategories) {
+                if (lowerQuery.matches(".*\\b" + Pattern.quote(cat) + "\\b.*")) {
+                    categoryName = cat;
+                    lowerQuery = lowerQuery.replaceFirst("\\b" + Pattern.quote(cat) + "\\b", "");
+                    break;
+                }
             }
         }
 
@@ -111,13 +122,14 @@ public class AiSearchService {
             lowerQuery = lowerQuery.replace(minPageMatcher.group(0), "");
         }
 
-        // 6. RULE: Thải loại stopwords không mang ý nghĩa tìm kiếm
-        String[] stopWords = { "tìm", "cho", "tôi", "muốn", "mua", "những", "về", "chủ", "đề", "có", "sách", "quyển",
-                "cuốn", "thể", "loại", "giá", "khoảng", "tiền", "thuộc", "các", "một", "nxb", "nhà", "xuất", "bản",
-                "trang", "kể", "của", "là", "với", "như", "được" };
-        for (String word : stopWords) {
-            lowerQuery = lowerQuery.replaceAll("(?U)\\b" + word + "\\b", " "); // Thêm (?U) để hỗ trợ biên từ Unicode
-                                                                               // (Tiếng Việt)
+        // 6. RULE: Thải loại stopwords mở rộng
+        if (lowerQuery.trim().split("\\s+").length > 3) {
+            String[] stopWords = { "tìm", "cho", "tôi", "muốn", "mua", "những", "về", "chủ", "đề", "có", "sách", "quyển",
+                    "cuốn", "thể", "loại", "giá", "khoảng", "tiền", "thuộc", "các", "một", "nxb", "nhà", "xuất", "bản",
+                    "trang", "kể", "của", "là", "với", "như", "được", "hay", "tốt", "đẹp", "mới", "nhất" };
+            for (String word : stopWords) {
+                lowerQuery = lowerQuery.replaceAll("(?U)\\b" + word + "\\b", " "); 
+            }
         }
 
         // Dọn khoảng trắng thừa

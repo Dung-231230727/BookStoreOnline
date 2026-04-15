@@ -93,16 +93,50 @@
             </div>
             <a href="javascript:void(0)" onclick="layout.render('Books', 'Index')" class="text-accent fw-bold text-decoration-none">Xem toàn bộ <i class="icon icon-ns-arrow-right"></i></a>
         </div>
-        <div class="row g-4" id="related-books-container">
-            <!-- Will be populated by JS -->
-            <div class="col-md-3">
-                <div class="product-item text-center">
-                    <div class="image-holder mb-3 overflow-hidden rounded-4 bg-light shadow-sm border p-2">
-                        <img src="assets/images/product-item1.jpg" alt="Books" class="img-fluid">
-                    </div>
-                    <h6>Cách sống đơn giản</h6>
-                    <div class="text-accent fw-bold small">400,000đ</div>
+        <div class="row g-4" id="related-books-grid">
+            <!-- Will be populated by books.js -->
+            <div class="col-12 text-center py-4 text-muted small italic">Đang tìm sách liên quan...</div>
+        </div>
+    </div>
+</section>
+<!-- Reviews Section (Person 5 Task) -->
+<section id="reviews-area" class="py-5 bg-sand">
+    <div class="container-xl py-5">
+        <div class="row">
+            <div class="col-lg-8">
+                <h3 class="fw-bold font-serif mb-5 pb-3 border-bottom">Đánh giá từ khách hàng</h3>
+                <div id="reviews-container">
+                    <!-- Reviews populated by review.js -->
+                    <div class="text-center py-4 text-muted small italic">Chưa có đánh giá nào.</div>
                 </div>
+
+                <div class="review-form-container mt-5 p-5 bg-white shadow-lg rounded-5 border border-accent border-opacity-10">
+                    <h5 class="fw-bold font-serif mb-4">Gửi nhận xét của bạn</h5>
+                    <div id="review-form" class="row g-3">
+                        <div class="col-md-4">
+                            <label class="small fw-bold text-muted mb-2">Điểm đánh giá</label>
+                            <select id="review-rating" class="form-select rounded-pill border-light bg-light">
+                                <option value="5">5 ★★★★★ (Tuyệt vời)</option>
+                                <option value="4">4 ★★★★☆ (Hài lòng)</option>
+                                <option value="3">3 ★★★☆☆ (Bình thường)</option>
+                                <option value="2">2 ★★☆☆☆ (Kém)</option>
+                                <option value="1">1 ★☆☆☆☆ (Rất kém)</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="small fw-bold text-muted mb-2">Nhận xét chi tiết</label>
+                            <textarea id="review-content" class="form-control rounded-4 border-light bg-light" rows="4" placeholder="Chia sẻ cảm nhận của bạn về cuốn sách này..."></textarea>
+                        </div>
+                        <div class="col-12 mt-4 text-end">
+                            <button type="button" onclick="review.submit(currentBookIsbn)" class="btn btn-accent px-5 py-3 rounded-pill fw-bold shadow-sm">
+                                Gửi đánh giá ngay
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <!-- Stats or Sidebar if needed -->
             </div>
         </div>
     </div>

@@ -1,109 +1,135 @@
-<!-- Admin Books Area - Create/Edit View -->
-<div class="admin-wrapper d-flex flex-column flex-lg-row bg-light min-vh-100">
-    <!-- Sidebar Navigation (Consistent) -->
-    <aside class="admin-sidebar bg-dark text-white p-4 d-flex flex-column" style="min-width: 280px;">
-        <div class="mb-5 px-3">
-            <h4 class="fw-bold text-accent font-serif mb-0">QUẢN TRỊ VIÊN</h4>
-        </div>
-        <nav class="nav flex-column gap-2 mb-auto">
-            <a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="nav-link text-white-50 p-3 hvr-admin"><i class="icon icon-clipboard me-2"></i> Tổng quan</a>
-            <a href="javascript:void(0)" onclick="layout.render('Books/Admin', 'Index')" class="nav-link text-white-50 active-admin bg-white bg-opacity-10 rounded-3 p-3"><i class="icon icon-notes me-2"></i> Sản phẩm (Sách)</a>
-            <a href="javascript:void(0)" onclick="layout.render('Categories/Admin', 'Index')" class="nav-link text-white-50 p-3 hvr-admin"><i class="icon icon-clipboard me-2"></i> Danh mục</a>
-        </nav>
-    </aside>
-
-    <main class="flex-grow-1 p-4 p-md-5">
-        <div class="mb-5">
+<!-- Admin Books - Create New Product -->
+<div class="p-4 p-md-5 w-100 bg-light min-vh-100">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-2">
-                    <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Books/Admin', 'Index')" class="text-decoration-none text-muted">Sản phẩm</a></li>
+                    <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Books', 'Admin/Index')" class="text-decoration-none text-muted">Quản lý sách</a></li>
                     <li class="breadcrumb-item small active fw-bold text-accent">Thêm mới</li>
                 </ol>
             </nav>
-            <h2 class="fw-bold font-serif mb-0">Thêm sách mới vào kho</h2>
+            <h2 class="fw-bold font-serif mb-0 text-dark">Thêm sách vào hệ thống</h2>
         </div>
+        <div class="d-flex gap-2">
+            <button onclick="layout.render('Books', 'Admin/Index')" class="btn btn-outline-dark rounded-pill px-4">Hủy</button>
+            <button id="btn-save-book" class="btn btn-accent rounded-pill px-4 fw-bold shadow-sm">Lưu sản phẩm</button>
+        </div>
+    </div>
 
-        <form id="book-create-form" class="row g-4">
+    <form id="create-book-form">
+        <div class="row g-4">
+            <!-- Left: Main Info -->
             <div class="col-lg-8">
-                <div class="card border-0 shadow-sm rounded-5 p-4 p-md-5 bg-white mb-4">
-                    <h5 class="fw-bold mb-4 font-serif border-bottom pb-2">Thông tin cơ bản</h5>
-                    <div class="row g-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Thông tin cơ bản</h5>
+                    <div class="row g-3">
                         <div class="col-12">
-                            <label class="form-label small fw-bold text-muted">Tên sách</label>
-                            <input type="text" class="form-control form-control-lg border-light bg-light rounded-3 shadow-none" placeholder="Nhập tên sách..." required>
+                            <label class="form-label small fw-bold">Tên sách <span class="text-danger">*</span></label>
+                            <input type="text" name="tenSach" class="form-control rounded-pill px-3" placeholder="Nhập tên sách..." required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold text-muted">Tác giả</label>
-                            <select class="form-select form-select-lg border-light bg-light rounded-3 shadow-none">
-                                <option selected disabled>Chọn tác giả</option>
-                                <option>Armor Ramsey</option>
-                                <option>Timbur Hood</option>
+                            <label class="form-label small fw-bold">Mã ISBN <span class="text-danger">*</span></label>
+                            <input type="text" name="isbn" class="form-control rounded-pill px-3" placeholder="978-..." required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Danh mục <span class="text-danger">*</span></label>
+                            <select name="maDanhMuc" id="maDanhMuc" class="form-select rounded-pill px-3" required>
+                                <option value="">-- Đang tải danh mục... --</option>
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold text-muted">Danh mục</label>
-                            <select class="form-select form-select-lg border-light bg-light rounded-3 shadow-none">
-                                <option selected disabled>Chọn danh mục</option>
-                                <option>Kinh tế</option>
-                                <option>Văn học</option>
+                            <label class="form-label small fw-bold">Nhà xuất bản</label>
+                            <select name="maNxb" id="maNxb" class="form-select rounded-pill px-3">
+                                <option value="">-- Đang tải NXB... --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Tác giả</label>
+                            <select name="maTacGia" id="maTacGia" class="form-select rounded-pill px-3">
+                                <option value="">-- Đang tải tác giả... --</option>
                             </select>
                         </div>
                         <div class="col-12">
-                            <label class="form-label small fw-bold text-muted">Mô tả tóm tắt</label>
-                            <textarea class="form-control border-light bg-light rounded-3 shadow-none" rows="5" placeholder="Nhập nội dung mô tả..."></textarea>
+                            <label class="form-label small fw-bold">Mô tả sản phẩm</label>
+                            <textarea name="moTa" class="form-control rounded-4 px-3" rows="5" placeholder="Nhập mô tả chi tiết sách..."></textarea>
                         </div>
                     </div>
                 </div>
 
-                <div class="card border-0 shadow-sm rounded-5 p-4 p-md-5 bg-white">
-                    <h5 class="fw-bold mb-4 font-serif border-bottom pb-2">Thông số & Giá</h5>
-                    <div class="row g-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Thông số kỹ thuật</h5>
+                    <div class="row g-3">
                         <div class="col-md-4">
-                            <label class="form-label small fw-bold text-muted">Giá bán (VNĐ)</label>
-                            <input type="number" class="form-control border-light bg-light rounded-3 shadow-none" placeholder="0">
+                            <label class="form-label small fw-bold">Số trang</label>
+                            <input type="number" name="soTrang" class="form-control rounded-pill" placeholder="VD: 320">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label small fw-bold text-muted">Số lượng trong kho</label>
-                            <input type="number" class="form-control border-light bg-light rounded-3 shadow-none" placeholder="0">
+                            <label class="form-label small fw-bold">Trọng lượng (g)</label>
+                            <input type="number" name="trongLuong" class="form-control rounded-pill" placeholder="VD: 350">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label small fw-bold text-muted">Mã SKU</label>
-                            <input type="text" class="form-control border-light bg-light rounded-3 shadow-none" placeholder="BK-XXXX">
+                            <label class="form-label small fw-bold">Năm xuất bản</label>
+                            <input type="number" name="namXuatBan" class="form-control rounded-pill" placeholder="VD: 2024">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Ngôn ngữ</label>
+                            <select name="ngonNgu" class="form-select rounded-pill">
+                                <option value="Tiếng Việt">Tiếng Việt</option>
+                                <option value="Tiếng Anh">Tiếng Anh</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Loại bìa</label>
+                            <select name="loaiBia" class="form-select rounded-pill">
+                                <option value="Bìa mềm">Bìa mềm</option>
+                                <option value="Bìa cứng">Bìa cứng</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Kích thước (cm)</label>
+                            <input type="text" name="kichThuoc" class="form-control rounded-pill" placeholder="13 x 20">
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Right: Pricing & Image -->
             <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-5 p-4 bg-white mb-4">
-                    <h5 class="fw-bold mb-4 font-serif border-bottom pb-2">Hình ảnh bìa</h5>
-                    <div class="image-upload-area text-center py-5 border-2 border-dashed rounded-4 bg-light cursor-pointer mb-3">
-                        <i class="icon icon-search fs-1 text-muted mb-3 d-block"></i>
-                        <span class="small text-muted">Click để tải ảnh lên</span>
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Giá & Kho hàng</h5>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Giá niêm yết (VNĐ) <span class="text-danger">*</span></label>
+                        <input type="number" name="giaNiemYet" id="giaNiemYet"
+                            class="form-control rounded-pill border-accent fw-bold" required min="1000"
+                            oninput="document.getElementById('final-price-display').innerText = api.formatCurrency(this.value || 0)">
                     </div>
-                    <p class="extra-small text-muted">Định dạng hỗ trợ: JPG, PNG. Dung lượng tối đa: 2MB.</p>
+                    <div>
+                        <label class="form-label small fw-bold">Giá hiển thị</label>
+                        <div id="final-price-display" class="fs-4 fw-bold text-accent">0đ</div>
+                    </div>
                 </div>
 
-                <div class="card border-0 shadow-sm rounded-5 p-4 bg-white">
-                    <h5 class="fw-bold mb-4 font-serif border-bottom pb-2">Trạng thái hiển thị</h5>
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                        <label class="form-check-label" for="flexSwitchCheckChecked">Đang bán (Công khai)</label>
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Hình ảnh bìa</h5>
+                    <div class="text-center mb-3">
+                        <div id="image-preview-container" class="rounded-4 bg-light d-flex align-items-center justify-content-center border-dashed" style="height:280px;">
+                            <i class="icon icon-plus fs-1 text-muted"></i>
+                        </div>
                     </div>
-                    <div class="form-check form-switch mb-4">
-                        <input class="form-check-input" type="checkbox" id="isFeatured">
-                        <label class="form-check-label" for="isFeatured">Sách nổi bật (Trang chủ)</label>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-accent w-100 py-3 rounded-pill fw-bold shadow">
-                        Lưu thông tin
-                    </button>
-                    <button type="button" onclick="layout.render('Books/Admin', 'Index')" class="btn btn-link link-dark w-100 mt-2 text-decoration-none small">Hủy bỏ</button>
+                    <input type="text" name="anhBia" id="anhBia" class="form-control rounded-pill small mt-2"
+                        placeholder="Tên file ảnh (VD: book1.jpg)"
+                        oninput="document.getElementById('image-preview-container').innerHTML = this.value
+                            ? '<img src=\'assets/images/' + this.value + '\' class=\'img-fluid rounded-4\' style=\'max-height:260px;object-fit:contain\' onerror=\'this.src=&quot;assets/images/product-item1.jpg&quot;\'>'
+                            : '<i class=\'icon icon-plus fs-1 text-muted\'></i>'">
+                    <small class="text-muted mt-2 d-block">Đặt ảnh trong thư mục assets/images/</small>
                 </div>
             </div>
-        </form>
-    </main>
+        </div>
+    </form>
 </div>
-<script>
-    $("#header-area, #footer-area").hide();
-</script>
+
+<style>
+    .border-dashed { border: 2px dashed #dee2e6; }
+    .btn-accent { background-color: #C5A992; color: white; border: none; }
+    .btn-accent:hover { background-color: #2F2F2F; }
+</style>

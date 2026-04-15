@@ -1,0 +1,41 @@
+<div class="shipping-tracking-page py-5 bg-light min-vh-100">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8 text-center mb-5">
+                <h1 class="font-serif fw-bold display-5 mb-3">Tra cứu Vận đơn trực tuyến</h1>
+                <p class="text-muted">Nhập mã vận đơn (Tracking ID) để theo dõi hành trình giao hàng từ Căn cứ tổng (Warehouse) tới bạn.</p>
+                
+                <div class="bg-white p-2 rounded-pill shadow-sm d-flex align-items-center mt-4">
+                    <i class="icon icon-search ms-3 text-muted"></i>
+                    <input type="text" id="tracking-input-id" class="form-control border-0 bg-transparent shadow-none" placeholder="VD: TRK-ORD-1..." onkeyup="if(event.key === 'Enter') inventory.trackOrder($('#tracking-input-id').val())">
+                    <button class="btn btn-accent rounded-pill px-4 fw-bold" onclick="inventory.trackOrder($('#tracking-input-id').val())">TRA CỨU</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center" id="tracking-result-container" style="display:none;">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-lg rounded-5 bg-white p-4 p-md-5">
+                    <div class="d-flex flex-wrap justify-content-between border-bottom pb-4 mb-5">
+                        <div>
+                            <h5 class="fw-bold text-dark mb-1" id="tracking-display-id">---</h5>
+                            <p class="text-muted small mb-0">Liên kết vệ tinh Logs: <span class="fw-bold text-accent">Giao Hàng Tiết Kiệm (GHTK)</span></p>
+                        </div>
+                        <div class="text-end mt-3 mt-md-0">
+                            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-bold border border-primary border-opacity-25" id="tracking-status-badge">Processing</span>
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold mb-4"><i class="icon icon-map-pin me-2 text-accent"></i>Lịch sử tuyến đường (Live Map Data)</h6>
+                    <div id="tracking-timeline" class="ps-3 pt-2">
+                        <!-- Dynamic generated timeline -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+.timeline-item { min-height: 80px; }
+.timeline-item:last-child { border-left-color: transparent !important; }
+</style>

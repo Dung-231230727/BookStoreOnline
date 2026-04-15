@@ -1,146 +1,247 @@
 ==============================================================================
 HƯỚNG DẪN CHI TIẾT HOÀN THIỆN 100% GIAO DIỆN & TÍCH HỢP API
-Dự án: Hệ thống Quản trị Nhà sách Online (Sử dụng Kiến trúc SPA)
+Dự án: Hệ thống Quản trị Nhà sách Online (SPA Architecture)
+Phiên bản: 3.0 - ĐÃ HOÀN THIỆN 100%
 ==============================================================================
 
 I. QUY CHUẨN KỸ THUẬT BẮT BUỘC
 ------------------------------------------------------------------------------
-1. Cấu trúc Component: 
-   - Không tạo file HTML độc lập. Toàn bộ nạp qua layout.render('Area', 'View', 'ID').
-   - Script logic phải viết vào file .js tương ứng trong assets/js/modules/.
+1. Kiến trúc:
+   - KHÔNG tạo file HTML độc lập. Toàn bộ nạp qua layout.render('Area', 'View', 'ID').
+   - Script logic phải viết vào file .js trong assets/js/modules/ tương ứng.
+   - Đăng ký case trong layout-manager.js -> hàm initViewLogic().
+
 2. Quy chuẩn UI:
-   - Màu chủ đạo (Accent): #c5a992 (Sử dụng class .text-accent, .bg-accent).
-   - Bo góc tiêu chuẩn: rounded-4 (Trang Admin dùng rounded-5).
-   - Font: 'Outfit' hoặc 'Inter' (Cấu hình trong style.css).
-3. Logic API:
-   - Luôn sử dụng biến toàn cục 'api' (đã có sẵn trong common.js).
-   - Cú pháp: api.get('/books'), api.post('/auth/login', data),...
-   - Toàn bộ Token JWT đã được tự động xử lý bởi đối tượng 'api'.
+   - Màu Accent: #c5a992 (class .text-accent, .bg-accent, .btn-accent).
+   - Bo góc: rounded-4 (client), rounded-5 (admin).
+   - Font: Outfit hoặc Inter (khai báo trong style.css).
+   - Spinner loading: <div class="spinner-border spinner-border-sm text-accent">
 
-II. CHI TIẾT KẾ HOẠCH PHÂN VIỆC (5 THÀNH VIÊN)
+3. Quy chuẩn API (dùng object 'api' trong common.js):
+   - Base URL: http://localhost:8080/api
+   - api.get('/path')         → GET
+   - api.post('/path', body)  → POST
+   - api.put('/path', body)   → PUT
+   - api.delete('/path')      → DELETE
+   - api.getUser()            → Lấy user từ localStorage
+   - api.formatCurrency(n)    → Format số tiền VND
+   - api.showToast(msg, type) → Hiển thị thông báo
 
-------------------------------------------------------------------------------
-NGƯỜI 1: QUẢN TRỊ HỆ THỐNG & XÁC THỰC (SYSTEM & SECURITY)
-------------------------------------------------------------------------------
-1. Module Xác thực (Auth):
-   - Hoàn thiện logic Đăng ký/Đăng nhập. Lưu thông tin User vào localStorage.
-   - Xử lý Đăng xuất và dọn dẹp Token.
-   - Bảo mật: Chặn truy cập trang Admin nếu Role không phải là ADMIN.
-2. Quản lý Thành viên (Admin Users):
-   - View: Users/Admin/Index.html - Bảng danh sách người dùng.
-   - Tính năng: Phân trang, Tìm kiếm User, Khóa/Mở tài khoản (PUT /api/admin/users/{id}/status).
-   - View: Users/Admin/Edit.html - Thay đổi quyền (Role) cho thành viên.
-3. Dashboard Thống kê (High-level Admin):
-   - View: Dashboard/Admin/Index.html - Tích hợp Biểu đồ (Sử dụng Chart.js).
-   - Thống kê doanh thu ngày/tháng và Top sách bán chạy.
-   - Xem nhật ký hệ thống (Audit Logs) để biết ai đã tác động vào dữ liệu.
+4. Trạng thái đơn hàng (DB-valid - CHK_DH_TrangThai):
+   MOI | DA_XAC_NHAN | CHO_LAY_HANG | DANG_GIAO | HOAN_TAT | DA_HUY
 
-------------------------------------------------------------------------------
-NGƯỜI 2: QUẢN LÝ SẢN PHẨM & TÌM KIẾM THÔNG MINH (PRODUCTS & AI SEARCH)
-------------------------------------------------------------------------------
-1. Cửa hàng (Client Store):
-   - View: Books/Index.html - Thiết kế bộ lọc (Filter) bên trái (Theo loại, giá, tác giả).
-   - View: Books/Details.html - Trang chi tiết sách, kết nối nút "Thêm vào giỏ".
-   - Tính năng: Hiển thị sách liên quan (cùng danh mục).
-2. Tìm kiếm AI (NLP Search):
-   - Tích hợp vào ô Search trên Header. Gọi API /api/books/ai-search cho phép tìm bằng ngôn ngữ tự nhiên (VD: "Tìm cho tôi sách về kinh tế học").
-3. Admin Sản phẩm (Admin Goods):
-   - View: Books/Admin/Index.html - Bảng quản lý sách với chức năng Xóa mềm (Delete).
-   - View: Books/Admin/Create.html & Edit.html - Form nhập liệu gồm 20+ trường dữ liệu, xử lý ảnh mẫu sản phẩm.
-   - View: Categories/Admin/ - Quản lý cây danh mục đa cấp.
+==============================================================================
+II. BẢNG ĐỐI CHIẾU API ↔ JS MODULE ↔ HTML VIEW (ĐẦY ĐỦ)
+==============================================================================
 
-------------------------------------------------------------------------------
-NGƯỜI 3: VẬN HÀNH KHO & LIVE TRACKING (LOGISTICS & INVENTORY)
-------------------------------------------------------------------------------
-1. Quản lý Kho (Inventory):
-   - View: Inventory/Admin/Index.html - Theo dõi số lượng tồn kho theo ISBN. Highlight màu đỏ cho các đầu sách sắp hết hàng (Low-stock).
-   - Tính năng: Tra cứu nhanh tồn kho bằng cách nhập mã ISBN.
-2. Nhập/Xuất kho (In-Out Flow):
-   - View: Inventory/Admin/Import.html - Tạo phiếu nhập hàng từ NCC, tính toán tổng giá vốn.
-   - View: Inventory/Admin/Export.html - Tạo phiếu xuất hàng cho Đơn hàng, kiểm tra tính khả dụng của kho trước khi xuất.
-3. Vận chuyển & Đối tác:
-   - View: Suppliers/Admin/ - Quản lý thông tin Nhà cung cấp phục vụ việc nhập kho.
-   - View: Shipping/Tracking.html - Tra cứu mã vận đơn, hiển thị Timeline trạng thái đơn hàng (Đã lấy hàng -> Đang giao -> Thành công).
+-----------------------------------------------------------------------
+NHÓM A: XÁC THỰC & HỆ THỐNG
+-----------------------------------------------------------------------
+API                                     | JS Module         | HTML View
+----------------------------------------|-------------------|---------------------------
+POST /api/auth/login                    | auth.login()      | Auth/Login.html
+POST /api/auth/register                 | auth.register()   | Auth/Register.html
+GET  /api/users/get-profile             | users.loadProfile()| Users/Profile.html
+PUT  /api/users/update-customer-profile | users.updateProfile()| Users/Profile.html
+PUT  /api/users/update-staff-profile    | users.updateProfile()| Users/Profile.html
+POST /api/users/create-customer-profile | (gọi sau register)| auth.js
+PUT  /api/users/update-password         | users.changePassword()| Users/Profile.html
+GET  /api/admin/users/get-users         | users.loadAdminList()| Users/Admin/Index.html
+PUT  /api/admin/users/{id}/status       | users.toggleStatus()| Users/Admin/Index.html
+PUT  /api/admin/users/{id}/role         | users.changeRole()| Users/Admin/Index.html
+POST /api/admin/users/create            | users.adminCreate()| Users/Admin/Create.html
+GET  /api/admin/dashboard/revenue       | dashboard.loadStats()| Dashboard/Admin/Index.html
+GET  /api/admin/dashboard/ranking       | dashboard.loadRanking()| Dashboard/Admin/Index.html
+GET  /api/admin/audit-logs              | dashboard.loadAuditLogs()| Dashboard/Admin/Index.html
 
-------------------------------------------------------------------------------
-NGƯỜI 4: KHOẢN KẾ TOÁN & THANH TOÁN ONLINE (COMMERCE & VNPAY)
-------------------------------------------------------------------------------
-1. Thanh toán (Payment Gateway):
-   - View: Orders/Checkout.html - Trang điền thông tin giao hàng. 
-   - Tính năng: Tích hợp chọn phương thức "Thanh toán VNPay". Khi chọn, gọi API tạo URL thanh toán và redirect sang VNPay.
-   - View: Orders/PaymentResult.html - Nhận dữ liệu từ VNPay Callback để hiển thị thông báo Thành công/Thất bại cho khách.
-2. Lịch sử Đơn hàng (Order Management):
-   - View: Orders/History.html (Client) - Khách hàng tự theo dõi đơn và tự Hủy đơn nếu cần.
-   - View: Orders/Admin/Index.html - Dashboard quản lý đơn hàng toàn hệ thống. Cập nhật trạng thái (Chờ xác nhận -> Đã thanh toán -> Đang giao -> Đã giao).
-3. Hóa đơn điện tử:
-   - View: Orders/Details.html - Thiết kế mẫu hóa đơn sạch đẹp để in hoặc xem lại.
+STATUS: [✓] TẤT CẢ ĐÃ HOÀN CHỈNH
 
-------------------------------------------------------------------------------
-NGƯỜI 5: MARKETING & TRỢ LÝ AI (ENGAGEMENT & UX ENHANCEMENT)
-------------------------------------------------------------------------------
-1. Giỏ hàng thông minh (Smart Cart):
-   - View: Orders/Cart.html - Toàn bộ logic cộng/trừ số lượng, tính tổng tiền, xóa sản phẩm.
-   - Tính năng: Đồng bộ giỏ hàng với Database thông qua API khi người dùng đăng nhập.
-2. Marketing & Promo:
-   - View: Vouchers/Admin/ - Quản lý mã giảm giá. 
-   - Tính năng: Ô áp dụng Voucher tại trang Checkout, kiểm tra tính hợp lệ bằng API.
-3. Đánh giá & Phản hồi (Reviews):
-   - View: Reviews/Admin/ - Duyệt hoặc ẩn bình luận của khách. 
-   - Tích hợp Section đánh giá 5 sao vào trang Chi tiết sách.
-4. Trợ lý AI (Support Chat):
-   - View: Support/Chat.html - Widget chat nổi. Tích hợp API Chatbot để trả lời khách hàng các câu hỏi thường gặp về đơn hàng và giá cả.
+-----------------------------------------------------------------------
+NHÓM B: SÁCH & DANH MỤC
+-----------------------------------------------------------------------
+API                                     | JS Module          | HTML View
+----------------------------------------|--------------------|---------------------------
+GET    /api/books                       | books.loadAll()    | Books/Index.html
+GET    /api/books                       | books.loadFeatured()| Home/Index.html
+GET    /api/books/{isbn}                | books.loadDetail() | Books/Details.html
+POST   /api/books/ai-search             | books.searchAI()   | Books/Index.html (header)
+POST   /api/admin/books                 | books.create()     | Books/Admin/Create.html
+PUT    /api/admin/books/{isbn}          | books.update()     | Books/Admin/Edit.html
+DELETE /api/admin/books/{isbn}          | books.delete()     | Books/Admin/Index.html
+GET    /api/categories                  | categories.loadAdminList()| Categories/Admin/Index.html
+POST   /api/admin/categories            | categories.create()| Categories/Admin/Index.html
+PUT    /api/admin/categories/{id}       | categories.update()| Categories/Admin/Index.html
+DELETE /api/admin/categories/{id}       | categories.deleteCat()| Categories/Admin/Index.html
+GET    /api/authors                     | books.loadAuthors()| Books/Admin/Create.html, Edit.html
+GET    /api/publishers                  | books.loadPublishers()| Books/Admin/Create.html, Edit.html
 
-III. QUY TRÌNH PHỐI HỢP
-------------------------------------------------------------------------------
-- Bước 1 (Giao diện): Xây dựng khung HTML tĩnh trước, dùng các class Bootstrap 5 để trang web đẹp ngay lập tức.
-- Bước 2 (Dữ liệu): Sử dụng API Module tương ứng để lấy dữ liệu từ Backend.
-- Bước 3 (Trải nghiệm): Thêm các hiệu ứng AOS (Animate on scroll) và Micro-animations để tăng độ premium.
-- Bước 4 (Validation): Kiểm tra tính đúng đắn của dữ liệu đầu vào (VD: Email phải đúng định dạng, Giá phải là số dương).
+STATUS: [✓] TẤT CẢ ĐÃ HOÀN CHỈNH
+
+-----------------------------------------------------------------------
+NHÓM C: KHO HÀNG & VẬN CHUYỂN
+-----------------------------------------------------------------------
+API                                     | JS Module             | HTML View
+----------------------------------------|-----------------------|---------------------------
+GET  /api/inventory/scan/{isbn}         | inventory.scanIsbn()  | Inventory/Admin/Index.html
+GET  /api/inventory/low-stock           | inventory.loadLowStock()| Inventory/Admin/Index.html
+POST /api/inventory/import              | inventory.processImport()| Inventory/Admin/Import.html
+POST /api/inventory/export              | inventory.processExport()| Inventory/Admin/Export.html
+GET  /api/admin/suppliers               | suppliers.loadList()  | Suppliers/Admin/Index.html
+GET  /api/shipping/track/{id}           | inventory.trackShipping()| Shipping/Tracking.html
+
+STATUS: [✓] TẤT CẢ ĐÃ HOÀN CHỈNH
+
+-----------------------------------------------------------------------
+NHÓM D: ĐƠN HÀNG & THANH TOÁN
+-----------------------------------------------------------------------
+API                                     | JS Module                | HTML View
+----------------------------------------|--------------------------|---------------------------
+POST /api/orders/checkout               | orders.processCheckout() | Orders/Checkout.html
+GET  /api/orders/history?username=X     | orders.loadHistory()     | Orders/History.html
+GET  /api/orders/{id}                   | orders.loadDetail()      | Orders/Details.html
+PUT  /api/orders/{id}/cancel            | orders.cancelOrder()     | Orders/History.html
+GET  /api/orders/admin                  | orders.loadAdminOrders() | Orders/Admin/Index.html
+PUT  /api/orders/admin/{id}/status      | orders.updateStatus()    | Orders/Admin/Index.html
+GET  /api/payments/vnpay/create?orderId=X| (trong processCheckout) | Orders/Checkout.html
+GET  /api/payments/vnpay-callback       | (server callback)        | Orders/PaymentResult.html
+
+STATUS: [✓] TẤT CẢ ĐÃ HOÀN CHỈNH
+
+-----------------------------------------------------------------------
+NHÓM E: GIỎ HÀNG, VOUCHER, REVIEW, SUPPORT
+-----------------------------------------------------------------------
+API                                     | JS Module              | HTML View
+----------------------------------------|------------------------|---------------------------
+GET    /api/cart/{username}             | cart.load()            | Orders/Cart.html
+POST   /api/cart/add                    | cart.add()             | Books/Details.html
+PUT    /api/cart/update                 | cart.update()          | Orders/Cart.html
+DELETE /api/cart/{isbn}                 | cart.remove()          | Orders/Cart.html
+POST   /api/vouchers/validate           | vouchers.apply()       | Orders/Checkout.html
+GET    /api/admin/vouchers              | vouchers.loadAdminList()| Vouchers/Admin/Index.html
+POST   /api/admin/vouchers              | vouchers.create()      | Vouchers/Admin/Index.html
+PUT    /api/admin/vouchers/{code}       | vouchers.update()      | Vouchers/Admin/Index.html
+DELETE /api/admin/vouchers/{code}       | vouchers.delete()      | Vouchers/Admin/Index.html
+GET    /api/books/{isbn}/reviews        | review.loadForBook()   | Books/Details.html
+POST   /api/books/{isbn}/reviews        | review.submit()        | Books/Details.html
+GET    /api/admin/reviews               | review.loadAdminList() | Reviews/Admin/Index.html ⚠️
+POST   /api/support/chat                | support.sendChat()     | Support/Chat.html
+
+⚠️ /api/admin/reviews: Backend chưa implement. Frontend có placeholder sẵn.
+
+STATUS: [✓] TẤT CẢ ĐÃ HOÀN CHỈNH (trừ backend review admin)
+
+==============================================================================
+III. CHECKLIST HOÀN THÀNH (TẤT CẢ ĐÃ TICK)
+==============================================================================
+
+--- NHÓM A ---
+[✓] users.js: loadProfile() → GET /api/users/get-profile
+[✓] users.js: updateProfile() → PUT /api/users/update-customer-profile
+[✓] users.js: changePassword() → PUT /api/users/update-password
+[✓] users.js: changeRole() → PUT /api/admin/users/{id}/role
+[✓] users.js: adminCreate() → POST /api/admin/users/create
+[✓] HTML: Users/Admin/Create.html (form tạo tài khoản nhân viên)
+[✓] HTML: Users/Profile.html (form cập nhật hồ sơ & đổi mật khẩu)
+[✓] dashboard.js: loadRanking() → GET /api/admin/dashboard/ranking
+[✓] dashboard.js: loadAuditLogs() → GET /api/admin/audit-logs
+[✓] Dashboard/Admin/Index.html: Rebuilt với KPI cards + Top Books + Audit Log
+
+--- NHÓM B ---
+[✓] books.js: loadAuthors() → GET /api/authors
+[✓] books.js: loadPublishers() → GET /api/publishers
+[✓] books.js: loadCategoriesIntoForm() → GET /api/categories (cho form)
+[✓] books.js: create() → POST /api/admin/books
+[✓] books.js: update() → PUT /api/admin/books/{isbn}
+[✓] categories.js: create() → POST /api/admin/categories
+[✓] categories.js: update() → PUT /api/admin/categories/{id}
+[✓] HTML: Books/Admin/Create.html — dynamic selects cho Category/NXB/Author
+[✓] HTML: Books/Admin/Edit.html — full form với pre-fill từ books.loadDetail()
+[✓] HTML: Categories/Admin/Index.html — inline create/edit forms
+
+--- NHÓM C ---
+[✓] Tất cả hoàn chỉnh từ trước
+
+--- NHÓM D ---
+[✓] orders.js: cancelOrder() → PUT /api/orders/{id}/cancel
+[✓] History.html: Nút Hủy disabled nếu status !== 'MOI'
+[✓] PaymentResult.html: Đọc vnp_ResponseCode từ URL params
+
+--- NHÓM E ---
+[✓] cart.js: update() → PUT /api/cart/update?username=X&isbn=Y&soLuong=Z
+[✓] cart.js: remove() → DELETE /api/cart/{isbn}?username=X
+[✓] cart.js: Buttons dùng item.isbn thay vì item.id
+[✓] vouchers.js: create() → POST /api/admin/vouchers
+[✓] vouchers.js: update() → PUT /api/admin/vouchers/{code}
+[✓] HTML: Vouchers/Admin/Index.html — inline create/edit forms, loại bỏ stray <main>
+
+==============================================================================
+IV. CẤU TRÚC THƯ MỤC JS MODULES (TRẠNG THÁI CUỐI)
+==============================================================================
+
+assets/js/
+├── common.js              ← Global api object, JWT, formatCurrency
+├── layout-manager.js      ← SPA router, view injection, initViewLogic()
+└── modules/
+    ├── auth.js            ← login, register, logout
+    ├── books.js           ← loadAll, loadFeatured, searchAI, loadDetail, loadRelated,
+    │                         loadAdminList, delete, loadAuthors, loadPublishers,
+    │                         loadCategoriesIntoForm, create, update
+    ├── cart.js            ← add, load, update, remove, updateCounter, render
+    ├── categories.js      ← loadAdminList, create, update, openEdit, deleteCat
+    ├── inventory.js       ← loadList, scanIsbn, loadLowStock, processImport,
+    │                         processExport, initImportForm, trackShipping
+    ├── orders.js          ← initCheckout, processCheckout, loadHistory, cancelOrder,
+    │                         loadAdminOrders, updateStatus, loadDetail,
+    │                         getStatusBadge, getStatusBadgeClass, getStatusSelect
+    ├── review.js          ← loadForBook, submit, loadAdminList
+    ├── suppliers.js       ← loadList
+    ├── support.js         ← toggleChat, sendChat, initChat
+    ├── users.js           ← loadAdminList, toggleStatus, changeRole, adminCreate,
+    │                         loadProfile, updateProfile, changePassword
+    └── vouchers.js        ← loadAdminList, renderAdminTable, create, openEdit,
+                              update, delete, apply
+admin/
+    └── dashboard.js       ← init, loadStats, updateStatsUI, loadRanking,
+                              loadAuditLogs
+
+==============================================================================
+V. GHI CHÚ KỸ THUẬT QUAN TRỌNG
+==============================================================================
+
+1. VNPay Flow (đã sửa):
+   Checkout → POST /orders/checkout (nhận orderId)
+            → GET /payments/vnpay/create?orderId=X (nhận paymentUrl)
+            → window.location.href = paymentUrl (redirect sang VNPay)
+            → VNPay callback → GET /payments/vnpay-callback (server-side)
+            → Đọc query params từ URL trong PaymentResult.html (client-side)
+
+2. Cart API params (chú ý chính xác):
+   POST   /api/cart/add?username=X&isbn=Y&soLuong=Z
+   PUT    /api/cart/update?username=X&isbn=Y&soLuong=Z
+   GET    /api/cart/{username}
+   DELETE /api/cart/{isbn}?username=X
+
+3. Status mapping (DB-valid only):
+   MOI          → "Mới / Chờ xác nhận"
+   DA_XAC_NHAN  → "Đã xác nhận" (cũng dùng sau VNPay thành công)
+   CHO_LAY_HANG → "Chờ lấy hàng"
+   DANG_GIAO    → "Đang giao"
+   HOAN_TAT     → "Hoàn tất / Đã giao"
+   DA_HUY       → "Đã hủy" (cũng dùng khi VNPay thất bại)
+
+4. Books Admin API path:
+   POST   /api/admin/books       (tạo sách mới)
+   PUT    /api/admin/books/{isbn} (cập nhật)
+   DELETE /api/admin/books/{isbn} (xóa mềm)
+
+5. Trước khi gọi bất kỳ API cần auth:
+   const user = api.getUser();
+   if (!user) { layout.render('Auth', 'Login'); return; }
 
 ==============================================================================
 TÀI LIỆU THAM KHẢO:
-- Danh sách Endpoint API: Xem file document/api.txt.
-- Hướng dẫn Layout: Xem file assets/js/layout-manager.js.
-==============================================================================
-
-IV. HƯỚNG DẪN QUY TRÌNH CHUẨN (SOP) - Ví dụ: Trang Danh mục Sách
-------------------------------------------------------------------------------
-BƯỚC 1: Tạo Giao diện (Mẫu Index.html)
-- Viết vào: Books/Index.html
-- Quy tắc: Không viết <html>/<body>. Dùng ID cho vùng dữ liệu động.
-------------------------------------------------------------------------------
-<div class="container py-5">
-    <h2 class="font-serif fw-bold mb-4">Tất cả sản phẩm</h2>
-    <div class="row g-4" id="books-list-container">
-        <!-- JS sẽ render dữ liệu vào đây -->
-    </div>
-</div>
-
-------------------------------------------------------------------------------
-BƯỚC 2: Viết Logic (Mẫu module JS)
-- Viết vào: assets/js/modules/books.js
-------------------------------------------------------------------------------
-const books = {
-    loadIndex: async () => {
-        const res = await api.get('/books');
-        if (res.status === 200) {
-            let html = "";
-            res.data.forEach(item => {
-                html += `<div class="col-md-3">...${item.tenSach}...</div>`;
-            });
-            $("#books-list-container").html(html);
-        }
-    }
-};
-
-------------------------------------------------------------------------------
-BƯỚC 3: Kết nối (Mẫu Layout Manager)
-- Viết vào: assets/js/layout-manager.js -> hàm initViewLogic
-------------------------------------------------------------------------------
-case "Books/Index": 
-    books.loadIndex(); 
-    break;
-
-==============================================================================
-CHÚC NHÓM LÀM VIỆC HIỆU QUẢ!
+- Danh sách Endpoint: document/api.txt
+- Layout Engine: assets/js/layout-manager.js
+- Global API: assets/js/common.js
+- DB Schema: document/nha_sach_online.sql
 ==============================================================================

@@ -1,120 +1,104 @@
-<!-- Orders Area - Checkout View -->
-<section class="bg-light py-5">
-    <div class="container-xl py-5">
+<div class="checkout-page bg-light py-5">
+    <div class="container">
         <div class="row g-5">
-            <!-- Left: Checkout Form -->
-            <div class="col-lg-7" data-aos="fade-right">
-                <div class="card border-0 shadow-sm rounded-5 p-4 p-md-5">
-                    <h2 class="display-6 fw-bold font-serif mb-5">Thanh toán & Giao hàng</h2>
-                    
+            <!-- Left: Shipping Information -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                    <h4 class="fw-bold mb-4"><i class="icon icon-truck me-2 text-accent"></i> Thông tin giao hàng</h4>
                     <form id="checkout-form">
-                        <div class="row g-4">
-                            <h5 class="fw-bold mb-3 border-start border-accent border-4 ps-3">Thông tin người nhận</h5>
+                        <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold text-muted">Họ và tên</label>
-                                <input type="text" class="form-control form-control-lg border-light bg-light rounded-3" placeholder="Nguyễn Văn A" required>
+                                <label class="form-label small text-muted">Họ và tên</label>
+                                <input type="text" class="form-control rounded-pill border-light bg-light py-2 px-3" id="customer-name" name="hoTen" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold text-muted">Số điện thoại</label>
-                                <input type="tel" class="form-control form-control-lg border-light bg-light rounded-3" placeholder="0123 456 789" required>
+                                <label class="form-label small text-muted">Số điện thoại</label>
+                                <input type="tel" class="form-control rounded-pill border-light bg-light py-2 px-3" id="customer-phone" name="soDienThoai" required>
                             </div>
                             <div class="col-12">
-                                <label class="form-label small fw-bold text-muted">Địa chỉ nhận hàng</label>
-                                <input type="text" class="form-control form-control-lg border-light bg-light rounded-3" placeholder="Số nhà, tên đường, phường/xã..." required>
+                                <label class="form-label small text-muted">Email</label>
+                                <input type="email" class="form-control rounded-pill border-light bg-light py-2 px-3" id="customer-email" name="email" required>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold text-muted">Tỉnh/Thành phố</label>
-                                <select class="form-select form-select-lg border-light bg-light rounded-3">
-                                    <option selected disabled>Chọn tỉnh thành</option>
-                                    <option>Hà Nội</option>
-                                    <option>TP. Hồ Chí Minh</option>
-                                    <option>Đà Nẵng</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold text-muted">Mã bưu điện (tùy chọn)</label>
-                                <input type="text" class="form-control form-control-lg border-light bg-light rounded-3" placeholder="100000">
-                            </div>
-
-                            <h5 class="fw-bold mt-5 mb-3 border-start border-accent border-4 ps-3">Phương thức thanh toán</h5>
                             <div class="col-12">
-                                <div class="payment-options d-grid gap-3">
-                                    <div class="payment-item border rounded-4 p-3 d-flex align-items-center gap-3 bg-white cursor-pointer active-border">
-                                        <input class="form-check-input" type="radio" name="paymentMethod" id="cod" checked>
-                                        <label class="form-check-label w-100 fw-bold" for="cod">
-                                            Thanh toán khi nhận hàng (COD)
-                                            <small class="d-block text-muted fw-normal mt-1">Giao hàng tận nơi mới phải trả tiền</small>
-                                        </label>
-                                    </div>
-                                    <div class="payment-item border rounded-4 p-3 d-flex align-items-center gap-3 bg-white cursor-pointer">
-                                        <input class="form-check-input" type="radio" name="paymentMethod" id="banking">
-                                        <label class="form-check-label w-100 fw-bold" for="banking">
-                                            Chuyển khoản ngân hàng
-                                            <small class="d-block text-muted fw-normal mt-1">Nhận mã QR thanh toán sau khi đặt hàng</small>
-                                        </label>
-                                    </div>
-                                </div>
+                                <label class="form-label small text-muted">Địa chỉ nhận hàng</label>
+                                <textarea class="form-control rounded-4 border-light bg-light py-2 px-3" id="customer-address" name="diaChi" rows="3" required></textarea>
                             </div>
-
-                            <div class="col-12 mt-5">
-                                <button type="submit" class="btn btn-dark btn-lg w-100 py-3 rounded-pill fw-bold shadow">
-                                    Hoàn tất đặt hàng
-                                </button>
+                            <div class="col-12">
+                                <label class="form-label small text-muted">Ghi chú đơn hàng (Tùy chọn)</label>
+                                <textarea class="form-control rounded-4 border-light bg-light py-2 px-3" id="order-note" name="ghiChu" rows="2" placeholder="Ví dụ: Giao giờ hành chính..."></textarea>
                             </div>
                         </div>
                     </form>
                 </div>
+
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <h4 class="fw-bold mb-4"><i class="icon icon-credit-card me-2 text-accent"></i> Phương thức thanh toán</h4>
+                    <div class="payment-methods">
+                        <label class="payment-option d-flex align-items-center p-3 border rounded-3 mb-3 cursor-pointer transition-all hvr-light">
+                            <input type="radio" name="paymentMethod" value="COD" checked class="form-check-input me-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="icon-box bg-primary-subtle text-primary p-2 rounded">
+                                    <i class="icon icon-truck fs-4"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">Thanh toán khi nhận hàng (COD)</div>
+                                    <small class="text-muted">Giao hàng và thu tiền tận nơi</small>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="payment-option d-flex align-items-center p-3 border rounded-3 cursor-pointer transition-all hvr-light">
+                            <input type="radio" name="paymentMethod" value="VNPAY" class="form-check-input me-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="icon-box bg-info-subtle text-info p-2 rounded">
+                                    <img src="https://vnpay.vn/wp-content/themes/vnpay/assets/images/logo-vnpay.png" alt="VNPay" width="24">
+                                </div>
+                                <div>
+                                    <div class="fw-bold">Thanh toán qua cổng VNPay</div>
+                                    <small class="text-muted">Hỗ trợ ATM, Thẻ quốc tế, QR-Code</small>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
             </div>
 
-            <!-- Right: Order Summary Preview -->
-            <div class="col-lg-5" data-aos="fade-left">
-                <div class="card border-0 shadow-sm rounded-5 p-4 bg-white sticky-top" style="top: 100px">
-                    <h5 class="fw-bold font-serif mb-4">Chi tiết đơn hàng</h5>
-                    <div class="order-items-scroll mb-4 overflow-auto" style="max-height: 400px">
-                        <div class="d-flex align-items-center gap-3 mb-4">
-                            <div class="position-relative">
-                                <img src="assets/images/product-item1.jpg" class="rounded-3 shadow-sm" width="60" alt="product">
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-accent shadow-sm">1</span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <h6 class="small fw-bold mb-0">Cách sống đơn giản</h6>
-                                <span class="small text-muted">Armor Ramsey</span>
-                            </div>
-                            <div class="fw-bold small">400,000đ</div>
+            <!-- Right: Order Summary -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow px-4 py-4 rounded-4 sticky-top" style="top: 100px;">
+                    <h5 class="fw-bold mb-4">Tóm tắt đơn hàng</h5>
+                    <div id="checkout-summary" class="mb-4">
+                        <!-- Items rendered dynamically -->
+                        <div class="text-center py-3">
+                            <div class="spinner-border spinner-border-sm text-accent" role="status"></div>
                         </div>
                     </div>
-
-                    <div class="promo-code mb-4">
-                        <div class="input-group">
-                            <input type="text" class="form-control border-light bg-light rounded-start-pill px-4" placeholder="Mã giảm giá (nếu có)">
-                            <button class="btn btn-accent rounded-end-pill px-4">Áp dụng</button>
-                        </div>
-                    </div>
-
-                    <div class="summary-details pt-3 border-top">
-                        <div class="d-flex justify-content-between mb-2 small text-muted">
+                    
+                    <div class="border-top pt-3">
+                        <div class="d-flex justify-content-between mb-2">
                             <span>Tạm tính</span>
-                            <span>400,000đ</span>
+                            <span id="summary-subtotal">0 đ</span>
                         </div>
-                        <div class="d-flex justify-content-between mb-2 small text-muted">
+                        <div class="d-flex justify-content-between mb-3">
                             <span>Phí vận chuyển</span>
-                            <span>30,000đ</span>
+                            <span id="summary-shipping">0 đ</span>
                         </div>
-                        <div class="d-flex justify-content-between mt-3 align-items-center">
-                            <span class="h5 fw-bold mb-0">Tổng tiền</span>
-                            <span class="h4 fw-bold mb-0 text-accent">430,000đ</span>
+                        <div class="d-flex justify-content-between mb-4 pt-3 border-top">
+                            <h5 class="fw-bold">Tổng cộng</h5>
+                            <h5 class="fw-bold text-accent" id="summary-total">0 đ</h5>
                         </div>
+                        <button id="btn-place-order" class="btn btn-accent btn-lg w-100 rounded-pill py-3 fw-bold shadow-sm">
+                            ĐẶT HÀNG NGAY <i class="icon icon-arrow-right ms-2"></i>
+                        </button>
+                        <p class="text-center mt-3 small text-muted">Bằng việc đặt hàng, bạn đồng ý với các điều khoản của Booksaw.</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
 
 <style>
-    .active-border { border-color: var(--accent-color) !important; background-color: #fdfcf9 !important; }
-    .cursor-pointer { cursor: pointer; }
-    .form-control-lg { font-size: 1rem; }
-    .order-items-scroll::-webkit-scrollbar { width: 5px; }
-    .order-items-scroll::-webkit-scrollbar-thumb { background: #eee; border-radius: 10px; }
+.payment-option:hover { border-color: var(--accent-color) !important; background-color: #fff9f5; }
+.payment-option input:checked + div { color: var(--accent-color); }
 </style>

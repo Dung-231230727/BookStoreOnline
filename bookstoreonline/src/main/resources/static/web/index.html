@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -18,7 +19,9 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+        rel="stylesheet">
 
     <script src="assets/lib/jquery/jquery.min.js"></script>
     <script src="assets/js/vendor/modernizr.js"></script>
@@ -26,16 +29,38 @@
 
 <body>
     <div id="header-area"></div>
-    <main id="render-body" class="container-fluid p-0"></main>
+
+    <div class="d-flex w-100">
+        <!-- Sidebar cố định cho Admin (Chỉ hiện khi vào trang Admin) -->
+        <div id="admin-sidebar-global" style="display: none;"></div>
+
+        <!-- Vùng nạp nội dung chính -->
+        <main id="render-body" class="flex-grow-1 p-0"></main>
+    </div>
+
     <div id="footer-area"></div>
+
+    <!-- AI Chat Support Widget (Person 5) -->
+    <div id="chat-widget-container" style="position: fixed; bottom: 30px; right: 30px; z-index: 1050;">
+        <button onclick="support.toggleChat()"
+            class="btn btn-accent rounded-circle shadow-lg p-0 d-flex align-items-center justify-content-center"
+            style="width: 60px; height: 60px; border: none;">
+            <i class="icon icon-paper-plane fs-4 text-white"></i>
+        </button>
+        <div id="chat-box-holder" style="display: none; position: absolute; bottom: 75px; right: 0; width: 350px;">
+            <!-- Content will be loaded dynamically -->
+        </div>
+    </div>
 
     <!-- Global Toast Notification -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
-        <div id="appToast" class="toast border-0 shadow-lg rounded-4" role="alert" aria-live="assertive" aria-atomic="true">
+        <div id="appToast" class="toast border-0 shadow-lg rounded-4" role="alert" aria-live="assertive"
+            aria-atomic="true">
             <div class="toast-header bg-accent text-white border-0 rounded-top-4">
                 <i class="icon icon-clipboard me-2"></i>
                 <strong class="me-auto">Thông báo hệ thống</strong>
-                <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="toast" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
             </div>
             <div class="toast-body bg-white rounded-bottom-4 fw-medium" id="toastMessage">
                 <!-- Message injected here -->
@@ -48,16 +73,21 @@
     <script src="assets/js/vendor/script.js"></script>
     <script src="assets/js/common.js"></script>
     <script src="assets/js/modules/auth.js"></script>
+    <script src="assets/js/modules/users.js"></script>
     <script src="assets/js/modules/books.js"></script>
+    <script src="assets/js/modules/categories.js"></script>
     <script src="assets/js/modules/authors.js"></script>
+    <script src="assets/js/modules/publishers.js"></script>
     <script src="assets/js/modules/cart.js"></script>
     <script src="assets/js/modules/orders.js"></script>
     <script src="assets/js/modules/inventory.js"></script>
+    <script src="assets/js/modules/suppliers.js"></script>
     <script src="assets/js/modules/vouchers.js"></script>
     <script src="assets/js/modules/review.js"></script>
     <script src="assets/js/modules/support.js"></script>
+    <script src="assets/js/admin/dashboard.js"></script>
     <script src="assets/js/layout-manager.js"></script>
-    
+
     <script>
         $(document).ready(() => {
             // Khởi chạy hệ thống layout, nạp trang chủ mặc định
@@ -65,4 +95,5 @@
         });
     </script>
 </body>
+
 </html>

@@ -6,14 +6,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&family=Prata&family=Playfair+Display:wght@400;700&display=swap');
 
 :root {
-    --accent-color       : #C5A992;
-    --secondary-color    : #C5A992;
-    --dark-color         : #2f2f2f;
-    --light-color        : #F3F2EC;
-    --body-text-color    : #757575;
-    --dark-text-color    : #2f2f2f;
-    --body-font          : "Raleway", sans-serif;
-    --heading-font       : "Prata", serif;
+    --accent-color: #C5A992;
+    --secondary-color: #C5A992;
+    --dark-color: #2f2f2f;
+    --light-color: #F3F2EC;
+    --body-text-color: #757575;
+    --dark-text-color: #2f2f2f;
+    --body-font: "Raleway", sans-serif;
+    --heading-font: "Prata", serif;
 }
 
 body {
@@ -23,10 +23,22 @@ body {
     line-height: 1.6;
 }
 
-h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
     font-family: var(--heading-font);
     color: var(--dark-text-color);
-    font-weight: 400; /* Prata looks best at 400 */
+    font-weight: 400;
+    /* Prata looks best at 400 */
     text-transform: capitalize;
 }
 
@@ -36,6 +48,7 @@ a {
     text-decoration: none;
     transition: 0.3s;
 }
+
 a:hover {
     color: var(--dark-color);
 }
@@ -52,6 +65,7 @@ a:hover {
     letter-spacing: 1px;
     transition: 0.3s;
 }
+
 .btn-booksaw:hover {
     background: var(--dark-text-color);
     color: #fff;
@@ -69,8 +83,15 @@ a:hover {
     padding: 8px 0;
     font-size: 13px;
 }
-.top-content a { color: #fff; opacity: 0.8; }
-.top-content a:hover { opacity: 1; }
+
+.top-content a {
+    color: #fff;
+    opacity: 0.8;
+}
+
+.top-content a:hover {
+    opacity: 1;
+}
 
 /* Navbar */
 .navbar-nav .nav-link {
@@ -80,7 +101,9 @@ a:hover {
     font-size: 14px;
     margin: 0 10px;
 }
-.navbar-nav .nav-link.active, .navbar-nav .nav-link:hover {
+
+.navbar-nav .nav-link.active,
+.navbar-nav .nav-link:hover {
     color: var(--accent-color) !important;
 }
 
@@ -92,18 +115,22 @@ a:hover {
     transition: 0.3s;
     border: 1px solid transparent;
 }
+
 .product-item:hover {
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     border-color: var(--accent-color);
 }
+
 .product-item img {
     margin-bottom: 20px;
     width: 100%;
 }
+
 .product-item .item-title {
     font-size: 18px;
     margin-bottom: 5px;
 }
+
 .product-item .item-price {
     color: var(--accent-color);
     font-weight: 700;
@@ -116,19 +143,26 @@ a:hover {
     padding: 80px 0 30px;
     border-top: 1px solid #eee;
 }
+
 .footer-logo img {
     max-width: 150px;
 }
 
 /* Utilities */
-.bg-beige { background-color: var(--light-color); }
-.text-accent { color: var(--accent-color); }
+.bg-beige {
+    background-color: var(--light-color);
+}
+
+.text-accent {
+    color: var(--accent-color);
+}
 
 /* Cart Styling */
 .cart-table thead {
     background: var(--dark-text-color);
     color: #fff;
 }
+
 .cart-total-box {
     background: #fff;
     padding: 30px;
@@ -140,10 +174,12 @@ a:hover {
     color: #212529 !important;
     font-weight: 500;
 }
+
 .dropdown-menu .dropdown-item:hover {
     background-color: #f8f9fa !important;
     color: #C5A992 !important;
 }
+
 .dropdown-item.text-danger {
     color: #dc3545 !important;
 }

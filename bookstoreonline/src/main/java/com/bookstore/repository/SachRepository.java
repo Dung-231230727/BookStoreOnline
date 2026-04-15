@@ -17,11 +17,9 @@ public interface SachRepository extends JpaRepository<Sach, String> {
            "LEFT JOIN s.nxb n " +
            "LEFT JOIN s.danhSachTacGia t " +
            "WHERE (s.daXoa = false OR s.daXoa IS NULL) AND " +
-           "(:keyword IS NULL OR LOWER(s.tenSach) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
-           "OR LOWER(s.moTaNguNghia) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
-           "OR LOWER(t.tenTacGia) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND " +
-           "(:tenDanhMuc IS NULL OR LOWER(d.tenDanhMuc) LIKE LOWER(CONCAT('%', :tenDanhMuc, '%'))) AND " +
-           "(:tenNxb IS NULL OR LOWER(n.tenNxb) LIKE LOWER(CONCAT('%', :tenNxb, '%'))) AND " +
+           "(:keyword IS NULL OR :keyword = '' OR LOWER(s.tenSach) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(s.moTaNguNghia) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND " +
+           "(:tenDanhMuc IS NULL OR :tenDanhMuc = '' OR d.tenDanhMuc = :tenDanhMuc) AND " +
+           "(:tenNxb IS NULL OR :tenNxb = '' OR n.tenNxb = :tenNxb) AND " +
            "(:minPrice IS NULL OR s.giaNiemYet >= :minPrice) AND " +
            "(:maxPrice IS NULL OR s.giaNiemYet <= :maxPrice) AND " +
            "(:minSoTrang IS NULL OR s.soTrang >= :minSoTrang) AND " +

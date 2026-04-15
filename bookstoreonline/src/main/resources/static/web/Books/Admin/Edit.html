@@ -1,0 +1,155 @@
+<!-- Admin Books - Edit Product -->
+<div class="p-4 p-md-5 w-100 bg-light min-vh-100">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2">
+                    <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Books', 'Admin/Index')" class="text-decoration-none text-muted">Quản lý sách</a></li>
+                    <li class="breadcrumb-item small active fw-bold text-accent">Chỉnh sửa</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold font-serif mb-0 text-dark">Chỉnh sửa thông tin sách</h2>
+        </div>
+        <div class="d-flex gap-2">
+            <button onclick="layout.render('Books', 'Admin/Index')" class="btn btn-outline-dark rounded-pill px-4">Hủy</button>
+            <button id="btn-update-book" class="btn btn-accent rounded-pill px-4 fw-bold shadow-sm">Cập nhật</button>
+        </div>
+    </div>
+
+    <form id="edit-book-form">
+        <div class="row g-4">
+            <!-- Left: Main Info -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Thông tin cơ bản</h5>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Tên sách <span class="text-danger">*</span></label>
+                            <input type="text" name="tenSach" id="edit-tenSach" class="form-control rounded-pill px-3" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Mã ISBN (không thể đổi)</label>
+                            <input type="text" id="edit-isbn-display" class="form-control rounded-pill px-3 bg-light" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Danh mục</label>
+                            <select name="maDanhMuc" id="maDanhMuc" class="form-select rounded-pill px-3">
+                                <option value="">-- Đang tải... --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Nhà xuất bản</label>
+                            <select name="maNxb" id="maNxb" class="form-select rounded-pill px-3">
+                                <option value="">-- Đang tải... --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Số trang</label>
+                            <input type="number" name="soTrang" id="edit-soTrang" class="form-control rounded-pill">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Mô tả sản phẩm</label>
+                            <textarea name="moTa" id="edit-moTa" class="form-control rounded-4 px-3" rows="5"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Thông số kỹ thuật</h5>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Trọng lượng (g)</label>
+                            <input type="number" name="trongLuong" id="edit-trongLuong" class="form-control rounded-pill">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Năm xuất bản</label>
+                            <input type="number" name="namXuatBan" id="edit-namXuatBan" class="form-control rounded-pill">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Ngôn ngữ</label>
+                            <select name="ngonNgu" id="edit-ngonNgu" class="form-select rounded-pill">
+                                <option value="Tiếng Việt">Tiếng Việt</option>
+                                <option value="Tiếng Anh">Tiếng Anh</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Pricing & Image -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Giá niêm yết</h5>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Giá (VNĐ) <span class="text-danger">*</span></label>
+                        <input type="number" name="giaNiemYet" id="edit-giaNiemYet"
+                            class="form-control rounded-pill fw-bold" required min="1000"
+                            oninput="document.getElementById('edit-price-display').innerText = api.formatCurrency(this.value || 0)">
+                    </div>
+                    <div>
+                        <label class="form-label small fw-bold">Giá hiển thị</label>
+                        <div id="edit-price-display" class="fs-4 fw-bold text-accent">---</div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Hình ảnh bìa</h5>
+                    <div class="text-center mb-3">
+                        <img id="edit-book-preview" src="assets/images/product-item1.jpg"
+                            class="img-fluid rounded-4" style="max-height:240px; object-fit:contain;"
+                            onerror="this.src='assets/images/product-item1.jpg'">
+                    </div>
+                    <input type="text" name="anhBia" id="edit-anhBia" class="form-control rounded-pill small mt-2"
+                        placeholder="Tên file ảnh (VD: book1.jpg)"
+                        oninput="document.getElementById('edit-book-preview').src = 'assets/images/' + (this.value || 'product-item1.jpg')">
+                    <small class="text-muted mt-2 d-block">Đặt ảnh trong thư mục assets/images/</small>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+(function() {
+    // Self-contained edit loader — does NOT override books.loadDetail
+    async function loadBookForEdit(isbn) {
+        try {
+            const res = await api.get(`/books/${isbn}`);
+            const b = res.data || res;
+
+            // Store ISBN on button
+            document.getElementById('btn-update-book').dataset.isbn = b.isbn;
+            document.getElementById('edit-isbn-display').value = b.isbn;
+            document.getElementById('edit-tenSach').value = b.tenSach || '';
+            document.getElementById('edit-moTa').value = b.moTaNguNghia || b.moTa || '';
+            document.getElementById('edit-soTrang').value = b.soTrang || '';
+            document.getElementById('edit-trongLuong').value = b.trongLuong || '';
+            document.getElementById('edit-namXuatBan').value = b.namXuatBan || '';
+            document.getElementById('edit-giaNiemYet').value = b.giaNiemYet || '';
+            document.getElementById('edit-price-display').innerText = api.formatCurrency(b.giaNiemYet || 0);
+            document.getElementById('edit-anhBia').value = b.anhBia || '';
+            if (b.anhBia) document.getElementById('edit-book-preview').src = 'assets/images/' + b.anhBia;
+            if (b.ngonNgu) document.getElementById('edit-ngonNgu').value = b.ngonNgu;
+
+            // After dropdowns are populated, select correct values
+            setTimeout(() => {
+                if (b.danhMuc) document.getElementById('maDanhMuc').value = b.danhMuc.maDanhMuc;
+                if (b.nxb)     document.getElementById('maNxb').value = b.nxb.maNxb;
+            }, 700);
+        } catch (e) {
+            api.showToast('Không thể tải dữ liệu sách: ' + e.message, 'error');
+        }
+    }
+
+    // Read ISBN from layout.current.id
+    const isbn = (window.layout && window.layout.current) ? window.layout.current.id : null;
+    if (isbn) {
+        loadBookForEdit(isbn);
+    }
+})();
+</script>
+
+<style>
+    .btn-accent { background-color: #C5A992; color: white; border: none; }
+    .btn-accent:hover { background-color: #2F2F2F; }
+</style>

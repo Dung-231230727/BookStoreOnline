@@ -51,4 +51,25 @@ public class SupportController {
         hoTroService.capNhatTrangThai(id, trangThai);
         return ApiResponse.success("Đã cập nhật trạng thái hồ sơ", null);
     }
+
+    @PostMapping("/ai-chat")
+    @Operation(summary = "Chatbot AI", description = "Phản hồi tự động cho khách hàng dựa trên từ khóa")
+    public ApiResponse<String> aiChat(@RequestParam String message) {
+        String msg = message.toLowerCase();
+        String response = "Cảm ơn bạn đã nhắn tin! Tôi là AI của Booksaw, tôi có thể giúp bạn tìm sách, kiểm tra đơn hàng hoặc cung cấp mã giảm giá. Bạn cần gì ạ?";
+
+        if (msg.contains("chào") || msg.contains("hello")) {
+            response = "Chào bạn! Chúc bạn một ngày tốt lành. Tôi có thể giúp gì cho bạn trong việc chọn sách hôm nay?";
+        } else if (msg.contains("giao hàng") || msg.contains("khi nào") || msg.contains("nhận hàng")) {
+            response = "Thời gian giao hàng thường từ 2-4 ngày làm việc. Bạn có thể kiểm tra trạng thái trong mục 'Đơn hàng của tôi' nhé!";
+        } else if (msg.contains("voucher") || msg.contains("giảm giá") || msg.contains("khuyến mãi")) {
+            response = "Hiện tại chúng tôi có mã GIAM20K cho đơn từ 200k. Bạn hãy áp dụng tại bước thanh toán nhé!";
+        } else if (msg.contains("sách hay") || msg.contains("tư vấn")) {
+            response = "Nếu bạn thích văn học, hãy thử 'Nhà Giả Kim'. Nếu muốn học kỹ năng, 'Đắc Nhân Tâm' là lựa chọn tuyệt vời!";
+        } else if (msg.contains("cảm ơn")) {
+            response = "Không có gì ạ! Rất vui được hỗ trợ bạn. Chúc bạn đọc sách vui vẻ!";
+        }
+
+        return ApiResponse.success(response);
+    }
 }

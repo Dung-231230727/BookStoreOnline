@@ -1,38 +1,42 @@
-<!-- Payment Result View -->
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6 text-center">
-            <div id="payment-success" style="display: none;">
-                <div class="mb-4">
-                    <i class="icon icon-circle-check text-success display-1"></i>
-                </div>
-                <h2 class="fw-bold font-serif mb-3">Thanh toán thành công!</h2>
-                <p class="text-muted mb-5">Cảm ơn bạn đã lựa chọn Booksaw. Đơn hàng của bạn đang được xử lý và sẽ sớm được giao đến bạn.</p>
-                <div class="card border-0 bg-light rounded-4 p-4 mb-5 text-start">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Mã giao dịch:</span>
-                        <span id="vnpay-txn" class="fw-bold">...</span>
+<div class="payment-result-page py-5 bg-light">
+    <div class="container text-center py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card border-0 shadow-lg rounded-5 p-5 bg-white">
+                    <div id="result-success" class="result-content" style="display:none;">
+                        <div class="icon-box bg-success-subtle text-success d-inline-flex p-4 rounded-circle mb-4">
+                            <i class="icon icon-check fs-1"></i>
+                        </div>
+                        <h2 class="fw-bold mb-3">Đặt hàng thành công!</h2>
+                        <p class="text-muted mb-4">Cảm ơn bạn đã tin tưởng Booksaw. Đơn hàng của bạn đang được xử lý và sẽ sớm được giao đến bạn.</p>
+                        <div class="alert alert-light border-0 bg-light rounded-4 text-start p-3 mb-4">
+                            <div class="d-flex justify-content-between mb-1 small text-muted">
+                                <span>Mã đơn hàng:</span>
+                                <span class="fw-bold text-dark" id="order-id-success">#12345</span>
+                            </div>
+                            <div class="d-flex justify-content-between small text-muted">
+                                <span>Trạng thái:</span>
+                                <span class="badge bg-success small">Đã xác nhận</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="d-flex justify-content-between">
-                        <span>Số tiền:</span>
-                        <strong id="vnpay-amount" class="text-accent">...</strong>
-                    </div>
-                </div>
-                <div class="d-grid gap-3">
-                    <button onclick="layout.render('Orders', 'History')" class="btn btn-dark rounded-pill py-3">Xem đơn hàng của tôi</button>
-                    <button onclick="layout.render('', 'Home/Index')" class="btn btn-outline-dark border-0">Tiếp tục mua sắm</button>
-                </div>
-            </div>
 
-            <div id="payment-failed" style="display: none;">
-                <div class="mb-4">
-                    <i class="icon icon-close text-danger display-1"></i>
-                </div>
-                <h2 class="fw-bold font-serif mb-3">Thanh toán thất bại</h2>
-                <p class="text-muted mb-5">Đã có lỗi xảy ra trong quá trình thanh toán. Vui lòng kiểm tra lại phương thức thanh toán hoặc thử lại sau.</p>
-                <div class="d-grid gap-3">
-                    <button onclick="layout.render('Orders', 'Checkout')" class="btn btn-dark rounded-pill py-3">Thử lại</button>
-                    <button onclick="layout.render('', 'Home/Index')" class="btn btn-outline-dark border-0">Về trang chủ</button>
+                    <div id="result-failed" class="result-content" style="display:none;">
+                        <div class="icon-box bg-danger-subtle text-danger d-inline-flex p-4 rounded-circle mb-4">
+                            <i class="icon icon-close fs-1"></i>
+                        </div>
+                        <h2 class="fw-bold mb-3">Thanh toán thất bại</h2>
+                        <p class="text-muted mb-4">Rất tiếc, đã có lỗi xảy ra trong quá trình thanh toán qua cổng VNPay. Vui lòng thử lại hoặc chọn phương thức khác.</p>
+                    </div>
+
+                    <div class="d-grid gap-3">
+                        <button class="btn btn-accent rounded-pill py-3 fw-bold" onclick="layout.render('', 'Home/Index')">
+                            Tiếp tục mua sắm <i class="icon icon-arrow-right ms-2"></i>
+                        </button>
+                        <button class="btn btn-light rounded-pill py-3 text-muted" onclick="layout.render('Orders', 'History')">
+                            Xem lịch sử đơn hàng
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -40,8 +44,19 @@
 </div>
 
 <script>
-    // This will be called by orders.js initViewLogic
-    function initPaymentResult() {
-        // Logic to parse URL params from VNPay and show success/fail
-    }
+    (function() {
+        // Logic xử lý hiển thị kết quả dựa trên URL Params (vnp_ResponseCode từ VNPay)
+        const params = new URLSearchParams(window.location.search);
+        const vnpResponse = params.get('vnp_ResponseCode');
+        const orderId = params.get('orderId') || params.get('vnp_TxnRef');
+
+        if (vnpResponse === '00' || !vnpResponse) {
+            // Thành công (hoặc là COD không có vnpResponse)
+            $("#result-success").fadeIn();
+            $("#order-id-success").text("#" + (orderId || '---'));
+        } else {
+            // Thất bại
+            $("#result-failed").fadeIn();
+        }
+    })();
 </script>

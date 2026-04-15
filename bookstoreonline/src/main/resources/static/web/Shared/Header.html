@@ -1,91 +1,135 @@
-<!-- Booksaw Header Converted to Bootstrap 5 -->
-<div id="header-wrap" class="bg-white border-bottom shadow-sm sticky-top">
-    <div class="top-content py-2 border-bottom bg-light">
+<!-- Booksaw Header - Compact & Modern -->
+<div id="header-wrap" class="sticky-top" style="z-index: 1030;">
+
+    <!-- ===== TOP BAR (compact) ===== -->
+    <div id="top-bar" class="d-none d-md-block" style="background:#2F2F2F; padding: 5px 0;">
         <div class="container-xl">
-            <div class="row align-items-center">
-                <div class="col-md-6 d-none d-md-block">
-                    <div class="social-links d-flex gap-3">
-                        <a href="#" class="text-secondary"><i class="icon icon-facebook"></i></a>
-                        <a href="#" class="text-secondary"><i class="icon icon-twitter"></i></a>
-                        <a href="#" class="text-secondary"><i class="icon icon-youtube-play"></i></a>
-                        <a href="#" class="text-secondary"><i class="icon icon-behance-square"></i></a>
-                    </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <!-- Left: social -->
+                <div class="d-flex gap-3">
+                    <a href="#" class="text-white-50 small" style="font-size:0.75rem;"><i
+                            class="icon icon-facebook"></i></a>
+                    <a href="#" class="text-white-50 small" style="font-size:0.75rem;"><i
+                            class="icon icon-twitter"></i></a>
+                    <a href="#" class="text-white-50 small" style="font-size:0.75rem;"><i
+                            class="icon icon-youtube-play"></i></a>
                 </div>
-                <div class="col-md-6 text-end">
-                    <div class="right-element d-flex justify-content-end align-items-center gap-4">
-                        <a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-dark-50 text-decoration-none small d-none d-md-inline pe-3 border-end">Admin Panel</a>
-                        <a href="javascript:void(0)" onclick="layout.render('Auth', 'Login')" class="user-account text-dark text-decoration-none d-flex align-items-center gap-2">
-                            <i class="icon icon-user"></i>
-                            <span class="d-none d-sm-inline">Tài khoản</span>
-                        </a>
-                        <a href="javascript:void(0)" onclick="layout.render('Orders', 'Cart')" class="cart text-dark text-decoration-none d-flex align-items-center gap-2">
-                            <i class="icon icon-clipboard"></i>
-                            <span class="d-none d-sm-inline">Giỏ hàng:</span>
-                            <span class="badge bg-accent rounded-pill" id="cart-count">0</span>
+                <!-- Right: user dropdown + cart -->
+                <div class="d-flex align-items-center gap-4">
+                    <!-- User Dropdown (renders inside #user-account-wrapper) -->
+                    <div id="user-account-wrapper" class="position-relative">
+                        <a href="javascript:void(0)" onclick="layout.render('Auth','Login')"
+                            class="text-white-50 text-decoration-none d-flex align-items-center gap-1"
+                            style="font-size:0.8rem;">
+                            <i class="icon icon-user" style="font-size:0.85rem;"></i>
+                            <span>Đăng nhập</span>
                         </a>
                     </div>
+                    <!-- Cart -->
+                    <a href="javascript:void(0)" onclick="layout.render('Orders','Cart')"
+                        class="text-white-50 text-decoration-none d-flex align-items-center gap-1"
+                        style="font-size:0.8rem;">
+                        <i class="icon icon-clipboard" style="font-size:0.85rem;"></i>
+                        <span>Giỏ hàng</span>
+                        <span class="badge rounded-pill ms-1 text-white" id="cart-count"
+                            style="background:#C5A992; font-size:0.7rem; padding:2px 7px;">0</span>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 
-    <header id="header" class="py-3">
+    <!-- ===== MAIN HEADER ===== -->
+    <header id="header" style="background:#fff; border-bottom:1px solid #eee; padding: 12px 0;">
         <div class="container-xl">
             <nav class="navbar navbar-expand-lg navbar-light p-0">
                 <div class="container-fluid p-0">
-                    <a class="navbar-brand py-0 me-5" href="index.html">
-                        <img src="assets/images/main-logo.png" alt="logo" height="40">
+                    <!-- Logo -->
+                    <a class="navbar-brand py-0 me-5" href="javascript:void(0)" onclick="layout.render('Home','Index')">
+                        <img src="assets/images/main-logo.png" alt="Booksaw" height="36"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                        <span
+                            style="display:none; font-size:1.4rem; font-weight:800; color:#2F2F2F; letter-spacing:-1px;">
+                            Book<span style="color:#C5A992;">saw</span>
+                        </span>
                     </a>
 
-                    <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                    <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#mainNavbar">
                         <span class="navbar-toggler-icon"></span>
                     </button>
 
                     <div class="collapse navbar-collapse" id="mainNavbar">
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-lg-4">
+                        <!-- Nav Links -->
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-lg-3">
                             <li class="nav-item">
-                                <a class="nav-link text-uppercase fw-bold" href="javascript:void(0)" onclick="layout.render('', 'Home/Index')">Trang chủ</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-uppercase fw-bold" href="javascript:void(0)" onclick="layout.render('', 'Home/About')">Giới thiệu</a>
+                                <a class="nav-link fw-bold text-uppercase"
+                                    style="font-size:0.82rem; letter-spacing:0.5px;" href="javascript:void(0)"
+                                    onclick="layout.render('Home','Index')">Trang chủ</a>
                             </li>
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle text-uppercase fw-bold" href="#" id="navbarPages" role="button" data-bs-toggle="dropdown">
-                                    Danh mục
-                                </a>
-                                <ul class="dropdown-menu border-0 shadow">
-                                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="layout.render('Books', 'Index')">Tất cả sách</a></li>
-                                    <li><a class="dropdown-item" href="javascript:void(0)">Thể loại</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="javascript:void(0)">Tác giả</a></li>
+                                <a class="nav-link fw-bold text-uppercase dropdown-toggle"
+                                    style="font-size:0.82rem; letter-spacing:0.5px;" href="#"
+                                    data-bs-toggle="dropdown">Danh mục</a>
+                                <ul class="dropdown-menu border-0 shadow rounded-4 py-2">
+                                    <li><a class="dropdown-item small py-2" href="javascript:void(0)"
+                                            onclick="layout.render('Books','Index')">📚 Tất cả sách</a></li>
+                                    <li><a class="dropdown-item small py-2" href="javascript:void(0)">🏷️ Thể loại</a>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider my-1">
+                                    </li>
+                                    <li><a class="dropdown-item small py-2" href="javascript:void(0)">✍️ Tác giả</a>
+                                    </li>
                                 </ul>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-uppercase fw-bold" href="javascript:void(0)">Tin tức</a>
+                                <a class="nav-link fw-bold text-uppercase"
+                                    style="font-size:0.82rem; letter-spacing:0.5px;" href="javascript:void(0)">Tin
+                                    tức</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-uppercase fw-bold" href="javascript:void(0)">Liên hệ</a>
+                                <a class="nav-link fw-bold text-uppercase"
+                                    style="font-size:0.82rem; letter-spacing:0.5px;" href="javascript:void(0)">Liên
+                                    hệ</a>
                             </li>
                         </ul>
 
-                        <div class="action-menu d-flex align-items-center">
-                            <div class="search-bar">
-                                <button class="btn btn-link text-dark p-0 search-toggle shadow-none" data-bs-toggle="collapse" data-bs-target="#searchBox">
-                                    <i class="icon icon-search fs-5"></i>
-                                </button>
-                            </div>
+                        <!-- Search + Mobile Cart -->
+                        <div class="d-flex align-items-center gap-3">
+                            <!-- Search toggle -->
+                            <button class="btn btn-link text-dark p-1 shadow-none border-0" data-bs-toggle="collapse"
+                                data-bs-target="#searchBox">
+                                <i class="icon icon-search" style="font-size:1.1rem;"></i>
+                            </button>
+                            <!-- Mobile-only: cart + user -->
+                            <a href="javascript:void(0)" onclick="layout.render('Orders','Cart')"
+                                class="d-lg-none text-dark text-decoration-none position-relative">
+                                <i class="icon icon-clipboard fs-5"></i>
+                                <span class="badge position-absolute top-0 start-100 translate-middle rounded-pill"
+                                    style="background:#C5A992; font-size:0.6rem;" id="cart-count-mobile">0</span>
+                            </a>
                         </div>
                     </div>
                 </div>
             </nav>
-            
-            <!-- Dynamic Search Box -->
-            <div class="collapse mt-3" id="searchBox">
-                <div class="card card-body border-0 bg-light">
-                    <form class="d-flex gap-2">
-                        <input class="form-control border-0 bg-white" type="search" placeholder="Bạn đang tìm cuốn sách nào?">
-                        <button class="btn btn-accent px-4" type="submit">Tìm</button>
-                    </form>
+
+            <!-- Search Box (collapsible) -->
+            <div class="collapse mt-2" id="searchBox">
+                <div class="card border-0 rounded-4 shadow-sm" style="background:#f9f7f5;">
+                    <div class="card-body py-2 px-3">
+                        <form class="d-flex gap-2"
+                            onsubmit="event.preventDefault(); books.searchAI($('#ai-search-input').val())">
+                            <input id="ai-search-input"
+                                class="form-control border-0 bg-white rounded-pill px-4 shadow-none"
+                                style="font-size:0.9rem;" type="search"
+                                placeholder="Tìm kiếm sách... VD: 'Sách hay về khởi nghiệp'">
+                            <button class="btn rounded-pill fw-bold px-4"
+                                style="background:#C5A992; color:white; font-size:0.85rem;" type="submit">
+                                <i class="icon icon-search me-1"></i> AI Search
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -93,10 +137,73 @@
 </div>
 
 <style>
-    .bg-accent { background-color: var(--accent-color); color: white; }
-    .btn-accent { background-color: var(--accent-color); color: white; border: none; }
-    .btn-accent:hover { background-color: var(--dark-color); color: white; }
-    .nav-link { color: var(--dark-text-color) !important; font-size: 0.9rem; letter-spacing: 1px; }
-    .nav-link:hover, .nav-link.active { color: var(--accent-color) !important; }
-    .dropdown-item:hover { background-color: var(--light-color); color: var(--accent-color); }
+    /* ── Nav links ── */
+    #header .nav-link {
+        color: #2F2F2F !important;
+    }
+
+    #header .nav-link:hover,
+    #header .nav-link.active {
+        color: #C5A992 !important;
+    }
+
+    /* ── Dropdown items ── */
+    .dropdown-item:hover,
+    .dropdown-item:focus {
+        background: #fdf5ef;
+        color: #C5A992;
+    }
+
+    /* ── User dropdown menu ── */
+    #userDropdownMenu {
+        min-width: 200px;
+        right: 0;
+        left: auto !important;
+        top: calc(100% + 6px);
+        border-radius: 12px !important;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+        border: none !important;
+        animation: fadeDropdown 0.15s ease-out;
+    }
+
+    @keyframes fadeDropdown {
+        from {
+            opacity: 0;
+            transform: translateY(-6px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ── Button resets ── */
+    #userDropdownBtn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        color: rgba(255, 255, 255, 0.7) !important;
+        font-size: 0.8rem;
+    }
+
+    #userDropdownBtn:hover {
+        color: #fff !important;
+    }
+
+    #userDropdownBtn .icon {
+        font-size: 0.9rem;
+    }
+
+    /* ── Accent badge (role label) ── */
+    .badge-role {
+        background: rgba(197, 169, 146, 0.15);
+        color: #C5A992;
+        font-size: 0.65rem;
+        border-radius: 20px;
+        padding: 2px 8px;
+        display: inline-block;
+        margin-top: 2px;
+    }
 </style>

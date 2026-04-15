@@ -11,19 +11,26 @@ const auth = {
             if (result.status === 200) {
                 const loginData = result.data;
                 api.setToken(loginData.token);
-                // Save essential user info
+                // Save full user info for use in checkout/profile
                 api.setUser({
-                    username: loginData.username,
-                    role: loginData.role
+                    username:    loginData.username,
+                    role:        loginData.role,
+                    hoTen:       loginData.hoTen       || loginData.username,
+                    email:       loginData.email        || '',
+                    soDienThoai: loginData.soDienThoai  || '',
+                    diaChi:      loginData.diaChi        || ''
                 });
                 
                 api.showToast("Đăng nhập thành công!", "success");
-                
+
+                // Immediately update header dropdown — no reload needed
+                if (window.layout && layout.updateUserHeader) layout.updateUserHeader();
+
                 // Redirect based on role
-                if (loginData.role === 'ADMIN') {
-                    setTimeout(() => layout.render('Dashboard/Admin', 'Index'), 500);
+                if (loginData.role === 'ADMIN' || loginData.role === 'STAFF') {
+                    setTimeout(() => layout.render('Dashboard', 'Admin/Index'), 500);
                 } else {
-                    setTimeout(() => layout.render('', 'Home/Index'), 500);
+                    setTimeout(() => layout.render('Home', 'Index'), 500);
                 }
             }
         } catch (error) {
@@ -35,7 +42,7 @@ const auth = {
     register: async (userData) => {
         try {
             const result = await api.post('/auth/register', userData);
-            if (result.success) {
+            if (result.status === 200) {
                 api.showToast("Đăng ký thành công! Hãy đăng nhập.", "success");
                 layout.render('Auth', 'Login');
             }
@@ -48,8 +55,11 @@ const auth = {
     logout: () => {
         api.clearToken();
         api.clearUser();
-        api.showToast("Đã đăng xuất");
-        layout.render('', 'Home/Index');
+        sessionStorage.removeItem('applied_voucher');
+        // Immediately update header dropdown to guest state — no page reload needed
+        if (window.layout && layout.updateUserHeader) layout.updateUserHeader();
+        api.showToast("Đã đăng xuất thành công");
+        layout.render('Home', 'Index');
     }
 };
 
