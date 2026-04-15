@@ -106,16 +106,66 @@
     </div>
 </div>
 
-<!-- Toast for Notifications (Optional but Premium) -->
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 2000">
-    <div id="appToast" class="toast hide rounded-4 shadow border-0" role="alert" aria-live="assertive"
-        aria-atomic="true">
-        <div class="toast-header bg-accent text-white border-0 py-3 rounded-top-4">
-            <strong class="me-auto">Thông báo</strong>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+<!-- Toast Notifications - Modern Design -->
+<div class="position-fixed end-0 p-3" style="z-index: 9999; top: 75px; pointer-events: none;">
+    <div id="appToast" role="alert" aria-live="assertive" aria-atomic="true" style="
+        display: none;
+        pointer-events: all;
+        min-width: 320px;
+        max-width: 380px;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.08);
+        overflow: hidden;
+        font-family: 'Inter', 'Outfit', sans-serif;
+    ">
+        <!-- Colored top stripe -->
+        <div id="toastStripe" style="height: 4px; width: 100%; background: #28a745;"></div>
+
+        <div style="display: flex; align-items: flex-start; gap: 12px; padding: 14px 14px 10px 14px;">
+            <!-- Icon bubble -->
+            <div id="toastIconWrap" style="
+                width: 38px; height: 38px; border-radius: 12px;
+                display: flex; align-items: center; justify-content: center;
+                font-size: 1.1rem; flex-shrink: 0; margin-top: 1px;
+                background: rgba(40,167,69,0.1);
+            ">
+                <span id="toastIcon">✅</span>
+            </div>
+
+            <!-- Text -->
+            <div style="flex: 1; min-width: 0;">
+                <div id="toastTitle" style="
+                    font-weight: 700; font-size: 0.8rem;
+                    text-transform: uppercase; letter-spacing: 0.06em;
+                    margin-bottom: 3px; color: #28a745;
+                ">Thành công</div>
+                <div id="toastMessage" style="
+                    font-size: 0.875rem; color: #374151;
+                    line-height: 1.5; word-break: break-word;
+                ">Thao tác thành công.</div>
+            </div>
+
+            <!-- Close -->
+            <button onclick="api.hideToast()" style="
+                background: none; border: none; cursor: pointer;
+                color: #9ca3af; font-size: 1.05rem; line-height: 1;
+                padding: 2px; flex-shrink: 0; border-radius: 6px;
+                transition: color 0.15s, background 0.15s;
+            " onmouseover="this.style.color='#374151';this.style.background='#f3f4f6'"
+               onmouseout="this.style.color='#9ca3af';this.style.background='none'">&times;</button>
         </div>
-        <div class="toast-body bg-white py-4 rounded-bottom-4 shadow-sm" id="toastMessage">
-            Đã thực hiện thao tác thành công.
+
+        <!-- Progress bar -->
+        <div style="padding: 0 14px 12px 64px;">
+            <div style="height: 3px; background: #f3f4f6; border-radius: 99px; overflow: hidden;">
+                <div id="toastProgress" style="
+                    height: 100%; width: 100%;
+                    background: #28a745;
+                    border-radius: 99px;
+                    transition: none;
+                "></div>
+            </div>
         </div>
     </div>
-</div>
+</div>

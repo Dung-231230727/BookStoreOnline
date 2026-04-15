@@ -104,24 +104,58 @@ const api = {
 
     showToast: (message, type = 'success') => {
         const toastEl = document.getElementById('appToast');
-        if (!toastEl) {
-            alert(message);
-            return;
-        }
-        const toastBody = document.getElementById('toastMessage');
-        const toastHeader = toastEl.querySelector('.toast-header');
-        toastBody.innerText = message;
-        
-        if (type === 'error') {
-            toastHeader.classList.add('bg-danger');
-            toastHeader.classList.remove('bg-accent');
-        } else {
-            toastHeader.classList.add('bg-accent');
-            toastHeader.classList.remove('bg-danger');
-        }
-        
-        const toast = new bootstrap.Toast(toastEl);
-        toast.show();
+        if (!toastEl) { console.warn('[Toast]', message); return; }
+
+        const configs = {
+            success: { icon: '✅', title: 'Thành công', color: '#16a34a', bg: 'rgba(22,163,74,0.08)'  },
+            error:   { icon: '❌', title: 'Lỗi',        color: '#dc2626', bg: 'rgba(220,38,38,0.08)'  },
+            warning: { icon: '⚠️', title: 'Cảnh báo',   color: '#d97706', bg: 'rgba(217,119,6,0.08)'  },
+            info:    { icon: 'ℹ️', title: 'Thông tin',  color: '#0284c7', bg: 'rgba(2,132,199,0.08)'  },
+        };
+        const cfg = configs[type] || configs.success;
+
+        // Update elements
+        const set = (id, prop, val) => { const el = document.getElementById(id); if (el) el[prop] = val; };
+        const style = (id, prop, val) => { const el = document.getElementById(id); if (el) el.style[prop] = val; };
+
+        set('toastIcon',  'textContent', cfg.icon);
+        set('toastTitle', 'textContent', cfg.title);
+        set('toastMessage', 'textContent', message);
+        style('toastTitle',    'color',      cfg.color);
+        style('toastStripe',   'background', cfg.color);
+        style('toastIconWrap', 'background', cfg.bg);
+        style('toastProgress', 'background', cfg.color);
+        style('toastProgress', 'width',      '100%');
+        style('toastProgress', 'transition', 'none');
+
+        // Slide in
+        toastEl.style.display    = 'block';
+        toastEl.style.opacity    = '0';
+        toastEl.style.transform  = 'translateX(30px)';
+        toastEl.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+            toastEl.style.opacity   = '1';
+            toastEl.style.transform = 'translateX(0)';
+        }));
+
+        // Shrink progress bar
+        const duration = 3800;
+        setTimeout(() => {
+            style('toastProgress', 'transition', `width ${duration}ms linear`);
+            style('toastProgress', 'width', '0%');
+        }, 80);
+
+        if (api._toastTimer) clearTimeout(api._toastTimer);
+        api._toastTimer = setTimeout(() => api.hideToast(), duration + 300);
+    },
+
+    hideToast: () => {
+        const toastEl = document.getElementById('appToast');
+        if (!toastEl) return;
+        toastEl.style.opacity   = '0';
+        toastEl.style.transform = 'translateX(30px)';
+        setTimeout(() => { toastEl.style.display = 'none'; }, 260);
+        if (api._toastTimer) { clearTimeout(api._toastTimer); api._toastTimer = null; }
     },
 
     formatCurrency: (amount) => {
