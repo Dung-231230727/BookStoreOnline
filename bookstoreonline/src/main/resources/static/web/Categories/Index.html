@@ -1,50 +1,105 @@
 <!-- Categories Area - Index View -->
-<section class="bg-sand py-5 min-vh-100">
+<section class="cat-public-section py-5 min-vh-100">
     <div class="container-xl py-5">
-        <div class="section-header text-center mb-5">
-            <span class="text-uppercase tracking-widest text-accent fw-bold small">Duyệt theo chủ đề</span>
-            <h1 class="display-4 fw-bold font-serif mt-2">Danh mục Sách</h1>
-            <p class="text-muted mt-2">Tìm kiếm cuốn sách phù hợp theo từng thể loại bạn yêu thích</p>
+        <div class="text-center mb-5">
+            <span class="cat-label-top">Duyet theo chu de</span>
+            <h1 class="cat-main-title mt-2">Danh muc Sach</h1>
+            <p class="cat-subtitle">Tim kiem cuon sach phu hop theo tung the loai ban yeu thich</p>
         </div>
 
-        <!-- Loading state -->
         <div id="categories-loading" class="text-center py-5">
-            <div class="spinner-border text-accent" role="status"></div>
-            <p class="text-muted mt-3">Đang tải danh mục...</p>
+            <div class="spinner-border" style="color:#C5A992; width:3rem; height:3rem;" role="status"></div>
+            <p class="text-muted mt-3 mb-0">Dang tai danh muc...</p>
         </div>
 
-        <!-- Dynamic category grid -->
         <div class="row g-4" id="categories-grid" style="display:none;">
-            <!-- Populated by categories.loadPublicList() -->
+            <!-- JS renders cards here -->
         </div>
 
-        <!-- Empty state -->
         <div id="categories-empty" class="text-center py-5" style="display:none;">
-            <div style="font-size:3rem;">📚</div>
-            <p class="text-muted mt-3">Chưa có danh mục nào.</p>
+            <div style="font-size:3rem;">&#128218;</div>
+            <p class="text-muted mt-3">Chua co danh muc nao.</p>
         </div>
     </div>
 </section>
 
 <style>
-    .bg-sand { background-color: #FDFCF9; }
-    .font-serif { font-family: 'Playfair Display', serif; }
-    .tracking-widest { letter-spacing: 0.15em; }
-    .text-accent { color: #C5A992 !important; }
-    .category-card {
-        border: 1.5px solid transparent;
-        transition: all 0.28s cubic-bezier(.25,.8,.25,1);
-    }
-    .category-card:hover {
-        border-color: #C5A992;
-        background-color: #fdfcf9 !important;
-        transform: translateY(-8px);
-        box-shadow: 0 16px 40px rgba(197,169,146,0.18) !important;
-    }
-    .cat-icon {
-        font-size: 2.2rem;
-        margin-bottom: 1rem;
-        display: block;
-    }
+.cat-public-section          { background: #FDFCF9; }
+.cat-label-top               { font-size:.72rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:#C5A992; }
+.cat-main-title              { font-family:'Playfair Display',serif; font-size:2.4rem; font-weight:700; color:#1a1a1a; }
+.cat-subtitle                { color:#888; font-size:.95rem; margin-top:.5rem; }
+.cat-public-card             {
+    display:block; text-decoration:none; color:inherit;
+    background:#fff; border:1.5px solid transparent;
+    border-radius:20px; padding:2rem 1.75rem;
+    box-shadow:0 2px 12px rgba(0,0,0,.06);
+    transition:all .28s cubic-bezier(.25,.8,.25,1);
+    height:100%;
+}
+.cat-public-card:hover       {
+    border-color:#C5A992;
+    transform:translateY(-8px);
+    box-shadow:0 16px 40px rgba(197,169,146,.2);
+    text-decoration:none; color:inherit;
+}
+.cat-public-icon             { font-size:2.2rem; margin-bottom:.85rem; }
+.cat-public-name             { font-family:'Playfair Display',serif; font-size:1.15rem; font-weight:700; color:#1a1a1a; margin-bottom:.5rem; }
+.cat-public-sub              { font-size:.82rem; color:#999; margin-bottom:.5rem; }
+.cat-public-badge            {
+    display:inline-block; font-size:.72rem;
+    background:#f5f2eb; color:#888;
+    border:1px solid #e8e4dc;
+    border-radius:20px; padding:3px 12px; margin-top:.25rem;
+}
 </style>
 
+<script>
+(function initCategoryPage() {
+    var icons = ['&#128218;','&#128214;','&#9997;&#65039;','&#128161;','&#128300;','&#127757;','&#127914;','&#127963;&#65039;','&#128188;','&#127912;','&#128421;&#65039;','&#127925;','&#127807;','&#9917;','&#128118;','&#127859;','&#129504;','&#128301;','&#128208;','&#128506;&#65039;'];
+
+    var grid    = document.getElementById('categories-grid');
+    var loading = document.getElementById('categories-loading');
+    var empty   = document.getElementById('categories-empty');
+
+    if (!grid) return;
+
+    loading.style.display = 'block';
+    grid.style.display    = 'none';
+    empty.style.display   = 'none';
+
+    api.get('/categories').then(function(res) {
+        var list = (res && res.data) ? res.data : [];
+        loading.style.display = 'none';
+
+        if (!list || list.length === 0) {
+            empty.style.display = 'block';
+            return;
+        }
+
+        grid.innerHTML = '';
+        list.forEach(function(cat, idx) {
+            var icon     = icons[idx % icons.length];
+            var subCount = (cat.subCategories || []).length;
+            var subText  = subCount > 0 ? (subCount + ' danh muc con') : 'Kham pha sach trong danh muc nay';
+            var col      = document.createElement('div');
+            col.className = 'col-lg-4 col-md-6';
+            col.innerHTML =
+                '<a href="javascript:void(0)" class="cat-public-card"' +
+                '   onclick="layout.render(\'Books\',\'Index\')">' +
+                '  <div class="cat-public-icon">' + icon + '</div>' +
+                '  <div class="cat-public-name">' + cat.categoryName + '</div>' +
+                '  <div class="cat-public-sub">' + subText + '</div>' +
+                '  <span class="cat-public-badge">Xem sach &#8594;</span>' +
+                '</a>';
+            grid.appendChild(col);
+        });
+
+        grid.style.display = 'flex';
+        grid.style.flexWrap = 'wrap';
+    }).catch(function(e) {
+        loading.style.display = 'none';
+        empty.style.display   = 'block';
+        console.error('Category load error:', e);
+    });
+})();
+</script>

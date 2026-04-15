@@ -3,59 +3,99 @@
  * Standardized for Full English Backend synchronization
  */
 const support = {
-    // Initialize Chat Widget
+    // Initialize Chat Widget — gắn event vào input trong widget mới
     initChat: () => {
-        $("#chat-form").off("submit").on("submit", function(e) {
-            e.preventDefault();
-            const msg = $("#chat-user-msg").val().trim();
-            if (msg) {
-                support.sendChat(msg);
-                $("#chat-user-msg").val("");
-            }
-        });
-        // Focus input when widget opens
         setTimeout(() => $("#chat-user-msg").focus(), 200);
     },
 
+    // Send from input field
+    sendChatFromInput: () => {
+        const input = $("#chat-user-msg");
+        const msg = input.val().trim();
+        if (!msg) return;
+        input.val("");
+        support.sendChat(msg);
+    },
+
     // Escape HTML to prevent XSS
-    escapeHtml: (text) => {
-        return $('<div>').text(text).html();
+    escapeHtml: (text) => $('<div>').text(text).html(),
+
+    // Render markdown-lite: **bold**, newlines
+    renderMarkdown: (text) => {
+        return support.escapeHtml(text)
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n/g, '<br>');
     },
 
     sendChat: async (message) => {
         const chatBox = $("#chat-box");
-        const safeMsg = support.escapeHtml(message);
+        if (!chatBox.length) return;
 
+        // Remove quick replies (they become stale after user picks one)
+        chatBox.find('.bsw-quick-replies').remove();
+
+        // User bubble
         chatBox.append(`
-            <div class="message-user bg-accent text-white p-3 rounded-4 shadow-sm align-self-end text-end" style="max-width: 85%; font-size:0.85rem;">
-                ${safeMsg}
+            <div class="bsw-msg-user">
+                <div class="bsw-bubble">${support.escapeHtml(message)}</div>
             </div>
         `);
         support.scrollToBottom();
 
+        // Typing indicator
         const typingId = "typing-" + Date.now();
         chatBox.append(`
-            <div id="${typingId}" class="message-ai bg-white p-3 rounded-4 shadow-sm align-self-start" style="max-width: 85%; font-size:0.85rem; color:#888;">
-                <span class="spinner-grow spinner-grow-sm me-1" style="color:#C5A992;"></span> Đang soạn...
+            <div id="${typingId}" class="bsw-msg-ai">
+                <div class="bsw-avatar">📚</div>
+                <div class="bsw-bubble" style="color:#bbb; display:flex; align-items:center; gap:4px;">
+                    <span style="animation:bsw-dot 1.2s infinite 0s">●</span>
+                    <span style="animation:bsw-dot 1.2s infinite 0.2s">●</span>
+                    <span style="animation:bsw-dot 1.2s infinite 0.4s">●</span>
+                </div>
             </div>
         `);
+
+        // Add dot animation style once
+        if (!document.getElementById('bsw-dot-style')) {
+            $('<style id="bsw-dot-style">@keyframes bsw-dot{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}</style>').appendTo('head');
+        }
+
         support.scrollToBottom();
 
         try {
             const res = await api.post(`/support/ai-chat?message=${encodeURIComponent(message)}`);
             $(`#${typingId}`).remove();
-            if (res.status === 200) {
-                chatBox.append(`
-                    <div class="message-ai bg-white p-3 rounded-4 shadow-sm align-self-start" style="max-width: 85%; font-size:0.85rem;">
-                        ${res.data || "Xin lỗi, tôi chưa hiểu ý bạn. Bạn có thể nói rõ hơn không?"}
-                    </div>
-                `);
-            } else { throw new Error(); }
+
+            // Parse response: {message, quickReplies} hoặc string fallback
+            const data = res.data;
+            const text   = (typeof data === 'object' && data.message) ? data.message :
+                           (typeof data === 'string' ? data : 'Xin lỗi, tôi chưa hiểu ý bạn.');
+            const qr     = (typeof data === 'object' && Array.isArray(data.quickReplies)) ? data.quickReplies : [];
+
+            // AI bubble
+            chatBox.append(`
+                <div class="bsw-msg-ai">
+                    <div class="bsw-avatar">📚</div>
+                    <div class="bsw-bubble">${support.renderMarkdown(text)}</div>
+                </div>
+            `);
+
+            // Quick reply chips
+            if (qr.length) {
+                const chips = qr.map(q =>
+                    `<button class="bsw-chip" data-msg="${support.escapeHtml(q)}" onclick="support.sendChat(this.dataset.msg)">${support.escapeHtml(q)}</button>`
+                ).join('');
+                chatBox.append(`<div class="bsw-quick-replies">${chips}</div>`);
+            }
+
         } catch (e) {
             $(`#${typingId}`).remove();
             chatBox.append(`
-                <div class="message-ai bg-white p-3 rounded-4 shadow-sm align-self-start text-danger" style="font-size:0.85rem;">
-                    Hệ thống bận, vui lòng thử lại sau.
+                <div class="bsw-msg-ai">
+                    <div class="bsw-avatar">📚</div>
+                    <div class="bsw-bubble" style="color:#e55;">
+                        Hệ thống đang bận, vui lòng thử lại sau nhé!
+                    </div>
                 </div>
             `);
         }
@@ -63,8 +103,8 @@ const support = {
     },
 
     scrollToBottom: () => {
-        const chatBox = $("#chat-box");
-        if(chatBox.length) chatBox.scrollTop(chatBox[0].scrollHeight);
+        const box = document.getElementById('chat-box');
+        if (box) box.scrollTop = box.scrollHeight;
     },
 
     toggleChat: () => {

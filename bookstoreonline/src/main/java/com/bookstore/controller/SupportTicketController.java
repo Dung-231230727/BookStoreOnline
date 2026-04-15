@@ -2,12 +2,14 @@ package com.bookstore.controller;
 
 import com.bookstore.dto.ApiResponse;
 import com.bookstore.dto.SupportTicketDTO;
+import com.bookstore.service.ChatbotService;
 import com.bookstore.service.SupportTicketService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/support")
@@ -16,25 +18,28 @@ import java.util.List;
 public class SupportTicketController {
 
     private final SupportTicketService supportTicketService;
+    private final ChatbotService chatbotService;
 
-    public SupportTicketController(SupportTicketService supportTicketService) {
+    public SupportTicketController(SupportTicketService supportTicketService,
+                                   ChatbotService chatbotService) {
         this.supportTicketService = supportTicketService;
+        this.chatbotService = chatbotService;
     }
 
     @GetMapping
-    @Operation(summary = "Tất cả yêu cầu", description = "Admin/Staff xem toàn bộ danh sách các yêu cầu hỗ trợ từ khách hàng")
+    @Operation(summary = "Tất cả yêu cầu")
     public ApiResponse<List<SupportTicketDTO>> getAllRequests() {
         return ApiResponse.success(supportTicketService.getAllTickets());
     }
 
     @GetMapping("/user/{username}")
-    @Operation(summary = "Yêu cầu của tôi", description = "Khách hàng xem lại danh sách các yêu cầu hỗ trợ của chính mình")
+    @Operation(summary = "Yêu cầu của tôi")
     public ApiResponse<List<SupportTicketDTO>> getRequestsByCustomer(@PathVariable String username) {
         return ApiResponse.success(supportTicketService.getTicketsByCustomer(username));
     }
 
     @PostMapping
-    @Operation(summary = "Gửi yêu cầu mới", description = "Khách hàng tạo một phiếu (ticket) yêu cầu hỗ trợ mới")
+    @Operation(summary = "Gửi yêu cầu mới")
     public ApiResponse<String> submitTicket(
             @RequestParam String username,
             @RequestParam String subject,
@@ -44,7 +49,7 @@ public class SupportTicketController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Cập nhật trạng thái", description = "Admin/Staff cập nhật trạng thái xử lý yêu cầu (OPEN, IN_PROGRESS, CLOSED)")
+    @Operation(summary = "Cập nhật trạng thái")
     public ApiResponse<String> updateStatus(
             @PathVariable Long id,
             @RequestParam String status) {
@@ -53,23 +58,9 @@ public class SupportTicketController {
     }
 
     @PostMapping("/ai-chat")
-    @Operation(summary = "Chatbot AI", description = "Phản hồi tự động cho khách hàng dựa trên từ khóa")
-    public ApiResponse<String> aiChat(@RequestParam String message) {
-        String msg = message.toLowerCase();
-        String response = "Cảm ơn bạn đã nhắn tin! Tôi là AI của Booksaw, tôi có thể giúp bạn tìm sách, kiểm tra đơn hàng hoặc cung cấp mã giảm giá. Bạn cần gì ạ?";
-
-        if (msg.contains("chào") || msg.contains("hello")) {
-            response = "Chào bạn! Chúc bạn một ngày tốt lành. Tôi có thể giúp gì cho bạn trong việc chọn sách hôm nay?";
-        } else if (msg.contains("giao hàng") || msg.contains("khi nào") || msg.contains("nhận hàng")) {
-            response = "Thời gian giao hàng thường từ 2-4 ngày làm việc. Bạn có thể kiểm tra trạng thái trong mục 'Đơn hàng của tôi' nhé!";
-        } else if (msg.contains("voucher") || msg.contains("giảm giá") || msg.contains("khuyến mãi")) {
-            response = "Hiện tại chúng tôi có mã GIAM20K cho đơn từ 200k. Bạn hãy áp dụng tại bước thanh toán nhé!";
-        } else if (msg.contains("sách hay") || msg.contains("tư vấn")) {
-            response = "Nếu bạn thích văn học, hãy thử 'Nhà Giả Kim'. Nếu muốn học kỹ năng, 'Đắc Nhân Tâm' là lựa chọn tuyệt vời!";
-        } else if (msg.contains("cảm ơn")) {
-            response = "Không có gì ạ! Rất vui được hỗ trợ bạn. Chúc bạn đọc sách vui vẻ!";
-        }
-
+    @Operation(summary = "Chatbot AI thông minh")
+    public ApiResponse<Map<String, Object>> aiChat(@RequestParam String message) {
+        Map<String, Object> response = chatbotService.getResponse(message);
         return ApiResponse.success(response);
     }
 }

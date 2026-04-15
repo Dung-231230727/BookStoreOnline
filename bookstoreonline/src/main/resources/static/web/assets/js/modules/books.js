@@ -21,26 +21,74 @@ const books = {
 
     // 2. AI Search Integration
     searchAI: async (query) => {
-        if (!query) return;
-        api.showToast("AI is searching...", "info");
+        if (!query || !query.trim()) return;
+        query = query.trim();
+
+        // Navigate to books page first
+        layout.current.isSearching = true;
+        if (layout.current.area !== 'Books' || layout.current.view !== 'Index') {
+            await layout.render('Books', 'Index');
+        }
+
+        // Show loading state in grid
+        const grid = $("#books-grid");
+        grid.html(`
+            <div class="col-12 text-center py-5">
+                <div class="spinner-border text-accent mb-3" style="width:2.5rem;height:2.5rem;"></div>
+                <p class="text-muted">
+                    AI đang tìm kiếm: <strong>"${$('<div>').text(query).html()}"</strong>
+                </p>
+                <p class="text-muted small">Phân tích ngôn ngữ tự nhiên, lọc theo danh mục và giá...</p>
+            </div>
+        `);
+        $("#product-count").text("...");
+        $("#category-title").html(`
+            <span class="text-accent" style="font-size:1rem; font-weight:600; display:block; margin-bottom:4px;">
+                🔍 Kết quả AI
+            </span>
+            "${query}"
+        `);
+
         try {
-            layout.current.isSearching = true;
-            if (layout.current.view !== "Books/Index") {
-                await layout.render('Books', 'Index');
-            }
+            const res = await api.post('/books/ai-search', { query });
+            const results = res.data || [];
 
-            const res = await api.post('/books/ai-search', { query: query });
-            const results = res.data;
-            console.log("AI Search Results:", results);
-
-            $("#category-title").text(`AI results for: "${query}"`);
-            books.renderGrid("#books-grid", results);
+            $("#product-count").text(results.length);
 
             if (!results || results.length === 0) {
-                api.showToast("No matches found by AI", "warning");
+                grid.html(`
+                    <div class="col-12 text-center py-5">
+                        <div style="font-size:3rem;">🔍</div>
+                        <h5 class="mt-3 fw-bold">Không tìm thấy kết quả</h5>
+                        <p class="text-muted">Không có sách nào khớp với "<strong>${$('<div>').text(query).html()}</strong>"</p>
+                        <p class="text-muted small mt-2">Gợi ý: thử từ khóa khác, tên tác giả, hoặc thể loại sách</p>
+                        <div class="d-flex gap-2 justify-content-center flex-wrap mt-3">
+                            <button class="btn btn-outline-secondary btn-sm rounded-pill" onclick="books.searchAI('sách văn học hay')">📚 Văn học</button>
+                            <button class="btn btn-outline-secondary btn-sm rounded-pill" onclick="books.searchAI('kinh doanh khởi nghiệp')">💼 Kinh doanh</button>
+                            <button class="btn btn-outline-secondary btn-sm rounded-pill" onclick="books.searchAI('kỹ năng tư duy')">🧠 Kỹ năng</button>
+                            <button class="btn btn-outline-secondary btn-sm rounded-pill" onclick="books.loadAll()">Xem tất cả sách</button>
+                        </div>
+                    </div>
+                `);
+                return;
             }
+
+            books.renderGrid("#books-grid", results);
+
+            // Update title with summary
+            let summaryParts = [];
+            if (results.length > 0) summaryParts.push(`${results.length} kết quả`);
+            api.showToast(`Tìm thấy ${results.length} sách phù hợp`, "success");
+
         } catch (error) {
-            api.showToast("AI Search Error", "error");
+            grid.html(`
+                <div class="col-12 text-center py-5 text-danger">
+                    <div style="font-size:2.5rem;">⚠️</div>
+                    <p class="mt-3">Đã xảy ra lỗi khi tìm kiếm. Vui lòng thử lại.</p>
+                    <button class="btn btn-outline-secondary btn-sm mt-2" onclick="books.loadAll()">Xem tất cả sách</button>
+                </div>
+            `);
+            console.error("AI Search error:", error);
         }
     },
 

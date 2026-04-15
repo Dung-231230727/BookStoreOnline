@@ -120,18 +120,42 @@
             <!-- Search Box (collapsible) -->
             <div class="collapse mt-2" id="searchBox">
                 <div class="card border-0 rounded-4 shadow-sm" style="background:#f9f7f5;">
-                    <div class="card-body py-2 px-3">
-                        <form class="d-flex gap-2"
-                            onsubmit="event.preventDefault(); books.searchAI($('#ai-search-input').val())">
+                    <div class="card-body py-3 px-3">
+                        <form class="d-flex gap-2 mb-2"
+                            onsubmit="event.preventDefault(); books.searchAI($('#ai-search-input').val()); bootstrap.Collapse.getInstance(document.getElementById('searchBox'))?.hide();">
                             <input id="ai-search-input"
                                 class="form-control border-0 bg-white rounded-pill px-4 shadow-none"
                                 style="font-size:0.9rem;" type="search"
-                                placeholder="Tìm kiếm sách... VD: 'Sách hay về khởi nghiệp'">
+                                placeholder="VD: sách kinh doanh dưới 200k, lập trình Python...">
                             <button class="btn rounded-pill fw-bold px-4"
-                                style="background:#C5A992; color:white; font-size:0.85rem;" type="submit">
+                                style="background:#C5A992; color:white; font-size:0.85rem; white-space:nowrap;" type="submit">
                                 <i class="icon icon-search me-1"></i> AI Search
                             </button>
                         </form>
+                        <!-- Quick suggestions -->
+                        <div class="d-flex gap-2 flex-wrap" style="font-size:0.75rem;">
+                            <span class="text-muted me-1">Gợi ý:</span>
+                            <button type="button" class="btn btn-sm btn-light rounded-pill py-0 px-3 border"
+                                onclick="books.searchAI('sách kỹ năng phát triển bản thân'); bootstrap.Collapse.getInstance(document.getElementById('searchBox'))?.hide();">
+                                🧠 Kỹ năng sống
+                            </button>
+                            <button type="button" class="btn btn-sm btn-light rounded-pill py-0 px-3 border"
+                                onclick="books.searchAI('kinh doanh khởi nghiệp'); bootstrap.Collapse.getInstance(document.getElementById('searchBox'))?.hide();">
+                                💼 Kinh doanh
+                            </button>
+                            <button type="button" class="btn btn-sm btn-light rounded-pill py-0 px-3 border"
+                                onclick="books.searchAI('tiểu thuyết văn học'); bootstrap.Collapse.getInstance(document.getElementById('searchBox'))?.hide();">
+                                📖 Văn học
+                            </button>
+                            <button type="button" class="btn btn-sm btn-light rounded-pill py-0 px-3 border"
+                                onclick="books.searchAI('lập trình công nghệ AI'); bootstrap.Collapse.getInstance(document.getElementById('searchBox'))?.hide();">
+                                💻 Công nghệ
+                            </button>
+                            <button type="button" class="btn btn-sm btn-light rounded-pill py-0 px-3 border"
+                                onclick="books.searchAI('sách dưới 100k'); bootstrap.Collapse.getInstance(document.getElementById('searchBox'))?.hide();">
+                                💰 Dưới 100k
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

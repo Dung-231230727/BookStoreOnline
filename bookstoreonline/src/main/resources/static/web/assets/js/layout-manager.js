@@ -68,8 +68,12 @@ const layout = {
                 if (typeof initBooksawTheme === 'function') {
                     initBooksawTheme();
                 }
-                
+
                 layout.updateActiveNav();
+
+                // Scroll to top after every navigation
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
                 resolve();
             });
         });
