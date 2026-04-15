@@ -141,25 +141,46 @@ const layout = {
             </li>
             <li><hr class="dropdown-divider my-1"></li>`;
 
+        // Build avatar initial from username or fullName
+        const displayName = user.fullName || user.username || 'U';
+        const initials    = displayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+        const roleColor   = { ADMIN: '#e74c3c', STAFF: '#3498db', STOREKEEPER: '#f39c12', CUSTOMER: '#C5A992' };
+        const avatarBg    = roleColor[user.role] || '#C5A992';
+
         wrapper.innerHTML = `
-            <button type="button" id="userDropdownBtn">
-                <i class="icon icon-user" style="font-size:0.85rem;"></i>
-                <span style="max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+            <a href="javascript:void(0)" id="userDropdownBtn" style="
+                display:flex; align-items:center; gap:4px;
+                background:none; border:none; padding:0; cursor:pointer;
+                color:rgba(255,255,255,0.7); font-size:0.8rem;
+                text-decoration:none; transition: color 0.2s; white-space:nowrap;
+                line-height: 1;
+            ">
+                <i class="icon icon-user" style="font-size:0.85rem; line-height: 1;"></i>
+                <span style="max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; line-height: 1;">
                     ${user.username}
                 </span>
-                <span style="font-size:0.6rem; margin-left:2px; opacity:0.7;">▼</span>
-            </button>
-            <ul id="userDropdownMenu" style="display:none; position:absolute; right:0; top:calc(100% + 8px);
-                min-width:200px; background:#fff; border-radius:12px; z-index:9999;
-                box-shadow:0 8px 30px rgba(0,0,0,0.12); padding:6px 0; list-style:none; margin:0;">
-                <li style="padding:10px 14px; border-bottom:1px solid #f0f0f0; margin-bottom:4px;">
-                    <div style="font-weight:700; font-size:0.85rem; color:#2F2F2F;">${user.fullName || user.username}</div>
-                    <span class="badge-role">${user.role || 'CUSTOMER'}</span>
+                <span style="font-size:0.5rem; opacity:0.5; margin-left: -1px; line-height: 1;">▼</span>
+            </a>
+            <ul id="userDropdownMenu" style="display:none; position:absolute; right:0; top:calc(100% + 15px);
+                min-width:180px; background:#fff; border-radius:12px; z-index:9999;
+                box-shadow:0 8px 25px rgba(0,0,0,0.13); padding:5px 0; list-style:none; margin:0;">
+                <li style="padding:10px 14px; border-bottom:1px solid #f3f0ec; margin-bottom:3px;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <div style="width:28px; height:28px; border-radius:50%; background:${avatarBg}; color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.68rem; font-weight:800; flex-shrink:0;">
+                            ${initials}
+                        </div>
+                        <div>
+                            <div style="font-weight:700; font-size:0.82rem; color:#2F2F2F; line-height:1.2;">${displayName}</div>
+                            <span style="background:${avatarBg}20; color:${avatarBg}; font-size:0.58rem; border-radius:20px; padding:1px 6px; display:inline-block; margin-top:2px; font-weight:700;">
+                                ${user.role || 'CUSTOMER'}
+                            </span>
+                        </div>
+                    </div>
                 </li>
                 ${menuItems}
                 <li>
                     <a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2 fw-bold"
-                       style="font-size:0.85rem; color:#dc3545;"
+                       style="font-size:0.82rem; color:#dc3545;"
                        href="javascript:void(0)" onclick="auth.logout()">
                        🚪 Đăng xuất
                     </a>

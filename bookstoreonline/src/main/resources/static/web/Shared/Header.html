@@ -2,7 +2,7 @@
 <div id="header-wrap" class="sticky-top" style="z-index: 1030;">
 
     <!-- ===== TOP BAR (compact) ===== -->
-    <div id="top-bar" class="d-none d-md-block" style="background:#2F2F2F; padding: 5px 0;">
+    <div id="top-bar" class="d-none d-md-block" style="background:#2F2F2F; padding: 2px 0;">
         <div class="container-xl">
             <div class="d-flex justify-content-between align-items-center">
                 <!-- Left: social -->
@@ -208,20 +208,24 @@
 
     /* ── Button resets ── */
     #userDropdownBtn {
-        background: none;
-        border: none;
+        /* Chỉ reset những gì cần, KHÔNG override background/border vì JS sẽ set inline */
         cursor: pointer;
-        padding: 0;
-        color: rgba(255, 255, 255, 0.7) !important;
-        font-size: 0.8rem;
+        line-height: 1;
+        /* Không đặt background/border/color ở đây — JS layout-manager sẽ set inline khi logged in */
     }
 
-    #userDropdownBtn:hover {
+    /* Khi CHƯA login — link bình thường, JS cũng render link không phải button */
+    #user-account-wrapper a {
+        transition: color 0.2s;
+    }
+    #user-account-wrapper a:hover {
         color: #fff !important;
     }
 
-    #userDropdownBtn .icon {
-        font-size: 0.9rem;
+    /* Hover effect cho nút đã login */
+    #userDropdownBtn:hover {
+        background: rgba(255,255,255,0.15) !important;
+        border-color: rgba(255,255,255,0.3) !important;
     }
 
     /* ── Accent badge (role label) ── */
