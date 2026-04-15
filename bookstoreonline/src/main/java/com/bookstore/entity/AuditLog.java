@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "audit_log")
+@Table(name = "audit_logs")
 public class AuditLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,27 +13,27 @@ public class AuditLog {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "username", nullable = false)
-    private TaiKhoan taiKhoan;
+    private Account account;
 
-    @Column(name = "hanh_dong", nullable = false, length = 255)
-    private String hanhDong;
+    @Column(name = "action", nullable = false, length = 255)
+    private String action;
 
-    @Column(name = "chi_tiet", columnDefinition = "NVARCHAR(MAX)")
-    private String chiTiet;
+    @Column(name = "details", columnDefinition = "NVARCHAR(MAX)")
+    private String details;
 
-    @Column(name = "thoi_diem")
-    private LocalDateTime thoiDiem = LocalDateTime.now();
+    @Column(name = "timestamp")
+    private LocalDateTime timestamp = LocalDateTime.now();
 
     public AuditLog() {}
 
     public Long getLogId() { return logId; }
     public void setLogId(Long logId) { this.logId = logId; }
-    public TaiKhoan getTaiKhoan() { return taiKhoan; }
-    public void setTaiKhoan(TaiKhoan taiKhoan) { this.taiKhoan = taiKhoan; }
-    public String getHanhDong() { return hanhDong; }
-    public void setHanhDong(String hanhDong) { this.hanhDong = hanhDong; }
-    public String getChiTiet() { return chiTiet; }
-    public void setChiTiet(String chiTiet) { this.chiTiet = chiTiet; }
-    public LocalDateTime getThoiDiem() { return thoiDiem; }
-    public void setThoiDiem(LocalDateTime thoiDiem) { this.thoiDiem = thoiDiem; }
+    public Account getAccount() { return account; }
+    public void setAccount(Account account) { this.account = account; }
+    public String getAction() { return action; }
+    public void setAction(String action) { this.action = action; }
+    public String getDetails() { return details; }
+    public void setDetails(String details) { this.details = details; }
+    public LocalDateTime getTimestamp() { return timestamp; }
+    public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
 }

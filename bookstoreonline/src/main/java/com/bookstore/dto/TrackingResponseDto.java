@@ -2,52 +2,52 @@ package com.bookstore.dto;
 
 import java.util.List;
 
-public class TrackingResponseDto {
-    private String maDonHang;
-    private String donViVanChuyen;
-    private String maVanDon;
-    private String trangThaiHienTai;
-    private List<ChiTietTracking> lichSuTrangThai;
+public class TrackingResponseDTO {
+    private String orderId;
+    private String provider;
+    private String trackingNumber;
+    private String status;
+    private List<TrackingDetail> history;
 
-    public TrackingResponseDto() {}
+    public TrackingResponseDTO() {}
 
-    public TrackingResponseDto(String maDonHang, String donViVanChuyen, String maVanDon, String trangThaiHienTai, List<ChiTietTracking> lichSuTrangThai) {
-        this.maDonHang = maDonHang;
-        this.donViVanChuyen = donViVanChuyen;
-        this.maVanDon = maVanDon;
-        this.trangThaiHienTai = trangThaiHienTai;
-        this.lichSuTrangThai = lichSuTrangThai;
+    public TrackingResponseDTO(String orderId, String provider, String trackingNumber, String status, List<TrackingDetail> history) {
+        this.orderId = orderId;
+        this.provider = provider;
+        this.trackingNumber = trackingNumber;
+        this.status = status;
+        this.history = history;
     }
 
-    public String getMaDonHang() { return maDonHang; }
-    public void setMaDonHang(String maDonHang) { this.maDonHang = maDonHang; }
-    public String getDonViVanChuyen() { return donViVanChuyen; }
-    public void setDonViVanChuyen(String donViVanChuyen) { this.donViVanChuyen = donViVanChuyen; }
-    public String getMaVanDon() { return maVanDon; }
-    public void setMaVanDon(String maVanDon) { this.maVanDon = maVanDon; }
-    public String getTrangThaiHienTai() { return trangThaiHienTai; }
-    public void setTrangThaiHienTai(String trangThaiHienTai) { this.trangThaiHienTai = trangThaiHienTai; }
-    public List<ChiTietTracking> getLichSuTrangThai() { return lichSuTrangThai; }
-    public void setLichSuTrangThai(List<ChiTietTracking> lichSuTrangThai) { this.lichSuTrangThai = lichSuTrangThai; }
+    public String getOrderId() { return orderId; }
+    public void setOrderId(String orderId) { this.orderId = orderId; }
+    public String getProvider() { return provider; }
+    public void setProvider(String provider) { this.provider = provider; }
+    public String getTrackingNumber() { return trackingNumber; }
+    public void setTrackingNumber(String trackingNumber) { this.trackingNumber = trackingNumber; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    public List<TrackingDetail> getHistory() { return history; }
+    public void setHistory(List<TrackingDetail> history) { this.history = history; }
 
-    public static class ChiTietTracking {
-        private String thoiGian;
-        private String trangThai;
-        private String viTri;
+    public static class TrackingDetail {
+        private String time;
+        private String status;
+        private String location;
 
-        public ChiTietTracking() {}
+        public TrackingDetail() {}
 
-        public ChiTietTracking(String thoiGian, String trangThai, String viTri) {
-            this.thoiGian = thoiGian;
-            this.trangThai = trangThai;
-            this.viTri = viTri;
+        public TrackingDetail(String time, String status, String location) {
+            this.time = time;
+            this.status = status;
+            this.location = location;
         }
 
-        public String getThoiGian() { return thoiGian; }
-        public void setThoiGian(String thoiGian) { this.thoiGian = thoiGian; }
-        public String getTrangThai() { return trangThai; }
-        public void setTrangThai(String trangThai) { this.trangThai = trangThai; }
-        public String getViTri() { return viTri; }
-        public void setViTri(String viTri) { this.viTri = viTri; }
+        public String getTime() { return time; }
+        public void setTime(String time) { this.time = time; }
+        public String getStatus() { return status; }
+        public void setStatus(String status) { this.status = status; }
+        public String getLocation() { return location; }
+        public void setLocation(String location) { this.location = location; }
     }
 }

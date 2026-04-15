@@ -2,9 +2,9 @@ package com.bookstore.dto;
 
 public class CheckoutRequest {
     private String username;
-    private String maVoucher;
-    private String diaChiGiaoHang;
-    private String phuongThucThanhToan; // E.g., "VNPAY", "COD"
+    private String voucherCode;
+    private String shippingAddress;
+    private String paymentMethod; // E.g., "VNPAY", "COD"
 
     public CheckoutRequest() {
     }
@@ -17,27 +17,27 @@ public class CheckoutRequest {
         this.username = username;
     }
 
-    public String getMaVoucher() {
-        return maVoucher;
+    public String getVoucherCode() {
+        return voucherCode;
     }
 
-    public void setMaVoucher(String maVoucher) {
-        this.maVoucher = maVoucher;
+    public void setVoucherCode(String voucherCode) {
+        this.voucherCode = voucherCode;
     }
 
-    public String getDiaChiGiaoHang() {
-        return diaChiGiaoHang;
+    public String getShippingAddress() {
+        return shippingAddress;
     }
 
-    public void setDiaChiGiaoHang(String diaChiGiaoHang) {
-        this.diaChiGiaoHang = diaChiGiaoHang;
+    public void setShippingAddress(String shippingAddress) {
+        this.shippingAddress = shippingAddress;
     }
 
-    public String getPhuongThucThanhToan() {
-        return phuongThucThanhToan;
+    public String getPaymentMethod() {
+        return paymentMethod;
     }
 
-    public void setPhuongThucThanhToan(String phuongThucThanhToan) {
-        this.phuongThucThanhToan = phuongThucThanhToan;
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 }

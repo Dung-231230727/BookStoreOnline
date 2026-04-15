@@ -1,9 +1,13 @@
 package com.bookstore.service;
 
+import com.bookstore.dto.ChangePasswordRequest;
+import com.bookstore.dto.ForgotPasswordRequest;
 import com.bookstore.dto.LoginRequest;
 import com.bookstore.dto.LoginResponse;
-import com.bookstore.entity.TaiKhoan;
-import com.bookstore.repository.TaiKhoanRepository;
+import com.bookstore.entity.Account;
+import com.bookstore.repository.AccountRepository;
+import com.bookstore.repository.CustomerRepository;
+import com.bookstore.repository.StaffRepository;
 import com.bookstore.security.JwtTokenProvider;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,23 +20,31 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AuthService {
 
-    private final TaiKhoanRepository taiKhoanRepository;
+    private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
+    private final AccountService accountService;
+    private final CustomerRepository customerRepository;
+    private final StaffRepository staffRepository;
 
-    public AuthService(TaiKhoanRepository taiKhoanRepository, 
+    public AuthService(AccountRepository accountRepository, 
                         PasswordEncoder passwordEncoder, 
                         AuthenticationManager authenticationManager, 
-                        JwtTokenProvider tokenProvider) {
-        this.taiKhoanRepository = taiKhoanRepository;
+                        JwtTokenProvider tokenProvider,
+                        AccountService accountService,
+                        CustomerRepository customerRepository,
+                        StaffRepository staffRepository) {
+        this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
+        this.accountService = accountService;
+        this.customerRepository = customerRepository;
+        this.staffRepository = staffRepository;
     }
 
     public LoginResponse login(LoginRequest request) {
-        // 1. Xác thực bằng Spring Security
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
@@ -40,38 +52,58 @@ public class AuthService {
                 )
         );
 
-        // 2. Lưu vào Security Context
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        // 3. Tạo JWT Token
         String jwt = tokenProvider.generateToken(authentication);
 
-        // 4. Lấy thông tin tài khoản để trả về
-        TaiKhoan taiKhoan = taiKhoanRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("Tài khoản không tồn tại"));
+        Account account = accountRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("Account does not exist"));
 
-        return new LoginResponse(taiKhoan.getUsername(), taiKhoan.getRole(), jwt);
+        LoginResponse response = new LoginResponse(account.getUsername(), account.getRole(), jwt, account.getUsername());
+        
+        // Populate profile info based on role
+        if ("CUSTOMER".equalsIgnoreCase(account.getRole())) {
+            customerRepository.findByAccount_Username(account.getUsername()).ifPresent(c -> {
+                response.setFullName(c.getFullName());
+                response.setPhone(c.getPhone());
+                response.setAddress(c.getShippingAddress());
+            });
+        } else {
+            staffRepository.findByAccount_Username(account.getUsername()).ifPresent(s -> {
+                response.setFullName(s.getFullName());
+                response.setPhone(s.getPhone());
+            });
+        }
+
+        return response;
     }
 
     @Transactional
     public LoginResponse register(LoginRequest request) {
-        // 1. Kiểm tra username đã tồn tại chưa
-        if (taiKhoanRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new IllegalArgumentException("Username đã tồn tại");
+        // 1. Check if username already exists
+        if (accountRepository.findByUsername(request.getUsername()).isPresent()) {
+            throw new IllegalArgumentException("Username already exists");
         }
 
-        // 2. Tạo tài khoản mới với vai trò Khách hàng (CUSTOMER)
-        TaiKhoan taiKhoan = new TaiKhoan();
-        taiKhoan.setUsername(request.getUsername());
-        // MÃ HÓA MẬT KHẨU TRƯỚC KHI LƯU
-        taiKhoan.setPassword(passwordEncoder.encode(request.getPassword()));
-        taiKhoan.setRole("CUSTOMER");
-        taiKhoan.setTrangThai(true);
+        // 2. Create new account with CUSTOMER role
+        Account account = new Account();
+        account.setUsername(request.getUsername());
+        account.setPassword(passwordEncoder.encode(request.getPassword()));
+        account.setRole("CUSTOMER");
+        account.setIsActive(true);
 
-        // 3. Lưu vào database
-        taiKhoanRepository.save(taiKhoan);
+        // 3. Save to database
+        accountRepository.save(account);
 
-        // 4. Trả về thông tin đăng ký (không trả về token ở bước này, hoặc có thể login luôn)
-        return new LoginResponse(taiKhoan.getUsername(), taiKhoan.getRole(), null);
+        // 4. Return registration info
+        return new LoginResponse(account.getUsername(), account.getRole(), null, account.getUsername());
+    }
+
+    public void changePassword(ChangePasswordRequest request) {
+        accountService.changePassword(request);
+    }
+
+    public void forgotPassword(ForgotPasswordRequest request) {
+        // Simulation for now
+        System.out.println(">>> Request Forgot Password for email: " + request.getEmail());
     }
 }

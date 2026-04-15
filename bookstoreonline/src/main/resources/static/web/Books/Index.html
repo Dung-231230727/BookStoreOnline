@@ -9,7 +9,7 @@
             </div>
             <div class="col-md-6" data-aos="fade-left">
                 <div class="d-flex justify-content-md-end gap-3 flex-wrap">
-                    <select class="form-select border-0 shadow-sm rounded-pill px-4 py-2" style="width: 200px">
+                    <select class="form-select border-0 shadow-sm rounded-pill px-4 py-2" id="books-sort-filter" style="width: 200px" onchange="books.handleSort(this.value)">
                         <option value="newest">Mới nhất</option>
                         <option value="price-asc">Giá tăng dần</option>
                         <option value="price-desc">Giá giảm dần</option>
@@ -26,11 +26,30 @@
                         <div class="card-body p-4">
                             <h5 class="fw-bold mb-4 font-serif border-bottom pb-2">Danh mục</h5>
                             <ul class="list-unstyled d-grid gap-3" id="categories-filter-list">
-                                <!-- Categories load dynamically -->
-                                <li><a href="javascript:void(0)" class="text-decoration-none text-muted hvr-accent d-flex justify-content-between">Văn học</a></li>
-                                <li><a href="javascript:void(0)" class="text-decoration-none text-muted hvr-accent d-flex justify-content-between">Kinh tế</a></li>
-                                <li><a href="javascript:void(0)" class="text-decoration-none text-muted hvr-accent d-flex justify-content-between">Kỹ năng</a></li>
+                                <!-- Categories load dynamically via categories.js or books.js -->
+                                 <li class="small text-muted text-center py-3"><div class="spinner-border spinner-border-sm"></div></li>
                             </ul>
+                        </div>
+                    </div>
+
+                    <!-- Price Filter (Optional extension) -->
+                    <div class="card border-0 shadow-sm rounded-4">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-3 font-serif border-bottom pb-2">Khoảng giá</h5>
+                            <div class="filter-price">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="price-range" id="price1" onclick="books.loadByPriceRange(0, 100000)">
+                                    <label class="form-check-label small" for="price1">Dưới 100,000đ</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="price-range" id="price2" onclick="books.loadByPriceRange(100000, 300000)">
+                                    <label class="form-check-label small" for="price2">100,000đ - 300,000đ</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="price-range" id="price3" onclick="books.loadByPriceRange(300000, 10000000)">
+                                    <label class="form-check-label small" for="price3">Trên 300,000đ</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -40,16 +59,16 @@
             <div class="col-lg-9" data-aos="fade-up" data-aos-delay="100">
                 <div class="row g-4" id="books-grid">
                     <!-- Loaded via books.js -->
-                    <div class="col-12 text-center py-5"><div class="spinner-border text-accent"></div></div>
+                    <div class="col-12 text-center py-5">
+                        <div class="spinner-border text-accent"></div>
+                        <div class="mt-3 text-muted">Đang tải danh sách sách...</div>
+                    </div>
                 </div>
 
                 <!-- Pagination -->
                 <nav class="mt-5 pt-4">
-                    <ul class="pagination justify-content-center border-0 gap-2">
-                        <li class="page-item"><a class="page-link rounded-circle border-0 shadow-sm p-3 hvr-accent" href="#"><i class="icon icon-arrow-left"></i></a></li>
-                        <li class="page-item active"><a class="page-link rounded-circle border-0 shadow-sm p-3 px-4" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link rounded-circle border-0 shadow-sm p-3 px-4" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link rounded-circle border-0 shadow-sm p-3 hvr-accent" href="#"><i class="icon icon-arrow-right"></i></a></li>
+                    <ul class="pagination justify-content-center border-0 gap-2" id="books-pagination">
+                        <!-- Populated by JS -->
                     </ul>
                 </nav>
             </div>
@@ -57,8 +76,6 @@
     </div>
 </section>
 
-<style>
-    .pagination .page-link { color: var(--dark-color); }
-    .pagination .page-item.active .page-link { background-color: var(--accent-color); border-color: var(--accent-color); color: white; }
-    .sidebar .hvr-accent:hover span { color: var(--accent-color); }
-</style>
+<script>
+    if (typeof AOS !== 'undefined') AOS.refresh();
+</script>

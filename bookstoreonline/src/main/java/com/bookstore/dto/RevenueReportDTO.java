@@ -10,16 +10,16 @@ public class RevenueReportDTO {
     @Schema(example = "42")
     private long totalOrders;
 
-    @Schema(example = "HOAN_TAT")
-    private String statusCheck;
+    @Schema(example = "COMPLETED")
+    private String orderStatus;
 
-    public RevenueReportDTO(BigDecimal totalRevenue, long totalOrders, String statusCheck) {
+    public RevenueReportDTO(BigDecimal totalRevenue, long totalOrders, String orderStatus) {
         this.totalRevenue = totalRevenue != null ? totalRevenue : BigDecimal.ZERO;
         this.totalOrders = totalOrders;
-        this.statusCheck = statusCheck;
+        this.orderStatus = orderStatus;
     }
 
     public BigDecimal getTotalRevenue() { return totalRevenue; }
     public long getTotalOrders() { return totalOrders; }
-    public String getStatusCheck() { return statusCheck; }
+    public String getOrderStatus() { return orderStatus; }
 }

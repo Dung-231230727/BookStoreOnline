@@ -146,7 +146,7 @@ const layout = {
                 min-width:200px; background:#fff; border-radius:12px; z-index:9999;
                 box-shadow:0 8px 30px rgba(0,0,0,0.12); padding:6px 0; list-style:none; margin:0;">
                 <li style="padding:10px 14px; border-bottom:1px solid #f0f0f0; margin-bottom:4px;">
-                    <div style="font-weight:700; font-size:0.85rem; color:#2F2F2F;">${user.hoTen || user.username}</div>
+                    <div style="font-weight:700; font-size:0.85rem; color:#2F2F2F;">${user.fullName || user.username}</div>
                     <span class="badge-role">${user.role || 'CUSTOMER'}</span>
                 </li>
                 ${menuItems}
@@ -228,7 +228,7 @@ const layout = {
                 }
                 break;
             case "Support/Index":
-                hoTro.loadList();
+                support.loadAdminTickets();
                 break;
             case "Users/Admin/Index":
                 users.loadAdminList();

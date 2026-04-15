@@ -1,0 +1,604 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------< com.bookstore:bookstoreonline >--------------------
+[INFO] Building bookstoreonline 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.3.2:clean (default-clean) @ bookstoreonline ---
+[INFO] Deleting D:\WorkSpace\MPJ\BookStoreOnline\bookstoreonline\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ bookstoreonline ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 185 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ bookstoreonline ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 154 source files with javac [debug parameters release 21] to target\classes
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/dto/AccountProfileDTO.java:[7,8] class UserProfileDTO is public, should be declared in a file named UserProfileDTO.java
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/dto/ExportOrderRequestDTO.java:[3,8] class ExportRequestDto is public, should be declared in a file named ExportRequestDto.java
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/dto/PurchaseOrderRequestDTO.java:[5,8] class ImportRequestDto is public, should be declared in a file named ImportRequestDto.java
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/dto/PurchaseOrderResponseDTO.java:[5,8] class ImportResponseDto is public, should be declared in a file named ImportResponseDto.java
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/dto/SupplierDTO.java:[3,8] class NhaCungCapDto is public, should be declared in a file named NhaCungCapDto.java
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/SupplierService.java:[13,8] class NhaCungCapService is public, should be declared in a file named NhaCungCapService.java
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/SupportTicketService.java:[6,8] interface HoTroService is public, should be declared in a file named HoTroService.java
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/SupportTicketServiceImpl.java:[15,8] class HoTroServiceImpl is public, should be declared in a file named HoTroServiceImpl.java
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/config/DataInitializer.java:[3,28] cannot find symbol
+  symbol:   class NhanVien
+  location: package com.bookstore.entity
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/config/DataInitializer.java:[4,28] cannot find symbol
+  symbol:   class TaiKhoan
+  location: package com.bookstore.entity
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/config/DataInitializer.java:[5,32] cannot find symbol
+  symbol:   class NhanVienRepository
+  location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/config/DataInitializer.java:[6,32] cannot find symbol
+  symbol:   class TaiKhoanRepository
+  location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/config/DataInitializer.java:[15,19] cannot find symbol
+  symbol:   class TaiKhoanRepository
+  location: class com.bookstore.config.DataInitializer
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/config/DataInitializer.java:[16,19] cannot find symbol
+  symbol:   class NhanVienRepository
+  location: class com.bookstore.config.DataInitializer
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/config/DataInitializer.java:[19,28] cannot find symbol
+  symbol:   class TaiKhoanRepository
+  location: class com.bookstore.config.DataInitializer
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/config/DataInitializer.java:[20,28] cannot find symbol
+  symbol:   class NhanVienRepository
+  location: class com.bookstore.config.DataInitializer
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/security/CustomUserDetailsService.java:[3,28] cannot find symbol
+  symbol:   class TaiKhoan
+  location: package com.bookstore.entity
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/security/CustomUserDetailsService.java:[4,32] cannot find symbol
+  symbol:   class TaiKhoanRepository
+  location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/security/CustomUserDetailsService.java:[17,19] cannot find symbol
+  symbol:   class TaiKhoanRepository
+  location: class com.bookstore.security.CustomUserDetailsService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/security/CustomUserDetailsService.java:[19,37] cannot find symbol
+  symbol:   class TaiKhoanRepository
+  location: class com.bookstore.security.CustomUserDetailsService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[6,28] cannot find symbol
+  symbol:   class Sach
+  location: package com.bookstore.entity
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[8,32] cannot find symbol
+  symbol:   class ChiTietDonHangRepository
+  location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[9,32] cannot find symbol
+  symbol:   class DonHangRepository
+  location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[10,32] cannot find symbol
+  symbol:   class SachRepository
+  location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[24,19] cannot find symbol
+  symbol:   class DonHangRepository
+  location: class com.bookstore.service.AdminDashboardService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[25,19] cannot find symbol
+  symbol:   class ChiTietDonHangRepository
+  location: class com.bookstore.service.AdminDashboardService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[27,19] cannot find symbol
+  symbol:   class SachRepository
+  location: class com.bookstore.service.AdminDashboardService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[28,43] cannot find symbol
+  symbol:   class KhachHangRepository
+  location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[29,43] cannot find symbol
+  symbol:   class KhoHangRepository
+  location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[31,34] cannot find symbol
+  symbol:   class DonHangRepository
+  location: class com.bookstore.service.AdminDashboardService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[32,34] cannot find symbol
+  symbol:   class ChiTietDonHangRepository
+  location: class com.bookstore.service.AdminDashboardService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[34,34] cannot find symbol
+  symbol:   class SachRepository
+  location: class com.bookstore.service.AdminDashboardService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[35,58] cannot find symbol
+  symbol:   class KhachHangRepository
+  location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[36,58] cannot find symbol
+  symbol:   class KhoHangRepository
+  location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[6,28] cannot find symbol
+  symbol:   class KhachHang
+  location: package com.bookstore.entity
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[7,28] cannot find symbol
+  symbol:   class NhanVien
+  location: package com.bookstore.entity
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[8,28] cannot find symbol
+  symbol:   class TaiKhoan
+  location: package com.bookstore.entity
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[10,32] cannot find symbol
+  symbol:   class NhanVienRepository
+  location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[11,32] cannot find symbol
+  symbol:   class TaiKhoanRepository
+  location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[12,32] cannot find symbol
+  symbol:   class KhachHangRepository
+  location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[25,19] cannot find symbol
+  symbol:   class TaiKhoanRepository
+  location: class com.bookstore.service.AdminService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[26,19] cannot find symbol
+  symbol:   class NhanVienRepository
+  location: class com.bookstore.service.AdminService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[27,19] cannot find symbol
+  symbol:   class KhachHangRepository
+  location: class com.bookstore.service.AdminService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[30,25] cannot find symbol
+  symbol:   class TaiKhoanRepository
+  location: class com.bookstore.service.AdminService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[31,25] cannot find symbol
+  symbol:   class NhanVienRepository
+  location: class com.bookstore.service.AdminService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[32,25] cannot find symbol
+  symbol:   class KhachHangRepository
+  location: class com.bookstore.service.AdminService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[103,48] cannot find symbol
+  symbol:   class TaiKhoan
+  location: class com.bookstore.service.AdminService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[103,79] cannot find symbol
+  symbol:   class KhachHang
+  location: class com.bookstore.service.AdminService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[103,115] cannot find symbol
+  symbol:   class NhanVien
+  location: class com.bookstore.service.AdminService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AuthService.java:[7,28] cannot find symbol
+  symbol:   class TaiKhoan
+  location: package com.bookstore.entity
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AuthService.java:[8,32] cannot find symbol
+  symbol:   class TaiKhoanRepository
+  location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AuthService.java:[21,19] cannot find symbol
+  symbol:   class TaiKhoanRepository
+  location: class com.bookstore.service.AuthService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AuthService.java:[25,19] cannot find symbol
+  symbol:   class UserService
+  location: class com.bookstore.service.AuthService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AuthService.java:[27,24] cannot find symbol
+  symbol:   class TaiKhoanRepository
+  location: class com.bookstore.service.AuthService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AuthService.java:[31,25] cannot find symbol
+  symbol:   class UserService
+  location: class com.bookstore.service.AuthService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DanhMucController.java:[4,25] cannot find symbol
+  symbol:   class DanhMucDTO
+  location: package com.bookstore.dto
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DanhMucController.java:[5,25] cannot find symbol
+  symbol:   class DanhMucRequest
+  location: package com.bookstore.dto
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DanhMucController.java:[6,29] cannot find symbol
+  symbol:   class DanhMucService
+  location: package com.bookstore.service
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DanhMucController.java:[21,19] cannot find symbol
+  symbol:   class DanhMucService
+  location: class com.bookstore.controller.DanhMucController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DanhMucController.java:[24,30] cannot find symbol
+  symbol:   class DanhMucService
+  location: class com.bookstore.controller.DanhMucController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DanhMucController.java:[30,44] cannot find symbol
+  symbol:   class DanhMucDTO
+  location: class com.bookstore.controller.DanhMucController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DanhMucController.java:[38,87] cannot find symbol
+  symbol:   class DanhMucRequest
+  location: class com.bookstore.controller.DanhMucController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DanhMucController.java:[38,39] cannot find symbol
+  symbol:   class DanhMucDTO
+  location: class com.bookstore.controller.DanhMucController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DanhMucController.java:[48,33] cannot find symbol
+  symbol:   class DanhMucRequest
+  location: class com.bookstore.controller.DanhMucController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DanhMucController.java:[46,39] cannot find symbol
+  symbol:   class DanhMucDTO
+  location: class com.bookstore.controller.DanhMucController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DonHangController.java:[6,25] cannot find symbol
+  symbol:   class DonHangResponseDTO
+  location: package com.bookstore.dto
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DonHangController.java:[7,29] cannot find symbol
+  symbol:   class DonHangService
+  location: package com.bookstore.service
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DonHangController.java:[21,19] cannot find symbol
+  symbol:   class DonHangService
+  location: class com.bookstore.controller.DonHangController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DonHangController.java:[23,30] cannot find symbol
+  symbol:   class DonHangService
+  location: class com.bookstore.controller.DonHangController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DonHangController.java:[29,24] cannot find symbol
+  symbol:   class DonHangResponseDTO
+  location: class com.bookstore.controller.DonHangController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DonHangController.java:[35,29] cannot find symbol
+  symbol:   class DonHangResponseDTO
+  location: class com.bookstore.controller.DonHangController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DonHangController.java:[41,24] cannot find symbol
+  symbol:   class DonHangResponseDTO
+  location: class com.bookstore.controller.DonHangController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DonHangController.java:[55,29] cannot find symbol
+  symbol:   class DonHangResponseDTO
+  location: class com.bookstore.controller.DonHangController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DonHangController.java:[70,24] cannot find symbol
+  symbol:   class DonHangResponseDTO
+  location: class com.bookstore.controller.DonHangController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/GioHangController.java:[4,25] cannot find symbol
+  symbol:   class GioHangDTO
+  location: package com.bookstore.dto
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/GioHangController.java:[5,29] cannot find symbol
+  symbol:   class GioHangService
+  location: package com.bookstore.service
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/GioHangController.java:[18,19] cannot find symbol
+  symbol:   class GioHangService
+  location: class com.bookstore.controller.GioHangController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/GioHangController.java:[20,30] cannot find symbol
+  symbol:   class GioHangService
+  location: class com.bookstore.controller.GioHangController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/GioHangController.java:[26,29] cannot find symbol
+  symbol:   class GioHangDTO
+  location: class com.bookstore.controller.GioHangController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/HoTroController.java:[4,25] cannot find symbol
+  symbol:   class HoTroDTO
+  location: package com.bookstore.dto
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/SupportTicketService.java:[3,25] cannot find symbol
+  symbol:   class HoTroDTO
+  location: package com.bookstore.dto
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/HoTroController.java:[26,29] cannot find symbol
+  symbol:   class HoTroDTO
+  location: class com.bookstore.controller.HoTroController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/HoTroController.java:[32,29] cannot find symbol
+  symbol:   class HoTroDTO
+  location: class com.bookstore.controller.HoTroController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/SupportTicketService.java:[7,10] cannot find symbol
+  symbol:   class HoTroDTO
+  location: interface com.bookstore.service.HoTroService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/SupportTicketService.java:[8,10] cannot find symbol
+  symbol:   class HoTroDTO
+  location: interface com.bookstore.service.HoTroService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/KhoHangController.java:[4,29] cannot find symbol
+  symbol:   class KhoHangService
+  location: package com.bookstore.service
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/KhoHangController.java:[14,19] cannot find symbol
+  symbol:   class KhoHangService
+  location: class com.bookstore.controller.KhoHangController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/KhoHangController.java:[16,30] cannot find symbol
+  symbol:   class KhoHangService
+  location: class com.bookstore.controller.KhoHangController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/dto/PurchaseOrderRequestDTO.java:[8,18] cannot find symbol
+  symbol:   class ChiTietImportRequest
+  location: class com.bookstore.dto.ImportRequestDto
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/dto/PurchaseOrderRequestDTO.java:[12,69] cannot find symbol
+  symbol:   class ChiTietImportRequest
+  location: class com.bookstore.dto.ImportRequestDto
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/dto/PurchaseOrderRequestDTO.java:[22,17] cannot find symbol
+  symbol:   class ChiTietImportRequest
+  location: class com.bookstore.dto.ImportRequestDto
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/dto/PurchaseOrderRequestDTO.java:[23,37] cannot find symbol
+  symbol:   class ChiTietImportRequest
+  location: class com.bookstore.dto.ImportRequestDto
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/NguoiDungController.java:[8,29] cannot find symbol
+  symbol:   class UserService
+  location: package com.bookstore.service
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/NguoiDungController.java:[22,19] cannot find symbol
+  symbol:   class UserService
+  location: class com.bookstore.controller.NguoiDungController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/NguoiDungController.java:[24,32] cannot find symbol
+  symbol:   class UserService
+  location: class com.bookstore.controller.NguoiDungController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/NxbController.java:[4,25] cannot find symbol
+  symbol:   class NxbDTO
+  location: package com.bookstore.dto
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/NxbController.java:[5,29] cannot find symbol
+  symbol:   class NxbService
+  location: package com.bookstore.service
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/NxbController.java:[20,19] cannot find symbol
+  symbol:   class NxbService
+  location: class com.bookstore.controller.NxbController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/NxbController.java:[22,26] cannot find symbol
+  symbol:   class NxbService
+  location: class com.bookstore.controller.NxbController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/NxbController.java:[28,44] cannot find symbol
+  symbol:   class NxbDTO
+  location: class com.bookstore.controller.NxbController
+[INFO] 100 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  2.666 s
+[INFO] Finished at: 2026-04-15T18:08:54+07:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile (default-compile) on project bookstoreonline: Compilation failure: Compilation failure: 
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/dto/AccountProfileDTO.java:[7,8] class UserProfileDTO is public, should be declared in a file named UserProfileDTO.java
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/dto/ExportOrderRequestDTO.java:[3,8] class ExportRequestDto is public, should be declared in a file named ExportRequestDto.java
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/dto/PurchaseOrderRequestDTO.java:[5,8] class ImportRequestDto is public, should be declared in a file named ImportRequestDto.java
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/dto/PurchaseOrderResponseDTO.java:[5,8] class ImportResponseDto is public, should be declared in a file named ImportResponseDto.java
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/dto/SupplierDTO.java:[3,8] class NhaCungCapDto is public, should be declared in a file named NhaCungCapDto.java
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/SupplierService.java:[13,8] class NhaCungCapService is public, should be declared in a file named NhaCungCapService.java
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/SupportTicketService.java:[6,8] interface HoTroService is public, should be declared in a file named HoTroService.java
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/SupportTicketServiceImpl.java:[15,8] class HoTroServiceImpl is public, should be declared in a file named HoTroServiceImpl.java
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/config/DataInitializer.java:[3,28] cannot find symbol
+[ERROR]   symbol:   class NhanVien
+[ERROR]   location: package com.bookstore.entity
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/config/DataInitializer.java:[4,28] cannot find symbol
+[ERROR]   symbol:   class TaiKhoan
+[ERROR]   location: package com.bookstore.entity
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/config/DataInitializer.java:[5,32] cannot find symbol
+[ERROR]   symbol:   class NhanVienRepository
+[ERROR]   location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/config/DataInitializer.java:[6,32] cannot find symbol
+[ERROR]   symbol:   class TaiKhoanRepository
+[ERROR]   location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/config/DataInitializer.java:[15,19] cannot find symbol
+[ERROR]   symbol:   class TaiKhoanRepository
+[ERROR]   location: class com.bookstore.config.DataInitializer
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/config/DataInitializer.java:[16,19] cannot find symbol
+[ERROR]   symbol:   class NhanVienRepository
+[ERROR]   location: class com.bookstore.config.DataInitializer
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/config/DataInitializer.java:[19,28] cannot find symbol
+[ERROR]   symbol:   class TaiKhoanRepository
+[ERROR]   location: class com.bookstore.config.DataInitializer
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/config/DataInitializer.java:[20,28] cannot find symbol
+[ERROR]   symbol:   class NhanVienRepository
+[ERROR]   location: class com.bookstore.config.DataInitializer
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/security/CustomUserDetailsService.java:[3,28] cannot find symbol
+[ERROR]   symbol:   class TaiKhoan
+[ERROR]   location: package com.bookstore.entity
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/security/CustomUserDetailsService.java:[4,32] cannot find symbol
+[ERROR]   symbol:   class TaiKhoanRepository
+[ERROR]   location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/security/CustomUserDetailsService.java:[17,19] cannot find symbol
+[ERROR]   symbol:   class TaiKhoanRepository
+[ERROR]   location: class com.bookstore.security.CustomUserDetailsService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/security/CustomUserDetailsService.java:[19,37] cannot find symbol
+[ERROR]   symbol:   class TaiKhoanRepository
+[ERROR]   location: class com.bookstore.security.CustomUserDetailsService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[6,28] cannot find symbol
+[ERROR]   symbol:   class Sach
+[ERROR]   location: package com.bookstore.entity
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[8,32] cannot find symbol
+[ERROR]   symbol:   class ChiTietDonHangRepository
+[ERROR]   location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[9,32] cannot find symbol
+[ERROR]   symbol:   class DonHangRepository
+[ERROR]   location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[10,32] cannot find symbol
+[ERROR]   symbol:   class SachRepository
+[ERROR]   location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[24,19] cannot find symbol
+[ERROR]   symbol:   class DonHangRepository
+[ERROR]   location: class com.bookstore.service.AdminDashboardService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[25,19] cannot find symbol
+[ERROR]   symbol:   class ChiTietDonHangRepository
+[ERROR]   location: class com.bookstore.service.AdminDashboardService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[27,19] cannot find symbol
+[ERROR]   symbol:   class SachRepository
+[ERROR]   location: class com.bookstore.service.AdminDashboardService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[28,43] cannot find symbol
+[ERROR]   symbol:   class KhachHangRepository
+[ERROR]   location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[29,43] cannot find symbol
+[ERROR]   symbol:   class KhoHangRepository
+[ERROR]   location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[31,34] cannot find symbol
+[ERROR]   symbol:   class DonHangRepository
+[ERROR]   location: class com.bookstore.service.AdminDashboardService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[32,34] cannot find symbol
+[ERROR]   symbol:   class ChiTietDonHangRepository
+[ERROR]   location: class com.bookstore.service.AdminDashboardService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[34,34] cannot find symbol
+[ERROR]   symbol:   class SachRepository
+[ERROR]   location: class com.bookstore.service.AdminDashboardService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[35,58] cannot find symbol
+[ERROR]   symbol:   class KhachHangRepository
+[ERROR]   location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminDashboardService.java:[36,58] cannot find symbol
+[ERROR]   symbol:   class KhoHangRepository
+[ERROR]   location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[6,28] cannot find symbol
+[ERROR]   symbol:   class KhachHang
+[ERROR]   location: package com.bookstore.entity
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[7,28] cannot find symbol
+[ERROR]   symbol:   class NhanVien
+[ERROR]   location: package com.bookstore.entity
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[8,28] cannot find symbol
+[ERROR]   symbol:   class TaiKhoan
+[ERROR]   location: package com.bookstore.entity
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[10,32] cannot find symbol
+[ERROR]   symbol:   class NhanVienRepository
+[ERROR]   location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[11,32] cannot find symbol
+[ERROR]   symbol:   class TaiKhoanRepository
+[ERROR]   location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[12,32] cannot find symbol
+[ERROR]   symbol:   class KhachHangRepository
+[ERROR]   location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[25,19] cannot find symbol
+[ERROR]   symbol:   class TaiKhoanRepository
+[ERROR]   location: class com.bookstore.service.AdminService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[26,19] cannot find symbol
+[ERROR]   symbol:   class NhanVienRepository
+[ERROR]   location: class com.bookstore.service.AdminService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[27,19] cannot find symbol
+[ERROR]   symbol:   class KhachHangRepository
+[ERROR]   location: class com.bookstore.service.AdminService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[30,25] cannot find symbol
+[ERROR]   symbol:   class TaiKhoanRepository
+[ERROR]   location: class com.bookstore.service.AdminService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[31,25] cannot find symbol
+[ERROR]   symbol:   class NhanVienRepository
+[ERROR]   location: class com.bookstore.service.AdminService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[32,25] cannot find symbol
+[ERROR]   symbol:   class KhachHangRepository
+[ERROR]   location: class com.bookstore.service.AdminService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[103,48] cannot find symbol
+[ERROR]   symbol:   class TaiKhoan
+[ERROR]   location: class com.bookstore.service.AdminService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[103,79] cannot find symbol
+[ERROR]   symbol:   class KhachHang
+[ERROR]   location: class com.bookstore.service.AdminService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AdminService.java:[103,115] cannot find symbol
+[ERROR]   symbol:   class NhanVien
+[ERROR]   location: class com.bookstore.service.AdminService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AuthService.java:[7,28] cannot find symbol
+[ERROR]   symbol:   class TaiKhoan
+[ERROR]   location: package com.bookstore.entity
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AuthService.java:[8,32] cannot find symbol
+[ERROR]   symbol:   class TaiKhoanRepository
+[ERROR]   location: package com.bookstore.repository
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AuthService.java:[21,19] cannot find symbol
+[ERROR]   symbol:   class TaiKhoanRepository
+[ERROR]   location: class com.bookstore.service.AuthService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AuthService.java:[25,19] cannot find symbol
+[ERROR]   symbol:   class UserService
+[ERROR]   location: class com.bookstore.service.AuthService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AuthService.java:[27,24] cannot find symbol
+[ERROR]   symbol:   class TaiKhoanRepository
+[ERROR]   location: class com.bookstore.service.AuthService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/AuthService.java:[31,25] cannot find symbol
+[ERROR]   symbol:   class UserService
+[ERROR]   location: class com.bookstore.service.AuthService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DanhMucController.java:[4,25] cannot find symbol
+[ERROR]   symbol:   class DanhMucDTO
+[ERROR]   location: package com.bookstore.dto
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DanhMucController.java:[5,25] cannot find symbol
+[ERROR]   symbol:   class DanhMucRequest
+[ERROR]   location: package com.bookstore.dto
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DanhMucController.java:[6,29] cannot find symbol
+[ERROR]   symbol:   class DanhMucService
+[ERROR]   location: package com.bookstore.service
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DanhMucController.java:[21,19] cannot find symbol
+[ERROR]   symbol:   class DanhMucService
+[ERROR]   location: class com.bookstore.controller.DanhMucController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DanhMucController.java:[24,30] cannot find symbol
+[ERROR]   symbol:   class DanhMucService
+[ERROR]   location: class com.bookstore.controller.DanhMucController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DanhMucController.java:[30,44] cannot find symbol
+[ERROR]   symbol:   class DanhMucDTO
+[ERROR]   location: class com.bookstore.controller.DanhMucController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DanhMucController.java:[38,87] cannot find symbol
+[ERROR]   symbol:   class DanhMucRequest
+[ERROR]   location: class com.bookstore.controller.DanhMucController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DanhMucController.java:[38,39] cannot find symbol
+[ERROR]   symbol:   class DanhMucDTO
+[ERROR]   location: class com.bookstore.controller.DanhMucController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DanhMucController.java:[48,33] cannot find symbol
+[ERROR]   symbol:   class DanhMucRequest
+[ERROR]   location: class com.bookstore.controller.DanhMucController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DanhMucController.java:[46,39] cannot find symbol
+[ERROR]   symbol:   class DanhMucDTO
+[ERROR]   location: class com.bookstore.controller.DanhMucController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DonHangController.java:[6,25] cannot find symbol
+[ERROR]   symbol:   class DonHangResponseDTO
+[ERROR]   location: package com.bookstore.dto
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DonHangController.java:[7,29] cannot find symbol
+[ERROR]   symbol:   class DonHangService
+[ERROR]   location: package com.bookstore.service
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DonHangController.java:[21,19] cannot find symbol
+[ERROR]   symbol:   class DonHangService
+[ERROR]   location: class com.bookstore.controller.DonHangController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DonHangController.java:[23,30] cannot find symbol
+[ERROR]   symbol:   class DonHangService
+[ERROR]   location: class com.bookstore.controller.DonHangController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DonHangController.java:[29,24] cannot find symbol
+[ERROR]   symbol:   class DonHangResponseDTO
+[ERROR]   location: class com.bookstore.controller.DonHangController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DonHangController.java:[35,29] cannot find symbol
+[ERROR]   symbol:   class DonHangResponseDTO
+[ERROR]   location: class com.bookstore.controller.DonHangController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DonHangController.java:[41,24] cannot find symbol
+[ERROR]   symbol:   class DonHangResponseDTO
+[ERROR]   location: class com.bookstore.controller.DonHangController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DonHangController.java:[55,29] cannot find symbol
+[ERROR]   symbol:   class DonHangResponseDTO
+[ERROR]   location: class com.bookstore.controller.DonHangController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/DonHangController.java:[70,24] cannot find symbol
+[ERROR]   symbol:   class DonHangResponseDTO
+[ERROR]   location: class com.bookstore.controller.DonHangController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/GioHangController.java:[4,25] cannot find symbol
+[ERROR]   symbol:   class GioHangDTO
+[ERROR]   location: package com.bookstore.dto
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/GioHangController.java:[5,29] cannot find symbol
+[ERROR]   symbol:   class GioHangService
+[ERROR]   location: package com.bookstore.service
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/GioHangController.java:[18,19] cannot find symbol
+[ERROR]   symbol:   class GioHangService
+[ERROR]   location: class com.bookstore.controller.GioHangController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/GioHangController.java:[20,30] cannot find symbol
+[ERROR]   symbol:   class GioHangService
+[ERROR]   location: class com.bookstore.controller.GioHangController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/GioHangController.java:[26,29] cannot find symbol
+[ERROR]   symbol:   class GioHangDTO
+[ERROR]   location: class com.bookstore.controller.GioHangController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/HoTroController.java:[4,25] cannot find symbol
+[ERROR]   symbol:   class HoTroDTO
+[ERROR]   location: package com.bookstore.dto
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/SupportTicketService.java:[3,25] cannot find symbol
+[ERROR]   symbol:   class HoTroDTO
+[ERROR]   location: package com.bookstore.dto
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/HoTroController.java:[26,29] cannot find symbol
+[ERROR]   symbol:   class HoTroDTO
+[ERROR]   location: class com.bookstore.controller.HoTroController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/HoTroController.java:[32,29] cannot find symbol
+[ERROR]   symbol:   class HoTroDTO
+[ERROR]   location: class com.bookstore.controller.HoTroController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/SupportTicketService.java:[7,10] cannot find symbol
+[ERROR]   symbol:   class HoTroDTO
+[ERROR]   location: interface com.bookstore.service.HoTroService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/service/SupportTicketService.java:[8,10] cannot find symbol
+[ERROR]   symbol:   class HoTroDTO
+[ERROR]   location: interface com.bookstore.service.HoTroService
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/KhoHangController.java:[4,29] cannot find symbol
+[ERROR]   symbol:   class KhoHangService
+[ERROR]   location: package com.bookstore.service
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/KhoHangController.java:[14,19] cannot find symbol
+[ERROR]   symbol:   class KhoHangService
+[ERROR]   location: class com.bookstore.controller.KhoHangController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/KhoHangController.java:[16,30] cannot find symbol
+[ERROR]   symbol:   class KhoHangService
+[ERROR]   location: class com.bookstore.controller.KhoHangController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/dto/PurchaseOrderRequestDTO.java:[8,18] cannot find symbol
+[ERROR]   symbol:   class ChiTietImportRequest
+[ERROR]   location: class com.bookstore.dto.ImportRequestDto
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/dto/PurchaseOrderRequestDTO.java:[12,69] cannot find symbol
+[ERROR]   symbol:   class ChiTietImportRequest
+[ERROR]   location: class com.bookstore.dto.ImportRequestDto
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/dto/PurchaseOrderRequestDTO.java:[22,17] cannot find symbol
+[ERROR]   symbol:   class ChiTietImportRequest
+[ERROR]   location: class com.bookstore.dto.ImportRequestDto
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/dto/PurchaseOrderRequestDTO.java:[23,37] cannot find symbol
+[ERROR]   symbol:   class ChiTietImportRequest
+[ERROR]   location: class com.bookstore.dto.ImportRequestDto
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/NguoiDungController.java:[8,29] cannot find symbol
+[ERROR]   symbol:   class UserService
+[ERROR]   location: package com.bookstore.service
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/NguoiDungController.java:[22,19] cannot find symbol
+[ERROR]   symbol:   class UserService
+[ERROR]   location: class com.bookstore.controller.NguoiDungController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/NguoiDungController.java:[24,32] cannot find symbol
+[ERROR]   symbol:   class UserService
+[ERROR]   location: class com.bookstore.controller.NguoiDungController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/NxbController.java:[4,25] cannot find symbol
+[ERROR]   symbol:   class NxbDTO
+[ERROR]   location: package com.bookstore.dto
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/NxbController.java:[5,29] cannot find symbol
+[ERROR]   symbol:   class NxbService
+[ERROR]   location: package com.bookstore.service
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/NxbController.java:[20,19] cannot find symbol
+[ERROR]   symbol:   class NxbService
+[ERROR]   location: class com.bookstore.controller.NxbController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/NxbController.java:[22,26] cannot find symbol
+[ERROR]   symbol:   class NxbService
+[ERROR]   location: class com.bookstore.controller.NxbController
+[ERROR] /D:/WorkSpace/MPJ/BookStoreOnline/bookstoreonline/src/main/java/com/bookstore/controller/NxbController.java:[28,44] cannot find symbol
+[ERROR]   symbol:   class NxbDTO
+[ERROR]   location: class com.bookstore.controller.NxbController
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

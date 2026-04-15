@@ -1,76 +1,101 @@
-<!-- Admin Dashboard View -->
+<!-- Admin Dashboard Index -->
 <div class="p-4 p-md-5 w-100">
     <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
-            <h2 class="fw-bold font-serif mb-1">Bảng điều khiển</h2>
-            <p class="text-muted mb-0 small">Thống kê tổng quan hệ thống nhà sách</p>
+            <h2 class="fw-bold font-serif mb-1">Administrative Dashboard</h2>
+            <p class="text-muted mb-0">Overview of your bookstore's performance and recent activities</p>
         </div>
-        <div class="avatar-placeholder rounded-circle bg-accent text-white d-flex align-items-center justify-content-center fw-bold" style="width:44px;height:44px;font-size:1.2rem">A</div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-light rounded-pill px-4 shadow-sm border" onclick="dashboard.init()">
+                <i class="icon icon-refresh me-2"></i> Refresh Data
+            </button>
+            <button class="btn btn-accent rounded-pill px-4 shadow-sm fw-bold">
+                <i class="icon icon-download me-2"></i> Export Report
+            </button>
+        </div>
     </div>
 
-    <!-- KPI Stats Row -->
+    <!-- Stats Cards -->
     <div class="row g-4 mb-5">
-        <div class="col-6 col-lg-3">
-            <div class="card border-0 shadow-sm rounded-5 p-4 bg-white h-100">
-                <span class="text-muted small text-uppercase fw-bold mb-2 d-block">Doanh thu</span>
-                <h3 class="display-6 fw-bold text-accent" id="stat-revenue">---</h3>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100 transition-all hvr-float bg-white border-start border-4 border-primary">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="bg-primary bg-opacity-10 p-2 rounded-3 text-primary"><i class="icon icon-ns-order fs-4"></i></div>
+                    <span class="text-success small fw-bold">+12% ↑</span>
+                </div>
+                <small class="text-muted text-uppercase fw-bold extra-small mb-1 d-block opacity-75">New Orders Today</small>
+                <h3 class="fw-bold mb-0" id="total-revenue">24</h3>
             </div>
         </div>
-        <div class="col-6 col-lg-3">
-            <div class="card border-0 shadow-sm rounded-5 p-4 bg-white h-100">
-                <span class="text-muted small text-uppercase fw-bold mb-2 d-block">Đơn hàng</span>
-                <h3 class="display-6 fw-bold text-accent" id="stat-orders">---</h3>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100 transition-all hvr-float bg-white border-start border-4 border-accent">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="bg-accent bg-opacity-10 p-2 rounded-3 text-accent"><i class="icon icon-ns-book fs-4"></i></div>
+                    <span class="text-muted small fw-bold">Stable</span>
+                </div>
+                <small class="text-muted text-uppercase fw-bold extra-small mb-1 d-block opacity-75">Low Stock Alert</small>
+                <h3 class="fw-bold mb-0 text-danger" id="low-stock-count">8</h3>
             </div>
         </div>
-        <div class="col-6 col-lg-3">
-            <div class="card border-0 shadow-sm rounded-5 p-4 bg-white h-100">
-                <span class="text-muted small text-uppercase fw-bold mb-2 d-block">Đầu sách</span>
-                <h3 class="display-6 fw-bold text-accent" id="stat-books">---</h3>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100 transition-all hvr-float bg-white border-start border-4 border-success">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="bg-success bg-opacity-10 p-2 rounded-3 text-success"><i class="icon icon-ns-user fs-4"></i></div>
+                    <span class="text-success small fw-bold">+156 New</span>
+                </div>
+                <small class="text-muted text-uppercase fw-bold extra-small mb-1 d-block opacity-75">Active Customers</small>
+                <h3 class="fw-bold mb-0" id="customer-count">1,248</h3>
             </div>
         </div>
-        <div class="col-6 col-lg-3">
-            <div class="card border-0 shadow-sm rounded-5 p-4 bg-white h-100">
-                <span class="text-muted small text-uppercase fw-bold mb-2 d-block">Khách hàng</span>
-                <h3 class="display-6 fw-bold text-accent" id="stat-customers">---</h3>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100 transition-all hvr-float bg-white border-start border-4 border-info">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="bg-info bg-opacity-10 p-2 rounded-3 text-info"><i class="icon icon-ns-ticket fs-4"></i></div>
+                </div>
+                <small class="text-muted text-uppercase fw-bold extra-small mb-1 d-block opacity-75">Open Support Tickets</small>
+                <h3 class="fw-bold mb-0" id="open-tickets">12</h3>
             </div>
         </div>
     </div>
 
-    <div class="row g-4">
-        <!-- Top Selling Books -->
-        <div class="col-lg-5">
-            <div class="card border-0 shadow-sm rounded-5 p-4 bg-white h-100">
-                <h5 class="fw-bold font-serif mb-4">🏆 Top sách bán chạy</h5>
-                <div class="table-responsive">
-                    <table class="table align-middle mb-0">
-                        <thead class="text-muted small">
-                            <tr><th class="ps-3">Hạng</th><th>Tên sách</th><th class="text-end pe-3">Đã bán</th></tr>
-                        </thead>
-                        <tbody id="ranking-list">
-                            <tr><td colspan="3" class="text-center py-3">
-                                <div class="spinner-border spinner-border-sm text-accent"></div>
-                            </td></tr>
-                        </tbody>
-                    </table>
+    <div class="row g-4 mb-5">
+        <!-- Recent Activities (Audit Logs) -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-5 h-100 bg-white">
+                <div class="card-header bg-transparent border-0 p-4 pb-0 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0">System Audit Logs</h5>
+                    <a href="javascript:void(0)" onclick="layout.render('AuditLogs', 'Admin/Index')" class="text-accent small text-decoration-none fw-bold">View History →</a>
+                </div>
+                <div class="card-body p-4">
+                    <div class="table-responsive">
+                        <table class="table align-middle table-hover mb-0">
+                            <thead class="bg-light text-muted extra-small text-uppercase fw-bold border-0">
+                                <tr>
+                                    <th class="border-0 ps-3">Timestamp</th>
+                                    <th class="border-0">User</th>
+                                    <th class="border-0">Action</th>
+                                    <th class="border-0 text-end pe-3">Level</th>
+                                </tr>
+                            </thead>
+                            <tbody id="audit-log-list" class="small">
+                                <!-- JS Populated -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Audit Log -->
-        <div class="col-lg-7">
-            <div class="card border-0 shadow-sm rounded-5 p-4 bg-white h-100">
-                <h5 class="fw-bold font-serif mb-4">📋 Nhật ký hoạt động</h5>
-                <div class="table-responsive" style="max-height: 380px; overflow-y: auto;">
-                    <table class="table align-middle mb-0 small">
-                        <thead class="text-muted">
-                            <tr><th class="ps-3">Người dùng</th><th>Hành động</th><th class="text-end pe-3">Thời gian</th></tr>
-                        </thead>
-                        <tbody id="audit-log-list">
-                            <tr><td colspan="3" class="text-center py-3">
-                                <div class="spinner-border spinner-border-sm text-accent"></div>
-                            </td></tr>
-                        </tbody>
-                    </table>
+        <!-- Best Sellers -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-5 h-100 bg-white">
+                <div class="card-header bg-transparent border-0 p-4 pb-0">
+                    <h5 class="fw-bold mb-0">Book Rankings</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div id="best-sellers-list" class="d-flex flex-column gap-4">
+                        <!-- JS Populated -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -78,6 +103,6 @@
 </div>
 
 <style>
-    .hvr-admin:hover { transform: translateX(5px); color: white !important; background: rgba(255,255,255,0.05); }
-    .nav-link.active-admin { color: white !important; font-weight: bold; }
+    .extra-small { font-size: 0.7rem; letter-spacing: 0.05em; }
+    .hvr-float:hover { transform: translateY(-5px); }
 </style>

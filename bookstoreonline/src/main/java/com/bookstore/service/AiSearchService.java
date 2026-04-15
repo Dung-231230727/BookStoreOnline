@@ -1,6 +1,8 @@
 package com.bookstore.service;
 
-import com.bookstore.dto.SachDTO;
+import com.bookstore.dto.BookDTO;
+import com.bookstore.repository.CategoryRepository;
+import com.bookstore.repository.PublisherRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -11,21 +13,21 @@ import java.util.regex.Pattern;
 @Service
 public class AiSearchService {
 
-    private final SachService sachService;
-    private final com.bookstore.repository.DanhMucRepository danhMucRepository;
-    private final com.bookstore.repository.NxbRepository nxbRepository;
+    private final BookService bookService;
+    private final CategoryRepository categoryRepository;
+    private final PublisherRepository publisherRepository;
 
-    public AiSearchService(SachService sachService, 
-                          com.bookstore.repository.DanhMucRepository danhMucRepository,
-                          com.bookstore.repository.NxbRepository nxbRepository) {
-        this.sachService = sachService;
-        this.danhMucRepository = danhMucRepository;
-        this.nxbRepository = nxbRepository;
+    public AiSearchService(BookService bookService, 
+                          CategoryRepository categoryRepository,
+                          PublisherRepository publisherRepository) {
+        this.bookService = bookService;
+        this.categoryRepository = categoryRepository;
+        this.publisherRepository = publisherRepository;
     }
 
-    public List<SachDTO> searchByNaturalLanguage(String query) {
+    public List<BookDTO> searchByNaturalLanguage(String query) {
         if (query == null || query.isBlank()) {
-            return sachService.searchAndFilterBooks(null, null, null, null, null, null, null);
+            return bookService.searchAndFilterBooks(null, null, null, null, null);
         }
 
         String lowerQuery = query.toLowerCase();
@@ -35,17 +37,16 @@ public class AiSearchService {
         String categoryName = null;
         String keyword = null;
 
-        // 1. RULE: Trích xuất Thể loại động từ DB và Map ngữ nghĩa cơ bản
-        List<String> possibleCategories = danhMucRepository.findAll().stream()
-                .map(cat -> cat.getTenDanhMuc().toLowerCase())
+        // 1. Extract category from DB and basic semantic mapping
+        List<String> possibleCategories = categoryRepository.findAll().stream()
+                .map(cat -> cat.getCategoryName().toLowerCase())
                 .filter(cat -> cat.length() > 2)
                 .toList();
 
-        // Map ngữ nghĩa thủ công (Cơ chế Semantic đơn giản)
-        if (lowerQuery.contains("khởi nghiệp") || lowerQuery.contains("startup") || lowerQuery.contains("làm giàu")) {
-            categoryName = "kinh tế"; 
-            // Nếu là tìm theo Concept rộng, ta có thể bỏ qua keyword để hiện toàn bộ sách Kinh tế
-            lowerQuery = lowerQuery.replace("khởi nghiệp", "").replace("startup", "").replace("làm giàu", "");
+        // Basic semantic mapping (Simple mechanism)
+        if (lowerQuery.contains("startup") || lowerQuery.contains("business") || lowerQuery.contains("rich")) {
+            categoryName = "economics"; 
+            lowerQuery = lowerQuery.replace("startup", "").replace("business", "").replace("rich", "");
         }
 
         if (categoryName == null) {
@@ -58,30 +59,29 @@ public class AiSearchService {
             }
         }
 
-        // 2. RULE: Kéo trần giá cao nhất
+        // 2. Extract price ranges (Vietnamese & English keywords)
         Pattern maxPricePattern = Pattern
-                .compile("(?:dưới|nhỏ hơn|rẻ hơn|tối đa|max|dưới mức|chưa tới)\\s*(\\d+)\\s*(k|nghìn|000|đ|vnd|vnđ)?");
+                .compile("(?:under|below|smaller|cheaper|max|dưới|rẻ hơn|tối đa)\\s*(\\d+)\\s*(k|thousand|nghìn|000|đ|vnd|vnđ)?");
         Matcher maxMatcher = maxPricePattern.matcher(lowerQuery);
         if (maxMatcher.find()) {
             long number = Long.parseLong(maxMatcher.group(1));
             String unit = maxMatcher.group(2);
-            if (unit != null && (unit.equals("k") || unit.equals("nghìn") || unit.equals("000"))) {
+            if (unit != null && (unit.equals("k") || unit.equals("nghìn") || unit.equals("thousand") || unit.equals("000"))) {
                 number = number * 1000;
-            } else if (number < 1000 && number > 0) { // Ví dụ nói "dưới 200", thường hiểu là 200k
+            } else if (number < 1000 && number > 0) { 
                 number = number * 1000;
             }
             maxPrice = BigDecimal.valueOf(number);
-            lowerQuery = lowerQuery.replace(maxMatcher.group(0), ""); // Tẩy vùng chữ này khỏi query
+            lowerQuery = lowerQuery.replace(maxMatcher.group(0), ""); 
         }
 
-        // 3. RULE: Kéo đáy giá thấp nhất
         Pattern minPricePattern = Pattern
-                .compile("(?:trên|lớn hơn|từ|min|tối thiểu|mức giá từ)\\s*(\\d+)\\s*(k|nghìn|000|đ|vnd|vnđ)?");
+                .compile("(?:above|over|from|min|at least|trên|lớn hơn|từ|tối thiểu)\\s*(\\d+)\\s*(k|thousand|nghìn|000|đ|vnd|vnđ)?");
         Matcher minMatcher = minPricePattern.matcher(lowerQuery);
         if (minMatcher.find()) {
             long number = Long.parseLong(minMatcher.group(1));
             String unit = minMatcher.group(2);
-            if (unit != null && (unit.equals("k") || unit.equals("nghìn") || unit.equals("000"))) {
+            if (unit != null && (unit.equals("k") || unit.equals("nghìn") || unit.equals("thousand") || unit.equals("000"))) {
                 number = number * 1000;
             } else if (number < 1000 && number > 0) {
                 number = number * 1000;
@@ -90,57 +90,35 @@ public class AiSearchService {
             lowerQuery = lowerQuery.replace(minMatcher.group(0), "");
         }
 
-        // 4. RULE: Trích xuất Nhà Xuất Bản động từ DB
-        List<String> possibleNxbs = nxbRepository.findAll().stream()
-                .map(nxb -> nxb.getTenNxb().toLowerCase())
+        // 3. Extract Publisher from DB
+        List<String> possiblePublishers = publisherRepository.findAll().stream()
+                .map(p -> p.getPublisherName().toLowerCase())
                 .toList();
-        String nxbName = null;
-        for (String nxb : possibleNxbs) {
-            if (lowerQuery.contains(nxb)) {
-                nxbName = nxb;
-                lowerQuery = lowerQuery.replace(nxb, "");
+        String publisherName = null;
+        for (String pub : possiblePublishers) {
+            if (lowerQuery.contains(pub)) {
+                publisherName = pub;
+                lowerQuery = lowerQuery.replace(pub, "");
                 break;
             }
         }
 
-        // 5. RULE: Khớp số lượng trang (Max/Min)
-        Integer minSoTrang = null;
-        Integer maxSoTrang = null;
-
-        Pattern maxPagePattern = Pattern.compile("(?U)(?:dưới|nhỏ hơn|mỏng|tối đa|max|ít hơn)\\s*(\\d+)\\s*(trang)?");
-        Matcher maxPageMatcher = maxPagePattern.matcher(lowerQuery);
-        if (maxPageMatcher.find()) {
-            maxSoTrang = Integer.parseInt(maxPageMatcher.group(1));
-            lowerQuery = lowerQuery.replace(maxPageMatcher.group(0), "");
-        }
-
-        Pattern minPagePattern = Pattern
-                .compile("(?U)(?:trên|lớn hơn|dày|tối thiểu|min|nhiều hơn|từ)\\s*(\\d+)\\s*(trang)?");
-        Matcher minPageMatcher = minPagePattern.matcher(lowerQuery);
-        if (minPageMatcher.find()) {
-            minSoTrang = Integer.parseInt(minPageMatcher.group(1));
-            lowerQuery = lowerQuery.replace(minPageMatcher.group(0), "");
-        }
-
-        // 6. RULE: Thải loại stopwords mở rộng
+        // 4. Stopwords removal
         if (lowerQuery.trim().split("\\s+").length > 3) {
-            String[] stopWords = { "tìm", "cho", "tôi", "muốn", "mua", "những", "về", "chủ", "đề", "có", "sách", "quyển",
-                    "cuốn", "thể", "loại", "giá", "khoảng", "tiền", "thuộc", "các", "một", "nxb", "nhà", "xuất", "bản",
-                    "trang", "kể", "của", "là", "với", "như", "được", "hay", "tốt", "đẹp", "mới", "nhất" };
+            String[] stopWords = { "find", "search", "show", "me", "want", "to", "buy", "with", "about", "topic",
+                                   "books", "book", "category", "price", "around", "money", "from", "publisher", 
+                                   "nxb", "nhà", "xuất", "bản", "quyển", "cuốn", "thể", "loại" };
             for (String word : stopWords) {
                 lowerQuery = lowerQuery.replaceAll("(?U)\\b" + word + "\\b", " "); 
             }
         }
 
-        // Dọn khoảng trắng thừa
+        // Clean extra spaces
         keyword = lowerQuery.replaceAll("\\s+", " ").trim();
-        // Nếu keyword quá ngắn (chỉ còn mấy chữ rời rạc vô nghĩa) hoặc rỗng thì bỏ đi
         if (keyword.length() < 2) {
             keyword = null;
         }
 
-        // Ráp nối vào hàm Search Repo gốc
-        return sachService.searchAndFilterBooks(keyword, categoryName, nxbName, minPrice, maxPrice, minSoTrang,
-                maxSoTrang);
+        return bookService.searchAndFilterBooks(keyword, categoryName, publisherName, minPrice, maxPrice);
     }
 }

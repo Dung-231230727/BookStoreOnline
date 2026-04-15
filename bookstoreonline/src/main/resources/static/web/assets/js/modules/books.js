@@ -1,6 +1,8 @@
 /**
- * books.js - Product Management & AI Search (Person 2)
+ * books.js - Product Management & AI Search
+ * Standardized for Full English Backend synchronization
  */
+
 let currentBookIsbn = null;
 
 const books = {
@@ -20,9 +22,8 @@ const books = {
     // 2. AI Search Integration
     searchAI: async (query) => {
         if (!query) return;
-        api.showToast("AI đang tìm kiếm...", "info");
+        api.showToast("AI is searching...", "info");
         try {
-            // Chuyển view trước khi gọi API (đánh dấu là đang search để tránh loadAll ghi đè)
             layout.current.isSearching = true;
             if (layout.current.view !== "Books/Index") {
                 await layout.render('Books', 'Index');
@@ -32,62 +33,65 @@ const books = {
             const results = res.data;
             console.log("AI Search Results:", results);
 
-            $("#category-title").text(`Kết quả AI cho: "${query}"`);
+            $("#category-title").text(`AI results for: "${query}"`);
             books.renderGrid("#books-grid", results);
 
             if (!results || results.length === 0) {
-                api.showToast("Rất tiếc, AI không tìm thấy sách phù hợp", "warning");
+                api.showToast("No matches found by AI", "warning");
             }
         } catch (error) {
-            api.showToast("Lỗi tìm kiếm AI", "error");
+            api.showToast("AI Search Error", "error");
         }
     },
 
     // 3. Load All Books with Filters
     loadAll: async (filters = {}) => {
         try {
-            const res = await api.get('/books');
-            const itemList = res.data || res;
+            const page = filters.page || 0;
+            const size = filters.size || 12;
+            const res = await api.get(`/books?page=${page}&size=${size}`);
+            const data = res.data || res;
+            
+            const itemList = (data && data.content) || (Array.isArray(data) ? data : []);
             books.renderGrid("#books-grid", itemList);
+            
+            if (data && data.totalPages > 1) {
+                console.log("Pagination:", data.totalPages, "pages");
+            }
         } catch (error) {
-            api.showToast("Lỗi tải danh sách sách", "error");
+            api.showToast("Failed to load book list", "error");
         }
     },
 
     // 4. Render Grid Utility
     renderGrid: (selector, itemList) => {
         const container = $(selector);
-        console.log(`[renderGrid] Target: ${selector}, Matches: ${container.length}, Items: ${itemList ? itemList.length : 0}`);
-
-        if (!container.length) {
-            console.warn(`[renderGrid] Container ${selector} not found in DOM!`);
-            return;
-        }
+        if (!container.length) return;
 
         container.empty();
         $("#product-count").text(itemList ? itemList.length : 0);
 
         if (!itemList || itemList.length === 0) {
-            container.html('<div class="col-12 text-center py-5"><p class="text-muted">Không tìm thấy sản phẩm nào.</p></div>');
+            container.html('<div class="col-12 text-center py-5"><p class="text-muted">No products found.</p></div>');
             return;
         }
 
         itemList.forEach(book => {
-            const price = api.formatCurrency(book.giaNiemYet);
-            const image = book.anhBia ? `assets/images/${book.anhBia}` : 'assets/images/product-item1.jpg';
+            const priceLabel = api.formatCurrency(book.price);
+            const imagePath = book.coverImage ? `assets/images/${book.coverImage}` : 'assets/images/product-item1.jpg';
 
             container.append(`
                 <div class="col-xl-3 col-lg-4 col-sm-6 mb-4">
                     <div class="product-item bg-white p-3 rounded-4 shadow-sm h-100 text-center transition-all hvr-float border-0">
                         <div class="image-holder position-relative mb-4 overflow-hidden rounded-3 bg-light p-2 shadow-sm">
-                            <img src="${image}" alt="${book.tenSach}" class="img-fluid" style="height: 250px; object-fit: contain;">
+                            <img src="${imagePath}" alt="${book.title}" class="img-fluid" style="height: 250px; object-fit: contain;">
                             <button type="button" class="btn btn-accent w-100 position-absolute bottom-0 start-0 py-2 border-0 opacity-0 transition-all add-to-cart-btn" onclick="cart.add('${book.isbn}', 1)">
-                                <i class="icon icon-plus me-2"></i> Thêm vào giỏ
+                                <i class="icon icon-plus me-2"></i> Add to Cart
                             </button>
                         </div>
                         <div class="product-detail">
-                            <h6 class="fw-bold mb-1"><a href="javascript:void(0)" onclick="layout.render('Books', 'Details', '${book.isbn}')" class="text-decoration-none text-dark hvr-accent">${book.tenSach}</a></h6>
-                            <div class="product-price fw-bold text-accent">${price}</div>
+                            <h6 class="fw-bold mb-1"><a href="javascript:void(0)" onclick="layout.render('Books', 'Details', '${book.isbn}')" class="text-decoration-none text-dark hvr-accent">${book.title}</a></h6>
+                            <div class="product-price fw-bold text-accent">${priceLabel}</div>
                         </div>
                     </div>
                 </div>
@@ -102,30 +106,32 @@ const books = {
             const res = await api.get(`/books/${isbn}`);
             const b = res.data || res;
 
-            $("#book-title").text(b.tenSach);
-            $("#book-price").text(api.formatCurrency(b.giaNiemYet));
-            $("#book-description").text(b.moTaNguNghia || b.moTa || "Chưa có mô tả.");
+            $("#book-title").text(b.title);
+            $("#book-price").text(api.formatCurrency(b.price));
+            $("#book-description").text(b.description || "No description available.");
             $("#book-sku").text(b.isbn);
-            $("#book-weight").text(b.trongLuong + "g" || "---");
-            $("#book-pages").text(b.soTrang || "---");
-            $("#breadcrumb-category").text(b.danhMuc ? b.danhMuc.tenDanhMuc : "Sách");
+            $("#book-weight").text(b.weight ? b.weight + "g" : "---");
+            $("#book-pages").text(b.pages || "---");
+            $("#breadcrumb-category").text(b.categoryName || "Books");
 
-            const imgPath = b.anhBia ? `assets/images/${b.anhBia}` : 'assets/images/product-item1.jpg';
+            const imgPath = b.coverImage ? `assets/images/${b.coverImage}` : 'assets/images/product-item1.jpg';
             $("#book-image").attr("src", imgPath);
             $("#btn-add-to-cart").attr("onclick", `cart.add('${b.isbn}', $('#quantity').val())`);
 
-            if (b.danhMuc) books.loadRelated(b.danhMuc.maDanhMuc, b.isbn);
+            if (b.categoryId) books.loadRelated(b.categoryId, b.isbn);
         } catch (error) {
-            api.showToast("Lỗi tải chi tiết sách", "error");
+            api.showToast("Error loading book details", "error");
         }
     },
 
-    loadRelated: async (catId, currentIsbn) => {
+    loadRelated: async (categoryId, currentIsbn) => {
         try {
             const res = await api.get('/books');
             const list = res.data || res;
-            const related = list.filter(x => x.danhMuc && x.danhMuc.maDanhMuc === catId && x.isbn !== currentIsbn).slice(0, 4);
-            books.renderGrid("#related-books-grid", related);
+            if (Array.isArray(list)) {
+                const related = list.filter(x => x.categoryId === categoryId && x.isbn !== currentIsbn).slice(0, 4);
+                books.renderGrid("#related-books-grid", related);
+            }
         } catch (e) { }
     },
 
@@ -143,19 +149,19 @@ const books = {
                     <tr>
                         <td class="ps-4 py-4">
                             <div class="d-flex align-items-center gap-3">
-                                <img src="${book.anhBia ? 'assets/images/' + book.anhBia : 'assets/images/product-item1.jpg'}" class="rounded shadow-sm" width="50">
+                                <img src="${book.coverImage ? 'assets/images/' + book.coverImage : 'assets/images/product-item1.jpg'}" class="rounded shadow-sm" width="50">
                                 <div>
-                                    <h6 class="fw-bold mb-0">${book.tenSach}</h6>
+                                    <h6 class="fw-bold mb-0">${book.title}</h6>
                                     <small class="text-muted">ISBN: ${book.isbn}</small>
                                 </div>
                             </div>
                         </td>
-                        <td>${book.danhMuc ? book.danhMuc.tenDanhMuc : '---'}</td>
-                        <td class="fw-bold text-accent">${api.formatCurrency(book.giaNiemYet)}</td>
-                        <td>${book.soLuongHienTai || 0}</td>
+                        <td>${book.categoryName || '---'}</td>
+                        <td class="fw-bold text-accent">${api.formatCurrency(book.price)}</td>
+                        <td>${book.stockQuantity || 0}</td>
                         <td class="text-end pe-4">
                             <div class="btn-group gap-2">
-                                <button class="btn btn-sm btn-light rounded-pill shadow-sm py-1 px-3" onclick="layout.render('Books/Admin', 'Edit', '${book.isbn}')">Sửa</button>
+                                <button class="btn btn-sm btn-light rounded-pill shadow-sm py-1 px-3" onclick="layout.render('Books/Admin', 'Edit', '${book.isbn}')">Edit</button>
                                 <button class="btn btn-sm btn-outline-danger rounded-pill shadow-sm" onclick="books.delete('${book.isbn}')"><i class="icon icon-close"></i></button>
                             </div>
                         </td>
@@ -163,45 +169,45 @@ const books = {
                 `);
             });
         } catch (e) {
-            api.showToast("Lỗi tải danh sách quản trị", "error");
+            api.showToast("Failed to load admin books", "error");
         }
     },
 
     delete: async (isbn) => {
-        if (!confirm("Bạn có chắc chắn muốn xóa sách này (Xóa mềm)?")) return;
+        if (!confirm("Are you sure you want to delete this book?")) return;
         try {
             await api.delete(`/admin/books/${isbn}`);
-            api.showToast("Đã xóa sản phẩm thành công");
+            api.showToast("Product deleted successfully");
             books.loadAdminList();
         } catch (e) {
-            api.showToast("Không thể xóa sản phẩm", "error");
+            api.showToast("Failed to delete product", "error");
         }
     },
 
-    // 7. Load Authors for dropdowns (GET /api/authors)
+    // 7. Load Authors for dropdowns
     loadAuthors: async () => {
         try {
             const res = await api.get('/authors');
             const data = res.data || res;
-            const sel = $('#maTacGia');
+            const sel = $('#authorId');
             if (!sel.length) return;
-            sel.empty().append('<option value="">-- Chọn tác giả --</option>');
+            sel.empty().append('<option value="">-- Select Author --</option>');
             (Array.isArray(data) ? data : []).forEach(a => {
-                sel.append(`<option value="${a.maTacGia}">${a.tenTacGia}</option>`);
+                sel.append(`<option value="${a.id}">${a.fullName || a.name}</option>`);
             });
         } catch (e) { console.warn('loadAuthors failed:', e.message); }
     },
 
-    // 8. Load Publishers for dropdowns (GET /api/publishers)
+    // 8. Load Publishers for dropdowns
     loadPublishers: async () => {
         try {
             const res = await api.get('/publishers');
             const data = res.data || res;
-            const sel = $('#maNxb');
+            const sel = $('#publisherId');
             if (!sel.length) return;
-            sel.empty().append('<option value="">-- Chọn NXB --</option>');
+            sel.empty().append('<option value="">-- Select Publisher --</option>');
             (Array.isArray(data) ? data : []).forEach(p => {
-                sel.append(`<option value="${p.maNxb}">${p.tenNxb}</option>`);
+                sel.append(`<option value="${p.id}">${p.name}</option>`);
             });
         } catch (e) { console.warn('loadPublishers failed:', e.message); }
     },
@@ -211,16 +217,28 @@ const books = {
         try {
             const res = await api.get('/categories');
             const data = res.data || res;
-            const sel = $('#maDanhMuc');
+            const sel = $('#categoryId');
             if (!sel.length) return;
-            sel.empty().append('<option value="">-- Chọn danh mục --</option>');
-            (Array.isArray(data) ? data : []).forEach(c => {
-                sel.append(`<option value="${c.maDanhMuc}">${c.tenDanhMuc}</option>`);
+            sel.empty().append('<option value="">-- Select Category --</option>');
+            
+            // Flatten category tree for select dropdown if needed
+            const options = [];
+            const walk = (nodes, depth = 0) => {
+                (Array.isArray(nodes) ? nodes : []).forEach(n => {
+                    options.push({ id: n.id || n.categoryId, name: n.name || n.categoryName, depth: depth });
+                    if (n.children || n.subCategories) walk(n.children || n.subCategories, depth + 1);
+                });
+            };
+            walk(Array.isArray(data) ? data : []);
+
+            options.forEach(c => {
+                const indent = "&nbsp;".repeat(c.depth * 4);
+                sel.append(`<option value="${c.id}">${indent}${c.name}</option>`);
             });
         } catch (e) { console.warn('loadCategoriesIntoForm failed:', e.message); }
     },
 
-    // 10. Create new book (POST /api/admin/books)
+    // 10. Create new book (standardized payload)
     create: async () => {
         const form = $("#create-book-form");
         if (!form[0].checkValidity()) { form[0].reportValidity(); return; }
@@ -228,28 +246,27 @@ const books = {
         const raw = {};
         form.serializeArray().forEach(item => { raw[item.name] = item.value; });
 
-        // SachCreateRequest expects flat Integer fields, not nested objects
         const payload = {
             isbn: raw.isbn,
-            tenSach: raw.tenSach,
-            giaNiemYet: parseFloat(raw.giaNiemYet) || 0,
-            soTrang: raw.soTrang ? parseInt(raw.soTrang) : null,
-            maDanhMuc: raw.maDanhMuc ? parseInt(raw.maDanhMuc) : null,
-            maNxb: raw.maNxb ? parseInt(raw.maNxb) : null,
-            moTaNguNghia: raw.moTa || '',
-            anhBia: raw.anhBia || '',
-            tacGiaIds: raw.maTacGia ? [parseInt(raw.maTacGia)] : []
+            title: raw.title,
+            price: parseFloat(raw.price) || 0,
+            pages: raw.pages ? parseInt(raw.pages) : null,
+            categoryId: raw.categoryId ? parseInt(raw.categoryId) : null,
+            publisherId: raw.publisherId ? parseInt(raw.publisherId) : null,
+            description: raw.description || '',
+            coverImage: raw.coverImage || '',
+            authorIds: raw.authorId ? [parseInt(raw.authorId)] : []
         };
 
-        api.showToast("Đang lưu dữ liệu...", "info");
+        api.showToast("Saving data...", "info");
         try {
             await api.post('/admin/books', payload);
-            api.showToast("Thêm sách thành công!");
+            api.showToast("Book added successfully!");
             layout.render('Books', 'Admin/Index');
-        } catch (e) { api.showToast("Lỗi khi thêm sách: " + e.message, "error"); }
+        } catch (e) { api.showToast("Error adding book: " + e.message, "error"); }
     },
 
-    // 11. Update existing book (PUT /api/admin/books/{isbn})
+    // 11. Update existing book
     update: async (isbn) => {
         const form = $("#edit-book-form");
         if (!form[0].checkValidity()) { form[0].reportValidity(); return; }
@@ -258,30 +275,27 @@ const books = {
         form.serializeArray().forEach(item => { raw[item.name] = item.value; });
 
         const payload = {
-            tenSach: raw.tenSach,
-            giaNiemYet: parseFloat(raw.giaNiemYet) || 0,
-            soTrang: raw.soTrang ? parseInt(raw.soTrang) : null,
-            trongLuong: raw.trongLuong ? parseFloat(raw.trongLuong) : null,
-            namXuatBan: raw.namXuatBan ? parseInt(raw.namXuatBan) : null,
-            maDanhMuc: raw.maDanhMuc ? parseInt(raw.maDanhMuc) : null,
-            maNxb: raw.maNxb ? parseInt(raw.maNxb) : null,
-            moTaNguNghia: raw.moTa || '',
-            anhBia: raw.anhBia || ''
+            title: raw.title,
+            price: parseFloat(raw.price) || 0,
+            pages: raw.pages ? parseInt(raw.pages) : null,
+            weight: raw.weight ? parseFloat(raw.weight) : null,
+            year: raw.year ? parseInt(raw.year) : null,
+            categoryId: raw.categoryId ? parseInt(raw.categoryId) : null,
+            publisherId: raw.publisherId ? parseInt(raw.publisherId) : null,
+            description: raw.description || '',
+            coverImage: raw.coverImage || ''
         };
 
-        api.showToast("Đang cập nhật...", "info");
+        api.showToast("Updating...", "info");
         try {
             await api.put(`/admin/books/${isbn}`, payload);
-            api.showToast("Cập nhật thành công!");
+            api.showToast("Updated successfully!");
             layout.render('Books', 'Admin/Index');
-        } catch (e) { api.showToast("Lỗi khi cập nhật: " + e.message, "error"); }
-    },
-
-    // 12. Legacy save() — kept for backward compat
-    save: async () => books.create()
+        } catch (e) { api.showToast("Error updating: " + e.message, "error"); }
+    }
 };
 
-$(document).on('click', '#btn-save-book', () => books.create());
+$(document).on('click', '#btn-create-book', () => books.create());
 $(document).on('click', '#btn-update-book', function () {
     const isbn = $(this).data('isbn');
     books.update(isbn);

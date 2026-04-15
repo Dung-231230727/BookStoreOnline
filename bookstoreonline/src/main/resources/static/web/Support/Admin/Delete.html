@@ -1,0 +1,61 @@
+<div class="p-4 p-md-5 w-100">
+
+    <main class="flex-grow-1 p-4 p-md-5">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-decoration-none text-muted">Admin</a></li>
+                <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Support/Admin', 'Index')" class="text-decoration-none text-muted">Hỗ trợ khách hàng</a></li>
+                <li class="breadcrumb-item small active fw-bold text-accent">Xóa</li>
+            </ol>
+        </nav>
+
+        <!-- Delete Confirmation Modal -->
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card border-0 shadow-lg rounded-5 p-5 bg-white">
+                    <div class="text-center mb-4">
+                        <div class="bg-danger-subtle text-danger d-inline-flex p-4 rounded-circle mb-3">
+                            <i class="icon icon-trash fs-1"></i>
+                        </div>
+                        <h3 class="fw-bold">Xác nhận xóa</h3>
+                        <p class="text-muted">Bạn có chắc chắn muốn xóa yêu cầu hỗ trợ này?</p>
+                    </div>
+
+                    <div class="alert alert-light border-0 bg-light rounded-4 p-3 mb-4">
+                        <small class="text-muted d-block mb-1">Tiêu đề:</small>
+                        <strong id="delete-ticket-title">Tiêu đề yêu cầu</strong>
+                        <hr class="my-2">
+                        <small class="text-muted d-block mb-1">Mã:</small>
+                        <strong id="delete-ticket-id">#123456</strong>
+                    </div>
+
+                    <p class="text-danger small mb-4">
+                        <i class="icon icon-alert me-2"></i>
+                        Lưu ý: Hành động này không thể hoàn tác!
+                    </p>
+
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-danger rounded-3 py-3 fw-bold" onclick="support.confirmDelete()">
+                            <i class="icon icon-trash me-2"></i>Xóa yêu cầu
+                        </button>
+                        <button class="btn btn-light rounded-3 py-3 fw-bold text-muted" onclick="layout.render('Support/Admin', 'Index')">
+                            Hủy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    $("#header-area, #footer-area").hide();
+    
+    $(document).ready(function() {
+        const ticketId = new URLSearchParams(window.location.search).get('ticketId');
+        if (ticketId) {
+            support.loadDeleteInfo(ticketId);
+        }
+    });
+</script>

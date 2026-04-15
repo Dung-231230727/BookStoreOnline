@@ -1,7 +1,7 @@
 package com.bookstore.security;
 
-import com.bookstore.entity.TaiKhoan;
-import com.bookstore.repository.TaiKhoanRepository;
+import com.bookstore.entity.Account;
+import com.bookstore.repository.AccountRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,25 +14,25 @@ import java.util.Collections;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final TaiKhoanRepository taiKhoanRepository;
+    private final AccountRepository accountRepository;
 
-    public CustomUserDetailsService(TaiKhoanRepository taiKhoanRepository) {
-        this.taiKhoanRepository = taiKhoanRepository;
+    public CustomUserDetailsService(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        TaiKhoan taiKhoan = taiKhoanRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người dùng với username: " + username));
+        Account account = accountRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Account not found with username: " + username));
 
         return new User(
-                taiKhoan.getUsername(),
-                taiKhoan.getPassword(),
-                taiKhoan.getTrangThai(), // enabled: Nếu false sẽ không login được
+                account.getUsername(),
+                account.getPassword(),
+                account.getIsActive(), // enabled: If false, login will be denied
                 true, // accountNonExpired
                 true, // credentialsNonExpired
                 true, // accountNonLocked
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + taiKhoan.getRole()))
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + account.getRole()))
         );
     }
 }

@@ -1,0 +1,116 @@
+<div class="p-4 p-md-5 w-100">
+
+    <main class="flex-grow-1 p-4 p-md-5">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-2">
+                        <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-decoration-none text-muted">Admin Hub</a></li>
+                        <li class="breadcrumb-item small active fw-bold text-accent">Activity History</li>
+                    </ol>
+                </nav>
+                <h2 class="fw-bold font-serif mb-0">System Audit Logs</h2>
+                <small class="text-muted">Track and monitor all user activities within the system</small>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="row mb-4 g-3">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 p-4 text-center bg-white hvr-float transition-all">
+                    <small class="text-muted mb-2 d-block text-uppercase fw-bold extra-small opacity-75">Total Activities</small>
+                    <h3 class="fw-bold text-accent mb-0" id="audit-total-count">...</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 p-4 text-center bg-white hvr-float transition-all">
+                    <small class="text-muted mb-2 d-block text-uppercase fw-bold extra-small opacity-75">New Actions Today</small>
+                    <h3 class="fw-bold text-success mb-0" id="audit-today-count">...</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 p-4 text-center bg-white hvr-float transition-all">
+                    <small class="text-muted mb-2 d-block text-uppercase fw-bold extra-small opacity-75">Active Users</small>
+                    <h3 class="fw-bold text-info mb-0" id="audit-active-users">...</h3>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm rounded-4 p-4 text-center bg-white hvr-float transition-all">
+                    <small class="text-muted mb-2 d-block text-uppercase fw-bold extra-small opacity-75">Data Mutations</small>
+                    <h3 class="fw-bold text-warning mb-0" id="audit-changes-count">...</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter & Search -->
+        <div class="row mb-4 gap-3 bg-white p-3 rounded-4 shadow-sm mx-0">
+            <div class="col-md-4">
+                <input type="text" class="form-control rounded-3 border-0 bg-light" id="audit-search" placeholder="Search by user, action or details...">
+            </div>
+            <div class="col-md-2">
+                <select class="form-select rounded-3 border-0 bg-light" id="audit-action-filter">
+                    <option value="">-- Action Type --</option>
+                    <option value="CREATE">Create</option>
+                    <option value="UPDATE">Update</option>
+                    <option value="DELETE">Delete</option>
+                    <option value="LOGIN">Login</option>
+                    <option value="AUTH">Authentication</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select class="form-select rounded-3 border-0 bg-light" id="audit-entity-filter">
+                    <option value="">-- Target Object --</option>
+                    <option value="BOOK">Product/Book</option>
+                    <option value="USER">User Account</option>
+                    <option value="ORDER">Order</option>
+                    <option value="PAYMENT">Payment</option>
+                    <option value="INVENTORY">Inventory</option>
+                </select>
+            </div>
+            <div class="col-md-auto">
+                <button class="btn btn-accent rounded-pill px-4 fw-bold" onclick="auditlog.loadLogs()">
+                    <i class="icon icon-search me-2"></i>Apply Filters
+                </button>
+            </div>
+        </div>
+
+        <!-- Audit Log Table -->
+        <div class="card border-0 shadow-sm rounded-5 overflow-hidden bg-white">
+            <div class="table-responsive">
+                <table class="table align-middle table-hover mb-0 small">
+                    <thead class="bg-light text-muted extra-small text-uppercase fw-bold border-0">
+                        <tr>
+                            <th class="ps-4 py-3">Timestamp</th>
+                            <th class="py-3">User</th>
+                            <th class="py-3">Action</th>
+                            <th class="py-3">Target Entity</th>
+                            <th class="py-3">Summary</th>
+                            <th class="py-3">IP Address</th>
+                            <th class="text-end pe-4 py-3">Operations</th>
+                        </tr>
+                    </thead>
+                    <tbody id="audit-list-body">
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <div class="spinner-border text-accent spinner-border-sm" role="status"></div>
+                                <span class="ms-2 text-muted">Syncing logs...</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center" id="audit-pagination">
+                <!-- Populated by JS -->
+            </ul>
+        </nav>
+    </main>
+</div>
+
+<style>
+    .extra-small { font-size: 0.7rem; letter-spacing: 0.05em; }
+    .hvr-float:hover { transform: translateY(-3px); }
+</style>

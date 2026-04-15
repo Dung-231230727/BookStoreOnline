@@ -6,19 +6,19 @@ public class BookRankingDTO {
     @Schema(example = "9786041123456")
     private String isbn;
 
-    @Schema(example = "Dế Mèn Phiêu Lưu Ký")
-    private String tenSach;
+    @Schema(example = "The adventure of Cricket")
+    private String title;
 
     @Schema(example = "125")
     private long totalSold;
 
-    public BookRankingDTO(String isbn, String tenSach, long totalSold) {
+    public BookRankingDTO(String isbn, String title, long totalSold) {
         this.isbn = isbn;
-        this.tenSach = tenSach;
+        this.title = title;
         this.totalSold = totalSold;
     }
 
     public String getIsbn() { return isbn; }
-    public String getTenSach() { return tenSach; }
+    public String getTitle() { return title; }
     public long getTotalSold() { return totalSold; }
 }

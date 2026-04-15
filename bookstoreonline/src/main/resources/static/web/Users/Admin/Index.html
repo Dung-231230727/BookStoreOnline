@@ -5,47 +5,37 @@
             <div>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-2">
-                        <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-decoration-none text-muted">Admin</a></li>
-                        <li class="breadcrumb-item small active fw-bold text-accent">Thành viên</li>
+                        <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-decoration-none text-muted">Admin Hub</a></li>
+                        <li class="breadcrumb-item small active fw-bold text-accent">User Accounts</li>
                     </ol>
                 </nav>
-                <h2 class="fw-bold font-serif mb-0">Quản lý Thành viên</h2>
+                <h2 class="fw-bold font-serif mb-0">Member Management</h2>
+                <small class="text-muted">Manage system administrators, staff members and registered customers</small>
             </div>
-            <button onclick="layout.render('Users/Admin', 'Create')" class="btn btn-dark px-4 py-2 rounded-pill fw-bold shadow-sm">
-                <i class="icon icon-plus me-2"></i> Thêm thành viên
+            <button onclick="layout.render('Users', 'Admin/Create')" class="btn btn-dark px-4 py-2 rounded-pill fw-bold shadow-sm">
+                <i class="icon icon-plus me-2"></i> Add New Member
             </button>
         </div>
 
         <div class="card border-0 shadow-sm rounded-5 overflow-hidden bg-white">
             <div class="table-responsive">
                 <table class="table align-middle table-hover mb-0">
-                    <thead class="bg-light">
+                    <thead class="bg-light text-muted extra-small text-uppercase fw-bold border-0">
                         <tr>
-                            <th class="ps-4">Thành viên</th>
-                            <th>Email</th>
-                            <th>Vai trò</th>
-                            <th>Ngày tham gia</th>
-                            <th>Trạng thái</th>
-                            <th class="text-end pe-4">Thao tác</th>
+                            <th class="ps-4 py-3">User Information</th>
+                            <th class="py-3">Email Address</th>
+                            <th class="py-3">Assigned Role</th>
+                            <th class="py-3">Joined Date</th>
+                            <th class="py-3">Account Status</th>
+                            <th class="text-end pe-4 py-3">Operations</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="users-admin-list">
+                        <!-- Data populated via users.js/ajax -->
                         <tr>
-                            <td class="ps-4 py-4">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="avatar-sm rounded-circle bg-accent text-white d-flex align-items-center justify-content-center fw-bold" style="width: 35px; height: 35px; min-width: 35px;">A</div>
-                                    <span class="fw-bold">Admin User</span>
-                                </div>
-                            </td>
-                            <td class="text-muted">admin@bookstore.com</td>
-                            <td><span class="badge bg-dark rounded-pill px-3">Administrator</span></td>
-                            <td>01/01/2024</td>
-                            <td><span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">Active</span></td>
-                            <td class="text-end pe-4">
-                                <div class="btn-group gap-2">
-                                    <button class="btn btn-sm btn-light rounded-circle shadow-sm"><i class="icon icon-notes"></i></button>
-                                    <button class="btn btn-sm btn-light rounded-circle shadow-sm text-danger"><i class="icon icon-close"></i></button>
-                                </div>
+                            <td colspan="6" class="text-center py-5">
+                                <div class="spinner-border text-accent spinner-border-sm" role="status"></div>
+                                <span class="ms-2 text-muted">Syncing user database...</span>
                             </td>
                         </tr>
                     </tbody>
@@ -54,6 +44,7 @@
         </div>
     </main>
 </div>
-<script>
-    $("#header-area, #footer-area").hide();
-</script>
+
+<style>
+    .extra-small { font-size: 0.7rem; letter-spacing: 0.05em; }
+</style>

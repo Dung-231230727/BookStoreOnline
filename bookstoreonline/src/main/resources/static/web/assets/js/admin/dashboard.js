@@ -12,31 +12,31 @@ const dashboard = {
         dashboard.loadAuditLogs();
     },
 
-    // 1. Revenue & KPI Stats
+    // 1. Comprehensive Stats
     loadStats: async () => {
         try {
-            const res = await api.get('/admin/dashboard/revenue');
+            const res = await api.get('/admin/dashboard/stats');
             const stats = res.data || res;
             if (!stats) return;
 
-            // RevenueReportDTO only has totalRevenue and totalOrders
-            const statRevEl  = document.getElementById('stat-revenue');
-            const statOrdEl  = document.getElementById('stat-orders');
-
-            if (statRevEl)  statRevEl.innerText  = api.formatCurrency(stats.totalRevenue  || 0);
-            if (statOrdEl)  statOrdEl.innerText  = stats.totalOrders   || 0;
-
-            // totalBooks & totalCustomers not in DTO → show placeholder
+            const statRevEl   = document.getElementById('stat-revenue');
+            const statOrdEl   = document.getElementById('stat-orders');
             const statBooksEl = document.getElementById('stat-books');
             const statCustEl  = document.getElementById('stat-customers');
-            if (statBooksEl)  statBooksEl.innerText  = '---';
-            if (statCustEl)   statCustEl.innerText   = '---';
+            const statLowEl   = document.getElementById('stat-low-stock');
+
+            if (statRevEl)   statRevEl.innerText   = api.formatCurrency(stats.totalRevenue || 0);
+            if (statOrdEl)   statOrdEl.innerText   = stats.pendingOrders   || 0;
+            if (statBooksEl) statBooksEl.innerText = stats.totalBooks      || 0;
+            if (statCustEl)  statCustEl.innerText  = stats.totalUsers      || 0;
+            if (statLowEl)   statLowEl.innerText   = stats.lowStockCount   || 0;
+            
         } catch (error) {
             console.error('Dashboard Stats Error:', error);
         }
     },
 
-    // 2. Top Selling Books — BookRankingDTO uses 'totalSold' not 'soLuongBan'
+    // 2. Top Selling Books — BookRankingDTO uses 'title' not 'tenSach'
     loadRanking: async () => {
         try {
             const res = await api.get('/admin/dashboard/ranking');
@@ -46,7 +46,7 @@ const dashboard = {
             tbody.innerHTML = '';
 
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-3">Chưa có dữ liệu xếp hạng</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-3">No ranking data available</td></tr>';
                 return;
             }
 
@@ -56,19 +56,19 @@ const dashboard = {
                         <td class="ps-3">
                             <span class="badge ${i < 3 ? 'bg-warning text-dark' : 'bg-light text-dark'} rounded-pill">#${i + 1}</span>
                         </td>
-                        <td class="fw-bold">${item.tenSach || item.isbn}</td>
-                        <td class="text-end pe-3 fw-bold text-accent">${item.totalSold || 0} quyển</td>
+                        <td class="fw-bold">${item.title || item.isbn}</td>
+                        <td class="text-end pe-3 fw-bold text-accent">${item.totalSold || 0} books</td>
                     </tr>
                 `;
             });
         } catch (e) {
             console.error('Ranking Error:', e);
             const tbody = document.getElementById('ranking-list');
-            if (tbody) tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-3">Không thể tải dữ liệu</td></tr>';
+            if (tbody) tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-3">Failed to load data</td></tr>';
         }
     },
 
-    // 3. Audit Logs — thoiDiem is already a formatted String ("dd/MM/yyyy HH:mm:ss"), no new Date() needed
+    // 3. Audit Logs — Uses 'action', 'details', 'timestamp'
     loadAuditLogs: async () => {
         try {
             const res = await api.get('/admin/audit-logs');
@@ -78,7 +78,7 @@ const dashboard = {
             tbody.innerHTML = '';
 
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-3">Chưa có nhật ký hệ thống</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-3">No system logs found</td></tr>';
                 return;
             }
 
@@ -86,8 +86,8 @@ const dashboard = {
                 tbody.innerHTML += `
                     <tr>
                         <td class="ps-3 fw-bold text-dark">${log.username || '---'}</td>
-                        <td class="text-wrap">${log.chiTiet || log.hanhDong || '---'}</td>
-                        <td class="text-end pe-3 text-muted small text-nowrap">${log.thoiDiem || '---'}</td>
+                        <td class="text-wrap">${log.details || log.action || '---'}</td>
+                        <td class="text-end pe-3 text-muted small text-nowrap">${log.timestamp || '---'}</td>
                     </tr>
                 `;
             });

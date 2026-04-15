@@ -1,52 +1,52 @@
 <!-- Users/Admin/Create.html - Create Staff/Admin Account -->
 <div class="p-4 p-md-5 w-100">
     <div class="d-flex align-items-center gap-3 mb-5">
-        <button onclick="layout.render('Users', 'Admin/Index')" class="btn btn-light rounded-circle p-2">
-            <i class="icon icon-arrow-left"></i>
+        <button onclick="layout.render('Users', 'Admin/Index')" class="btn btn-light rounded-circle p-2 shadow-sm">
+            <i class="icon icon-ns-arrow-left"></i>
         </button>
         <div>
-            <h2 class="fw-bold font-serif mb-0">Tạo tài khoản mới</h2>
-            <p class="text-muted mb-0 small">Thêm nhân viên hoặc quản trị viên vào hệ thống</p>
+            <h2 class="fw-bold font-serif mb-0">Create New Account</h2>
+            <p class="text-muted mb-0 small">Add a new staff member or system administrator to the platform</p>
         </div>
     </div>
 
     <div class="row justify-content-center">
         <div class="col-lg-7">
-            <div class="card border-0 shadow-sm rounded-5 p-5">
-                <div class="row g-3">
+            <div class="card border-0 shadow-sm rounded-5 p-5 bg-white">
+                <div class="row g-4">
                     <div class="col-12">
-                        <label class="form-label fw-bold text-muted small text-uppercase">Tên đăng nhập <span class="text-danger">*</span></label>
-                        <input type="text" id="new-username" class="form-control form-control-lg rounded-4" placeholder="VD: nhanvien01">
+                        <label class="form-label fw-bold text-muted extra-small text-uppercase opacity-75">Username <span class="text-danger">*</span></label>
+                        <input type="text" id="new-username" class="form-control form-control-lg rounded-pill border-light px-4 bg-light shadow-none" placeholder="e.g. staff_01">
                     </div>
                     <div class="col-12">
-                        <label class="form-label fw-bold text-muted small text-uppercase">Mật khẩu <span class="text-danger">*</span></label>
-                        <input type="password" id="new-password" class="form-control form-control-lg rounded-4" placeholder="Tối thiểu 6 ký tự">
+                        <label class="form-label fw-bold text-muted extra-small text-uppercase opacity-75">Secure Password <span class="text-danger">*</span></label>
+                        <input type="password" id="new-password" class="form-control form-control-lg rounded-pill border-light px-4 bg-light shadow-none" placeholder="Minimum 6 characters">
                     </div>
                     <div class="col-12">
-                        <label class="form-label fw-bold text-muted small text-uppercase">Quyền hạn <span class="text-danger">*</span></label>
-                        <select id="new-role" class="form-select form-select-lg rounded-4">
-                            <option value="">-- Chọn quyền --</option>
-                            <option value="STAFF">STAFF - Nhân viên bán hàng</option>
-                            <option value="STOREKEEPER">STOREKEEPER - Thủ kho</option>
-                            <option value="ADMIN">ADMIN - Quản trị viên</option>
+                        <label class="form-label fw-bold text-muted extra-small text-uppercase opacity-75">Access Role <span class="text-danger">*</span></label>
+                        <select id="new-role" class="form-select form-select-lg rounded-pill border-light px-4 bg-light shadow-none">
+                            <option value="">-- Select Role --</option>
+                            <option value="STAFF">STAFF - Sales Representative</option>
+                            <option value="STOREKEEPER">STOREKEEPER - Warehouse Manager</option>
+                            <option value="ADMIN">ADMIN - System Administrator</option>
                         </select>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-muted small text-uppercase">Họ và tên</label>
-                        <input type="text" id="new-hoten" class="form-control rounded-4" placeholder="Nhập họ tên...">
+                        <label class="form-label fw-bold text-muted extra-small text-uppercase opacity-75">Full Name</label>
+                        <input type="text" id="new-fullName" class="form-control rounded-pill border-light px-4 shadow-sm" placeholder="e.g. John Doe">
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label fw-bold text-muted small text-uppercase">Số điện thoại</label>
-                        <input type="tel" id="new-sdt" class="form-control rounded-4" placeholder="Nhập SĐT...">
+                        <label class="form-label fw-bold text-muted extra-small text-uppercase opacity-75">Contact Phone</label>
+                        <input type="tel" id="new-phone" class="form-control rounded-pill border-light px-4 shadow-sm" placeholder="e.g. 090xxxxxxx">
                     </div>
                 </div>
 
                 <div class="mt-5 d-flex gap-3">
-                    <button onclick="users.adminCreate()" class="btn btn-accent btn-lg rounded-pill px-5 fw-bold flex-grow-1">
-                        <i class="icon icon-user me-2"></i> Tạo tài khoản
+                    <button onclick="users.adminCreate()" class="btn btn-accent btn-lg rounded-pill px-5 fw-bold flex-grow-1 shadow-sm transition-all">
+                        <i class="icon icon-ns-user-plus me-2"></i> Create Account
                     </button>
-                    <button onclick="layout.render('Users', 'Admin/Index')" class="btn btn-light btn-lg rounded-pill px-4">
-                        Hủy
+                    <button onclick="layout.render('Users', 'Admin/Index')" class="btn btn-light btn-lg rounded-pill px-4 transition-all">
+                        Cancel
                     </button>
                 </div>
             </div>
@@ -55,6 +55,8 @@
 </div>
 
 <style>
+    .font-serif { font-family: 'Playfair Display', serif; }
+    .extra-small { font-size: 0.7rem; letter-spacing: 0.05em; }
     .btn-accent { background-color: #C5A992; color: white; border: none; }
-    .btn-accent:hover { background-color: #2F2F2F; transform: translateY(-2px); }
+    .btn-accent:hover { background-color: #2F2F2F; transform: translateY(-3px); }
 </style>

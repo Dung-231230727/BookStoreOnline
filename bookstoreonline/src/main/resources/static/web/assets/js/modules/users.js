@@ -9,28 +9,28 @@ const users = {
     // =========================================================
     loadAdminList: async () => {
         try {
-            const res = await api.get('/admin/users/get-users');
+            const res = await api.get('/admin/accounts/get-users');
             const data = Array.isArray(res) ? res : (res.data || []);
             const tbody = $("#users-admin-list");
             if (!tbody.length) return;
             tbody.empty();
 
             if (data.length === 0) {
-                tbody.html('<tr><td colspan="6" class="text-center py-4 text-muted">Không có người dùng nào.</td></tr>');
+                tbody.html('<tr><td colspan="6" class="text-center py-4 text-muted">No users found in system.</td></tr>');
                 return;
             }
 
             const roleBadge = { ADMIN: 'bg-danger', STAFF: 'bg-primary', STOREKEEPER: 'bg-warning text-dark', CUSTOMER: 'bg-secondary' };
 
             data.forEach(user => {
-                const isActive = user.trangThai === true || user.trangThai === 1;
+                const isActive = user.isActive === true; // Aligned with AccountDTO isActive
                 tbody.append(`
                     <tr>
                         <td class="ps-4 fw-bold text-dark">${user.username}</td>
-                        <td>${user.hoTen || '---'}</td>
+                        <td>${user.fullName || '---'}</td>
                         <td><span class="badge ${roleBadge[user.role] || 'bg-secondary'} rounded-pill px-3">${user.role}</span></td>
-                        <td>${user.ngayTao ? new Date(user.ngayTao).toLocaleDateString('vi-VN') : '---'}</td>
-                        <td><span class="badge ${isActive ? 'bg-success' : 'bg-danger'} bg-opacity-15 ${isActive ? 'text-success' : 'text-danger'} rounded-pill px-3">${isActive ? 'Hoạt động' : 'Bị khóa'}</span></td>
+                        <td>${user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB') : '---'}</td>
+                        <td><span class="badge ${isActive ? 'bg-success' : 'bg-danger'} bg-opacity-15 ${isActive ? 'text-success' : 'text-danger'} rounded-pill px-3">${isActive ? 'Active' : 'Locked'}</span></td>
                         <td class="text-end pe-4 d-flex gap-2 justify-content-end">
                             <select class="form-select form-select-sm rounded-pill" style="width: auto"
                                 onchange="users.changeRole('${user.username}', this.value)">
@@ -39,66 +39,58 @@ const users = {
                                 ).join('')}
                             </select>
                             <button class="btn btn-sm btn-outline-${isActive ? 'danger' : 'success'} rounded-pill px-3"
-                                onclick="users.toggleStatus('${user.username}')">
-                                ${isActive ? 'Khóa' : 'Mở khóa'}
+                                onclick="users.toggleStatus('${user.username}', ${isActive})">
+                                ${isActive ? 'Lock' : 'Unlock'}
                             </button>
                         </td>
                     </tr>
                 `);
             });
         } catch (e) {
-            api.showToast("Lỗi tải danh sách người dùng", "error");
+            api.showToast("Failed to load user list", "error");
         }
     },
 
-    toggleStatus: async (username) => {
+    toggleStatus: async (username, currentActive) => {
         try {
-            // Backend: PUT /admin/users/{username}/status?status=true/false
-            // We need to know current status to toggle — reload and check
-            const res = await api.get('/admin/users/get-users');
-            const data = Array.isArray(res) ? res : (res.data || []);
-            const user = data.find(u => u.username === username);
-            const newStatus = user ? !(user.trangThai === true || user.trangThai === 1) : false;
-            await api.put(`/admin/users/${username}/status?status=${newStatus}`);
-            api.showToast("Cập nhật trạng thái thành công!");
+            // Backend: PUT /admin/accounts/{username}/status?status=true/false
+            await api.put(`/admin/accounts/${username}/status?status=${!currentActive}`);
+            api.showToast("Account status updated successfully!");
             users.loadAdminList();
         } catch (e) {
-            api.showToast("Lỗi khi khóa/mở khóa tài khoản", "error");
+            api.showToast("Error updating account status", "error");
         }
     },
 
     changeRole: async (username, newRole) => {
         try {
-            // Backend: PUT /admin/users/{username}/role?role=VALUE
-            await api.put(`/admin/users/${username}/role?role=${newRole}`);
-            api.showToast(`Đã thay đổi quyền thành ${newRole}`);
+            await api.put(`/admin/accounts/${username}/role?role=${newRole}`);
+            api.showToast(`Role updated to ${newRole}`);
         } catch (e) {
-            api.showToast("Lỗi khi thay đổi quyền", "error");
+            api.showToast("Error updating user role", "error");
             users.loadAdminList();
         }
     },
 
-    // ADMIN: Create new staff/admin account
     adminCreate: async () => {
         const username    = $("#new-username").val().trim();
         const password    = $("#new-password").val().trim();
         const role        = $("#new-role").val();
-        const hoTen       = $("#new-hoten").val().trim();
-        const sdt         = $("#new-sdt").val().trim();
+        const fullName    = $("#new-fullName").val().trim();
+        const phone       = $("#new-phone").val().trim();
 
         if (!username || !password || !role) {
-            api.showToast("Vui lòng điền đầy đủ thông tin bắt buộc", "warning");
+            api.showToast("Please fill in all required fields", "warning");
             return;
         }
 
         try {
-            await api.post('/admin/users/create', { username, password, role, hoTen, sdt });
-            api.showToast("Tạo tài khoản thành công!");
+            await api.post('/admin/accounts/create', { username, password, role, fullName, phone });
+            api.showToast("Account created successfully!");
             users.loadAdminList();
-            // Clear form
-            ["#new-username","#new-password","#new-hoten","#new-sdt"].forEach(id => $(id).val(''));
+            ["#new-username","#new-password","#new-fullName","#new-phone"].forEach(id => $(id).val(''));
         } catch (e) {
-            api.showToast("Lỗi tạo tài khoản: " + e.message, "error");
+            api.showToast("Error creating account: " + e.message, "error");
         }
     },
 
@@ -110,17 +102,17 @@ const users = {
         if (!user) { layout.render('Auth', 'Login'); return; }
 
         try {
-            const res = await api.get('/users/get-profile');
-            const profile = res.data || res;
+            const res = await api.get('/users/profile');
+            const p = res.data || res;
 
-            $("#profile-username").val(profile.username || user.username);
-            $("#profile-hoten").val(profile.hoTen || '');
-            $("#profile-sdt").val(profile.sdt || '');
-            $("#profile-diachi").val(profile.diaChiGiaoHang || '');
-            $("#profile-email").val(profile.email || '');
-            $("#profile-role").val(profile.role || user.role || '');
+            $("#profile-username").val(p.username || user.username);
+            $("#profile-fullName").val(p.fullName || '');
+            $("#profile-phone").val(p.phoneNumber || p.phone || '');
+            $("#profile-address").val(p.address || '');
+            $("#profile-email").val(p.email || '');
+            $("#profile-role").val(p.role || user.role || '');
         } catch (e) {
-            api.showToast("Không thể tải thông tin hồ sơ", "error");
+            api.showToast("Failed to load profile information", "error");
         }
     },
 
@@ -129,19 +121,26 @@ const users = {
         if (!user) return;
 
         const isCustomer = user.role === 'CUSTOMER';
-        const endpoint   = isCustomer ? '/users/update-customer-profile' : '/users/update-staff-profile';
+        const endpoint   = isCustomer ? '/users/profile/update-customer' : '/users/profile/update-staff';
 
         const data = {
-            hoTen:            $("#profile-hoten").val().trim(),
-            sdt:              $("#profile-sdt").val().trim(),
-            diaChiGiaoHang:   isCustomer ? $("#profile-diachi").val().trim() : undefined,
+            fullName:    $("#profile-fullName").val().trim(),
+            phone:       $("#profile-phone").val().trim(),
+            address:     isCustomer ? $("#profile-address").val().trim() : undefined,
         };
 
         try {
             await api.put(endpoint, data);
-            api.showToast("Cập nhật hồ sơ thành công!");
+            api.showToast("Profile updated successfully!");
+            // Update local storage if needed
+            const current = api.getUser();
+            if (current) {
+                current.fullName = data.fullName;
+                localStorage.setItem('user', JSON.stringify(current));
+                layout.updateUserHeader();
+            }
         } catch (e) {
-            api.showToast("Lỗi khi cập nhật hồ sơ", "error");
+            api.showToast("Error updating profile", "error");
         }
     },
 
@@ -151,24 +150,24 @@ const users = {
         const confirm2 = $("#pw-confirm").val().trim();
 
         if (!oldPass || !newPass) {
-            api.showToast("Vui lòng điền đầy đủ mật khẩu", "warning");
+            api.showToast("Please enter all password fields", "warning");
             return;
         }
         if (newPass !== confirm2) {
-            api.showToast("Xác nhận mật khẩu không khớp", "error");
+            api.showToast("Passwords do not match", "error");
             return;
         }
         if (newPass.length < 6) {
-            api.showToast("Mật khẩu mới phải có ít nhất 6 ký tự", "warning");
+            api.showToast("New password must be at least 6 characters", "warning");
             return;
         }
 
         try {
-            await api.put('/users/update-password', { oldPassword: oldPass, newPassword: newPass });
-            api.showToast("Đổi mật khẩu thành công!");
+            await api.put('/users/profile/change-password', { oldPassword: oldPass, newPassword: newPass });
+            api.showToast("Password changed successfully!");
             ["#pw-old","#pw-new","#pw-confirm"].forEach(id => $(id).val(''));
         } catch (e) {
-            api.showToast("Lỗi đổi mật khẩu: " + e.message, "error");
+            api.showToast("Password change failed: " + e.message, "error");
         }
     }
 };

@@ -1,26 +1,26 @@
-<div class="order-history-page py-5">
-    <div class="container">
+<div class="order-history-page py-5 bg-sand min-vh-100">
+    <div class="container py-5">
         <div class="d-flex justify-content-between align-items-center mb-5">
             <div>
-                <h2 class="fw-bold mb-1">Lịch sử đơn hàng</h2>
-                <p class="text-muted">Theo dõi và quản lý các đơn hàng bạn đã đặt tại Booksaw</p>
+                <h2 class="fw-bold mb-1 font-serif">Lịch sử đơn hàng</h2>
+                <p class="text-muted">Theo dõi hành trình và tình trạng các đơn hàng bạn đã đặt</p>
             </div>
-            <button class="btn btn-outline-accent rounded-pill px-4" onclick="layout.render('', 'Home/Index')">
-                <i class="icon icon-plus me-2"></i> Mua thêm sách
+            <button class="btn btn-dark rounded-pill px-4 shadow-sm" onclick="layout.render('', 'Home/Index')">
+                <i class="icon icon-ns-plus me-2"></i> Mua sắm thêm
             </button>
         </div>
 
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light">
+                    <thead class="bg-light text-muted extra-small text-uppercase fw-bold border-0">
                         <tr>
-                            <th class="ps-4 py-3 text-muted small text-uppercase fw-bold">Mã đơn</th>
-                            <th class="py-3 text-muted small text-uppercase fw-bold">Ngày đặt</th>
-                            <th class="py-3 text-muted small text-uppercase fw-bold">Tổng tiền</th>
-                            <th class="py-3 text-muted small text-uppercase fw-bold">Thanh toán</th>
-                            <th class="py-3 text-muted small text-uppercase fw-bold">Trạng thái</th>
-                            <th class="py-3 text-muted small text-uppercase fw-bold text-end pe-4">Thao tác</th>
+                            <th class="ps-4 py-3">Mã Đơn Hàng</th>
+                            <th class="py-3">Ngày Đặt Hàng</th>
+                            <th class="py-3">Tổng Giá Trị</th>
+                            <th class="py-3">Thanh Toán</th>
+                            <th class="py-3">Trạng Thái</th>
+                            <th class="py-3 text-end pe-4">Thao Tác</th>
                         </tr>
                     </thead>
                     <tbody id="order-history-list" class="border-top-0">
@@ -28,7 +28,7 @@
                         <tr>
                             <td colspan="6" class="text-center py-5">
                                 <div class="spinner-border text-accent spinner-border-sm" role="status"></div>
-                                <span class="ms-2 text-muted">Đang tải lịch sử...</span>
+                                <span class="ms-2 text-muted small">Đang đồng bộ lịch sử đơn hàng...</span>
                             </td>
                         </tr>
                     </tbody>
@@ -37,3 +37,10 @@
         </div>
     </div>
 </div>
+
+<style>
+    .bg-sand { background-color: #FDFCF9; }
+    .font-serif { font-family: 'Playfair Display', serif; }
+    .extra-small { font-size: 0.72rem; letter-spacing: 0.05em; }
+    .text-accent { color: #C5A992; }
+</style>

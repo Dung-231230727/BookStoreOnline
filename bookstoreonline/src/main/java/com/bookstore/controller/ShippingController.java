@@ -1,13 +1,16 @@
 package com.bookstore.controller;
 
 import com.bookstore.dto.ApiResponse;
-import com.bookstore.dto.TrackingResponseDto;
+import com.bookstore.dto.TrackingResponseDTO;
 import com.bookstore.service.ShippingService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/shipping")
+@Tag(name = "Shipping Management", description = "Theo dõi và cập nhật trạng thái vận chuyển")
 public class ShippingController {
 
     private final ShippingService shippingService;
@@ -16,19 +19,22 @@ public class ShippingController {
         this.shippingService = shippingService;
     }
 
-    // API 42: Live Tracking lộ trình giao hàng (Mock)
-    // Method: GET
-    // URL: http://localhost:8080/api/shipping/track/{id}
     @GetMapping("/track/{id}")
-    public ResponseEntity<TrackingResponseDto> trackOrder(@PathVariable String id) {
-        TrackingResponseDto response = shippingService.trackOrder(id);
-        return ResponseEntity.ok(response);
+    @Operation(summary = "Theo dõi vận chuyển (ID vận đơn)")
+    public ResponseEntity<ApiResponse<TrackingResponseDTO>> trackOrder(@PathVariable String id) {
+        TrackingResponseDTO response = shippingService.trackOrder(id);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    // API 43: Update Shipping Status
-    // Method: PUT
-    // URL: http://localhost:8080/api/shipping/{id}/status
+    @GetMapping("/tracking/{orderId}")
+    @Operation(summary = "Theo dõi vận chuyển (Mã đơn hàng)")
+    public ResponseEntity<ApiResponse<TrackingResponseDTO>> getTrackingByOrderId(@PathVariable String orderId) {
+        TrackingResponseDTO response = shippingService.trackOrder(orderId);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
     @PutMapping("/{id}/status")
+    @Operation(summary = "Cập nhật trạng thái vận chuyển")
     public ResponseEntity<ApiResponse<String>> updateShippingStatus(
             @PathVariable String id,
             @RequestParam String status,

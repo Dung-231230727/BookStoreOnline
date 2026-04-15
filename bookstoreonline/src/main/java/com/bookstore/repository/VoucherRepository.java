@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface VoucherRepository extends JpaRepository<Voucher, String> {
     
-    // Tìm các voucher vẫn còn hạn sử dụng
-    List<Voucher> findByThoiHanAfter(LocalDateTime date);
+    // Find vouchers that are still valid
+    List<Voucher> findByExpiryDateAfter(LocalDateTime date);
 }

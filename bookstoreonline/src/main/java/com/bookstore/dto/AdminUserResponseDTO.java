@@ -4,20 +4,20 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
 public class AdminUserResponseDTO {
-    @Schema(example = "nv_kho_01")
+    @Schema(example = "stock_manager_01")
     private String username;
 
     @Schema(example = "STOREKEEPER")
     private String role;
 
     @Schema(example = "true")
-    private Boolean trangThai;
+    private Boolean isActive;
 
     @Schema(example = "2024-04-13T08:00:00")
-    private LocalDateTime ngayTao;
+    private LocalDateTime createdAt;
 
-    @Schema(example = "KHO")
-    private String boPhan;
+    @Schema(example = "WAREHOUSE")
+    private String department;
 
     public AdminUserResponseDTO() {}
 
@@ -25,10 +25,10 @@ public class AdminUserResponseDTO {
     public void setUsername(String username) { this.username = username; }
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
-    public Boolean getTrangThai() { return trangThai; }
-    public void setTrangThai(Boolean trangThai) { this.trangThai = trangThai; }
-    public LocalDateTime getNgayTao() { return ngayTao; }
-    public void setNgayTao(LocalDateTime setNgayTao) { this.ngayTao = setNgayTao; }
-    public String getBoPhan() { return boPhan; }
-    public void setBoPhan(String boPhan) { this.boPhan = boPhan; }
+    public Boolean getIsActive() { return isActive; }
+    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public String getDepartment() { return department; }
+    public void setDepartment(String department) { this.department = department; }
 }

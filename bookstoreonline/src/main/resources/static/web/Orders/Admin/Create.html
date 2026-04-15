@@ -1,0 +1,182 @@
+<div class="p-4 p-md-5 w-100">
+
+    <main class="flex-grow-1 p-4 p-md-5">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-5">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-decoration-none text-muted">Admin</a></li>
+                <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Orders/Admin', 'Index')" class="text-decoration-none text-muted">Đơn hàng</a></li>
+                <li class="breadcrumb-item small active fw-bold text-accent">Tạo đơn hàng mới</li>
+            </ol>
+        </nav>
+
+        <div class="row gap-4">
+            <!-- Main Content -->
+            <div class="col-md-8">
+                <!-- Customer Selection -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4 p-4">
+                    <h5 class="fw-bold mb-3">Chọn khách hàng</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label small text-muted fw-bold">Khách hàng</label>
+                        <select class="form-select rounded-3 border-0 bg-light" id="order-customer-select" onchange="loadCustomerInfo(event)">
+                            <option value="">-- Chọn khách hàng --</option>
+                            <option value="1">Nguyễn Văn A - customer1@email.com</option>
+                            <option value="2">Trần Thị B - customer2@email.com</option>
+                            <option value="3">Phạm Văn C - customer3@email.com</option>
+                        </select>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <small class="text-muted d-block mb-1">Email</small>
+                            <strong id="order-customer-email">--</strong>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted d-block mb-1">Điện thoại</small>
+                            <strong id="order-customer-phone">--</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Items -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4 p-4">
+                    <h5 class="fw-bold mb-3">Thêm sản phẩm</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label small text-muted fw-bold">Chọn sách</label>
+                        <div class="input-group">
+                            <select class="form-select rounded-start-3 border-0 bg-light" id="order-book-select">
+                                <option value="">-- Chọn sách --</option>
+                                <option value="1">Lập trình Java - 150,000₫</option>
+                                <option value="2">Python cho người mới - 120,000₫</option>
+                                <option value="3">Web Development - 180,000₫</option>
+                            </select>
+                            <button class="btn btn-accent rounded-end-3 px-4" onclick="addOrderItem()">
+                                <i class="icon icon-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Items List -->
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0">
+                            <thead class="border-bottom bg-light rounded-3">
+                                <tr>
+                                    <th>Sách</th>
+                                    <th>Giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Thành tiền</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="order-items-list">
+                                <tr>
+                                    <td colspan="5" class="text-center py-3 text-muted small">
+                                        Chưa có sản phẩm. Vui lòng thêm sản phẩm.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Shipping & Payment -->
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <h5 class="fw-bold mb-3">Địa chỉ giao hàng & Thanh toán</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label small text-muted fw-bold">Địa chỉ giao hàng</label>
+                        <textarea class="form-control rounded-3 border-0 bg-light" id="order-shipping-address" rows="2" placeholder="Nhập địa chỉ giao hàng..."></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted fw-bold">Phương thức thanh toán</label>
+                            <select class="form-select rounded-3 border-0 bg-light" id="order-payment-method">
+                                <option value="COD">Thanh toán khi nhận</option>
+                                <option value="VNPAY">VNPay</option>
+                                <option value="MOMO">Momo</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted fw-bold">Phiếu giảm giá (nếu có)</label>
+                            <input type="text" class="form-control rounded-3 border-0 bg-light" id="order-voucher-code" placeholder="Nhập mã voucher...">
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <small class="text-muted d-block mb-2">Ghi chú đơn hàng</small>
+                        <textarea class="form-control rounded-3 border-0 bg-light" id="order-notes" rows="2" placeholder="Nhập ghi chú (tùy chọn)"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar - Order Summary -->
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 30px;">
+                    <h5 class="fw-bold mb-3">Tóm tắt đơn hàng</h5>
+                    
+                    <div class="alert alert-light border-0 bg-light rounded-3 p-3 mb-3">
+                        <small class="d-block mb-2">
+                            <strong>Subtotal:</strong> 
+                            <span class="float-end" id="order-subtotal">0₫</span>
+                        </small>
+                        <small class="d-block mb-2">
+                            <strong>Phí vận chuyển:</strong> 
+                            <span class="float-end" id="order-shipping-fee">0₫</span>
+                        </small>
+                        <small class="d-block mb-2">
+                            <strong>Giảm giá:</strong> 
+                            <span class="float-end text-danger" id="order-discount">0₫</span>
+                        </small>
+                        <hr class="my-2">
+                        <strong class="d-block">
+                            Tổng cộng: 
+                            <span class="float-end text-accent fs-5" id="order-total">0₫</span>
+                        </strong>
+                    </div>
+
+                    <hr class="my-3">
+
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-accent rounded-3 py-3 fw-bold" onclick="orders.saveAdminOrder()">
+                            <i class="icon icon-check me-2"></i>Tạo đơn hàng
+                        </button>
+                        <button class="btn btn-light rounded-3 py-3 fw-bold text-muted" onclick="layout.render('Orders/Admin', 'Index')">
+                            <i class="icon icon-close me-2"></i>Hủy
+                        </button>
+                    </div>
+
+                    <div class="mt-3 p-3 bg-warning-subtle rounded-3 border border-warning-subtle">
+                        <small class="text-warning fw-bold d-block mb-1">
+                            <i class="icon icon-alert me-2"></i>Lưu ý quan trọng
+                        </small>
+                        <small class="text-muted">
+                            Đơn hàng sẽ được tạo với trạng thái "Mới". Hệ thống sẽ tự động gửi email xác nhận đến khách hàng.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    $("#header-area, #footer-area").hide();
+    
+    function loadCustomerInfo(event) {
+        const customerId = event.target.value;
+        // Load customer details dynamically
+        console.log("Load customer:", customerId);
+    }
+    
+    function addOrderItem() {
+        // Add selected book to order items list
+        console.log("Add order item");
+    }
+    
+    $(document).ready(function() {
+        console.log("Order create page loaded");
+    });
+</script>

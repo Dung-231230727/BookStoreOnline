@@ -1,5 +1,6 @@
 /**
  * auth.js - Authentication Logic
+ * Standardized for Full English Backend synchronization
  */
 const auth = {
     // Perform Login
@@ -7,26 +8,26 @@ const auth = {
         try {
             const result = await api.post('/auth/login', { username, password });
             
-            // Backend ApiResponse uses 'status: 200' instead of 'success: true'
             if (result.status === 200) {
                 const loginData = result.data;
                 api.setToken(loginData.token);
-                // Save full user info for use in checkout/profile
+                
+                // Save user info for use across the site
                 api.setUser({
-                    username:    loginData.username,
-                    role:        loginData.role,
-                    hoTen:       loginData.hoTen       || loginData.username,
-                    email:       loginData.email        || '',
-                    soDienThoai: loginData.soDienThoai  || '',
-                    diaChi:      loginData.diaChi        || ''
+                    username: loginData.username,
+                    role:     loginData.role,
+                    fullName: loginData.fullName || loginData.name || loginData.username,
+                    email:    loginData.email    || loginData.emailAddress || '',
+                    phone:    loginData.phone    || loginData.phoneNumber || loginData.mobilePhone || '',
+                    address:  loginData.address  || loginData.shippingAddress || loginData.street || ''
                 });
                 
-                api.showToast("Đăng nhập thành công!", "success");
+                api.showToast("Login Successful!", "success");
 
-                // Immediately update header dropdown — no reload needed
+                // Update UI layout context
                 if (window.layout && layout.updateUserHeader) layout.updateUserHeader();
 
-                // Redirect based on role
+                // Professional Admin Dashboard redirect
                 if (loginData.role === 'ADMIN' || loginData.role === 'STAFF') {
                     setTimeout(() => layout.render('Dashboard', 'Admin/Index'), 500);
                 } else {
@@ -43,7 +44,7 @@ const auth = {
         try {
             const result = await api.post('/auth/register', userData);
             if (result.status === 200) {
-                api.showToast("Đăng ký thành công! Hãy đăng nhập.", "success");
+                api.showToast("Registration successful! Please login.", "success");
                 layout.render('Auth', 'Login');
             }
         } catch (error) {
@@ -56,14 +57,17 @@ const auth = {
         api.clearToken();
         api.clearUser();
         sessionStorage.removeItem('applied_voucher');
-        // Immediately update header dropdown to guest state — no page reload needed
+        sessionStorage.removeItem('applied_discount');
+
         if (window.layout && layout.updateUserHeader) layout.updateUserHeader();
-        api.showToast("Đã đăng xuất thành công");
+        api.showToast("Logged out successfully");
         layout.render('Home', 'Index');
     }
 };
 
-// Form Binding Logic (to be called after view render)
+/**
+ * Form Binding Logic (to be called after view render)
+ */
 function initAuthForms() {
     $("#loginForm").on('submit', function(e) {
         e.preventDefault();
@@ -78,7 +82,7 @@ function initAuthForms() {
         const confirm = $("#reg-confirm-password").val();
         
         if (pass !== confirm) {
-            api.showToast("Mật khẩu xác nhận không khớp", "error");
+            api.showToast("Password confirmation does not match", "error");
             return;
         }
 

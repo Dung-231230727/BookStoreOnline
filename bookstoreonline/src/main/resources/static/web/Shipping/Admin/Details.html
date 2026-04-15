@@ -1,0 +1,165 @@
+<div class="p-4 p-md-5 w-100">
+
+    <main class="flex-grow-1 p-4 p-md-5">
+        <!-- Breadcrumb & Header -->
+        <div class="mb-5">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2">
+                    <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-decoration-none text-muted">Admin</a></li>
+                    <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Shipping/Admin', 'Index')" class="text-decoration-none text-muted">Vận chuyển</a></li>
+                    <li class="breadcrumb-item small active fw-bold text-accent">Chi tiết vận chuyển</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold font-serif mb-0">Chi tiết Vận chuyển</h2>
+        </div>
+
+        <div class="row gap-4">
+            <!-- Main Content -->
+            <div class="col-md-8">
+                <!-- Shipment Information Card -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4 p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h4 class="fw-bold mb-2">Mã vận chuyển: <span id="shipping-id">#VĐ123456</span></h4>
+                            <small class="text-muted">Mã đơn hàng: <strong id="shipping-order-id">#DH123456</strong></small>
+                        </div>
+                        <div id="shipping-status-badge" class="badge bg-info rounded-pill px-3 py-2">PENDING</div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <h5 class="fw-bold mb-3">Thông tin giao hàng</h5>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <small class="text-muted d-block mb-1">Nhà vận chuyển</small>
+                            <strong id="shipping-carrier">Giao Hàng Nhanh</strong>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted d-block mb-1">Mã theo dõi</small>
+                            <strong id="shipping-tracking-code">GHN123456789</strong>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <small class="text-muted d-block mb-1">Người nhận</small>
+                            <strong id="shipping-receiver-name">Nguyễn Văn A</strong><br/>
+                            <small class="text-muted" id="shipping-receiver-phone">0912345678</small>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted d-block mb-1">Địa chỉ giao</small>
+                            <small id="shipping-receiver-address" class="text-muted">123 Đường ABC, Quận 1, TP. HCM</small>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Timeline -->
+                    <h5 class="fw-bold mb-3">Lịch sử trạng thái</h5>
+                    <div id="shipping-timeline" class="mb-4">
+                        <div class="d-flex gap-3 mb-3">
+                            <div class="position-relative">
+                                <div class="bg-success rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; min-width: 30px;">
+                                    <i class="icon icon-check text-white fs-6"></i>
+                                </div>
+                                <div class="border-start border-2 border-light-subtle" style="height: 30px; margin-left: 14px;"></div>
+                            </div>
+                            <div>
+                                <strong class="d-block">Đã xác nhận</strong>
+                                <small class="text-muted">01/04/2024 09:00</small>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-3 mb-3">
+                            <div class="position-relative">
+                                <div class="bg-info rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; min-width: 30px;">
+                                    <i class="icon icon-location text-white fs-6"></i>
+                                </div>
+                                <div class="border-start border-2 border-light-subtle" style="height: 30px; margin-left: 14px;"></div>
+                            </div>
+                            <div>
+                                <strong class="d-block">Đang giao</strong>
+                                <small class="text-muted">01/04/2024 14:30</small>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-3">
+                            <div class="position-relative">
+                                <div class="bg-light rounded-circle p-2 d-flex align-items-center justify-content-center text-muted" style="width: 30px; height: 30px; min-width: 30px;">
+                                    <i class="icon icon-check fs-6"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <strong class="d-block text-muted">Đã giao</strong>
+                                <small class="text-muted">--:--</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Update Status Form -->
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <h5 class="fw-bold mb-3">Cập nhật trạng thái</h5>
+                    <form onsubmit="shipping.updateStatus(event)">
+                        <div class="mb-3">
+                            <label class="form-label small text-muted fw-bold">Trạng thái mới</label>
+                            <select class="form-select rounded-3 border-0 bg-light" id="shipping-new-status" required>
+                                <option value="PENDING">Chờ xác nhận</option>
+                                <option value="IN_TRANSIT" selected>Đang giao</option>
+                                <option value="DELIVERED">Đã giao</option>
+                                <option value="RETURNED">Trả lại</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-muted fw-bold">Ghi chú</label>
+                            <textarea class="form-control rounded-3 border-0 bg-light" id="shipping-update-note" rows="2" placeholder="Nhập ghi chú (tùy chọn)"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-accent rounded-3 px-4 py-2 fw-bold">
+                            <i class="icon icon-check me-2"></i>Cập nhật
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <h5 class="fw-bold mb-3">Thông tin bổ sung</h5>
+                    
+                    <small class="text-muted d-block mb-2">
+                        <strong>Ngày tạo:</strong> <span id="shipping-created-date">01/04/2024</span>
+                    </small>
+                    <small class="text-muted d-block mb-2">
+                        <strong>Cân nặng:</strong> <span id="shipping-weight">1.5 kg</span>
+                    </small>
+                    <small class="text-muted d-block mb-2">
+                        <strong>Phí ship:</strong> <span id="shipping-fee" class="text-dark fw-bold">45,000 ₫</span>
+                    </small>
+                    <small class="text-muted d-block mb-4">
+                        <strong>Ghi chú:</strong> <span id="shipping-notes">--</span>
+                    </small>
+
+                    <hr class="my-3">
+
+                    <div class="d-grid gap-2">
+                        <a href="javascript:void(0)" onclick="layout.render('Shipping/Admin', 'Index')" class="btn btn-light rounded-3 py-2 fw-bold">
+                            <i class="icon icon-arrow-left me-2"></i>Quay lại
+                        </a>
+                        <a href="javascript:void(0)" id="ghn-link" target="_blank" class="btn btn-outline-accent rounded-3 py-2 fw-bold">
+                            <i class="icon icon-external-link me-2"></i>Xem trên GHN
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    $("#header-area, #footer-area").hide();
+    
+    $(document).ready(function() {
+        const shippingId = new URLSearchParams(window.location.search).get('shippingId');
+        if (shippingId) {
+            shipping.loadAdminDetails(shippingId);
+        }
+    });
+</script>

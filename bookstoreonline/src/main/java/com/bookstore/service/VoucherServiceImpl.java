@@ -19,42 +19,42 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public List<VoucherDTO> layTatCaVoucher() {
+    public List<VoucherDTO> getAllVouchers() {
         return voucherRepository.findAll().stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public VoucherDTO layVoucherTheoMa(String code) {
+    public VoucherDTO getVoucherByCode(String code) {
         return voucherRepository.findById(code)
                 .map(this::toDTO)
-                .orElseThrow(() -> new RuntimeException("Mã giảm giá không tồn tại"));
+                .orElseThrow(() -> new RuntimeException("Voucher code does not exist"));
     }
 
     @Override
-    public VoucherDTO luuVoucher(VoucherDTO dto) {
+    public VoucherDTO saveVoucher(VoucherDTO dto) {
         Voucher entity = new Voucher();
-        entity.setMaVoucher(dto.getMaVoucher());
-        entity.setGiaTriGiam(dto.getGiaTriGiam());
-        entity.setDieuKienToiThieu(dto.getDieuKienToiThieu());
-        entity.setThoiHan(dto.getThoiHan());
+        entity.setVoucherCode(dto.getVoucherCode());
+        entity.setDiscountValue(dto.getDiscountValue());
+        entity.setMinCondition(dto.getMinCondition());
+        entity.setExpiryDate(dto.getExpiryDate());
         
         Voucher saved = voucherRepository.save(entity);
         return toDTO(saved);
     }
 
     @Override
-    public void xoaVoucher(String code) {
+    public void deleteVoucher(String code) {
         voucherRepository.deleteById(code);
     }
 
     private VoucherDTO toDTO(Voucher entity) {
         VoucherDTO dto = new VoucherDTO();
-        dto.setMaVoucher(entity.getMaVoucher());
-        dto.setGiaTriGiam(entity.getGiaTriGiam());
-        dto.setDieuKienToiThieu(entity.getDieuKienToiThieu());
-        dto.setThoiHan(entity.getThoiHan());
+        dto.setVoucherCode(entity.getVoucherCode());
+        dto.setDiscountValue(entity.getDiscountValue());
+        dto.setMinCondition(entity.getMinCondition());
+        dto.setExpiryDate(entity.getExpiryDate());
         return dto;
     }
 }

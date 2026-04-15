@@ -1,67 +1,74 @@
 <!-- Users/Profile.html - Customer & Staff Profile Page -->
-<div class="profile-page py-5">
-    <div class="container" style="max-width: 760px;">
-        <div class="mb-5">
+<div class="profile-page py-5 bg-sand min-vh-100">
+    <div class="container py-5" style="max-width: 760px;">
+        <div class="mb-5 text-center text-md-start">
             <h2 class="fw-bold font-serif">Hồ sơ cá nhân</h2>
-            <p class="text-muted">Quản lý thông tin tài khoản và bảo mật</p>
+            <p class="text-muted">Quản lý thông tin tài khoản và bảo mật quyền riêng tư của bạn</p>
         </div>
 
         <!-- Profile Info Card -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
-            <h5 class="fw-bold mb-4 d-flex align-items-center gap-2">
-                <i class="icon icon-user text-accent"></i> Thông tin cá nhân
+        <div class="card border-0 shadow-sm rounded-5 p-4 p-md-5 mb-4 bg-white">
+            <h5 class="fw-bold mb-4 d-flex align-items-center gap-3 font-serif">
+                <div class="icon-box bg-accent bg-opacity-10 p-2 rounded-3 text-accent"><i class="icon icon-ns-user fs-4"></i></div>
+                Thông tin cá nhân
             </h5>
-            <div class="row g-3">
-                <div class="col-12">
-                    <label class="form-label text-muted small fw-bold">Tên đăng nhập</label>
-                    <input type="text" id="profile-username" class="form-control rounded-4 bg-light" readonly>
-                </div>
-                <div class="col-12">
-                    <label class="form-label text-muted small fw-bold">Quyền hạn</label>
-                    <input type="text" id="profile-role" class="form-control rounded-4 bg-light" readonly>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label class="form-label text-muted extra-small fw-bold text-uppercase opacity-75">Tên đăng nhập</label>
+                    <input type="text" id="profile-username" class="form-control rounded-pill bg-light border-0 px-4 py-2" readonly>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label text-muted small fw-bold">Họ và tên</label>
-                    <input type="text" id="profile-hoten" class="form-control rounded-4" placeholder="Nhập họ tên...">
+                    <label class="form-label text-muted extra-small fw-bold text-uppercase opacity-75">Vai trò hệ thống</label>
+                    <input type="text" id="profile-role" class="form-control rounded-pill bg-light border-0 px-4 py-2" readonly>
+                </div>
+                <div class="col-12">
+                    <label class="form-label text-muted extra-small fw-bold text-uppercase opacity-75">Địa chỉ Email</label>
+                    <input type="email" id="profile-email" class="form-control rounded-pill bg-light border-0 px-4 py-2" readonly>
+                    <small class="text-muted mt-1 d-block opacity-75">Email được dùng để nhận thông báo đơn hàng.</small>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label text-muted small fw-bold">Số điện thoại</label>
-                    <input type="tel" id="profile-sdt" class="form-control rounded-4" placeholder="Nhập SĐT...">
+                    <label class="form-label text-muted extra-small fw-bold text-uppercase opacity-75">Họ và tên</label>
+                    <input type="text" id="profile-fullName" class="form-control rounded-pill border-light px-4 py-2 shadow-sm" placeholder="Nhập đầy đủ họ tên...">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-muted extra-small fw-bold text-uppercase opacity-75">Số điện thoại</label>
+                    <input type="tel" id="profile-phone" class="form-control rounded-pill border-light px-4 py-2 shadow-sm" placeholder="Nhập số điện thoại...">
                 </div>
                 <div class="col-12" id="profile-address-row">
-                    <label class="form-label text-muted small fw-bold">Địa chỉ giao hàng</label>
-                    <input type="text" id="profile-diachi" class="form-control rounded-4" placeholder="Nhập địa chỉ...">
+                    <label class="form-label text-muted extra-small fw-bold text-uppercase opacity-75">Địa chỉ giao hàng</label>
+                    <textarea id="profile-address" class="form-control rounded-4 border-light px-4 py-2 shadow-sm" rows="3" placeholder="Số nhà, tên đường, khu vực..."></textarea>
                 </div>
             </div>
-            <div class="mt-4 text-end">
-                <button onclick="users.updateProfile()" class="btn btn-accent rounded-pill px-5 py-2 fw-bold">
-                    Lưu thay đổi
+            <div class="mt-5 text-end">
+                <button onclick="users.updateProfile()" class="btn btn-accent rounded-pill px-5 py-3 fw-bold shadow-sm transition-all">
+                    Cập nhật thông tin <i class="icon icon-ns-check ms-2"></i>
                 </button>
             </div>
         </div>
 
         <!-- Change Password Card -->
-        <div class="card border-0 shadow-sm rounded-4 p-4">
-            <h5 class="fw-bold mb-4 d-flex align-items-center gap-2">
-                <i class="icon icon-lock text-accent"></i> Đổi mật khẩu
+        <div class="card border-0 shadow-sm rounded-5 p-4 p-md-5 bg-white">
+            <h5 class="fw-bold mb-4 d-flex align-items-center gap-3 font-serif">
+                <div class="icon-box bg-danger bg-opacity-10 p-2 rounded-3 text-danger"><i class="icon icon-ns-lock fs-4"></i></div>
+                Đổi mật khẩu
             </h5>
-            <div class="row g-3">
+            <div class="row g-4">
                 <div class="col-12">
-                    <label class="form-label text-muted small fw-bold">Mật khẩu hiện tại</label>
-                    <input type="password" id="pw-old" class="form-control rounded-4" placeholder="Nhập mật khẩu cũ...">
+                    <label class="form-label text-muted extra-small fw-bold text-uppercase opacity-75">Mật khẩu hiện tại</label>
+                    <input type="password" id="pw-old" class="form-control rounded-pill border-light px-4 py-2 shadow-sm" placeholder="Nhập mật khẩu đang sử dụng">
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label text-muted small fw-bold">Mật khẩu mới</label>
-                    <input type="password" id="pw-new" class="form-control rounded-4" placeholder="Tối thiểu 6 ký tự">
+                    <label class="form-label text-muted extra-small fw-bold text-uppercase opacity-75">Mật khẩu mới</label>
+                    <input type="password" id="pw-new" class="form-control rounded-pill border-light px-4 py-2 shadow-sm" placeholder="Tối thiểu 6 ký tự">
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label text-muted small fw-bold">Xác nhận mật khẩu mới</label>
-                    <input type="password" id="pw-confirm" class="form-control rounded-4" placeholder="Nhập lại mật khẩu mới">
+                    <label class="form-label text-muted extra-small fw-bold text-uppercase opacity-75">Xác nhận mật khẩu</label>
+                    <input type="password" id="pw-confirm" class="form-control rounded-pill border-light px-4 py-2 shadow-sm" placeholder="Nhập lại mật khẩu mới">
                 </div>
             </div>
-            <div class="mt-4 text-end">
-                <button onclick="users.changePassword()" class="btn btn-outline-danger rounded-pill px-5 py-2 fw-bold">
-                    Đổi mật khẩu
+            <div class="mt-5 text-end">
+                <button onclick="users.changePassword()" class="btn btn-outline-danger rounded-pill px-5 py-3 fw-bold transition-all">
+                    Xác nhận đổi mật khẩu
                 </button>
             </div>
         </div>
@@ -79,6 +86,9 @@
 </script>
 
 <style>
+    .bg-sand { background-color: #FDFCF9; }
+    .font-serif { font-family: 'Playfair Display', serif; }
+    .extra-small { font-size: 0.7rem; letter-spacing: 0.05em; }
     .btn-accent { background-color: #C5A992; color: white; border: none; }
-    .btn-accent:hover { background-color: #2F2F2F; }
+    .btn-accent:hover { background-color: #2F2F2F; transform: translateY(-3px); }
 </style>

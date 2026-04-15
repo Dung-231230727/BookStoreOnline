@@ -1,0 +1,491 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="p-4 p-md-5 w-100">
+                <main class="flex-grow-1 p-4 p-md-5">
+                    
+                    <!-- Breadcrumb -->
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-4">
+                            <li class="breadcrumb-item">
+                                <a onclick="layout.render('Home', 'Index')" class="text-decoration-none">Trang Chủ</a>
+                            </li>
+                            <li class="breadcrumb-item active">Viết Đánh Giá Sách</li>
+                        </ol>
+                    </nav>
+
+                    <!-- Page Title -->
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <div>
+                            <h1 class="h3 fw-600 text-dark mb-1">
+                                <i class="fas fa-star text-warning me-2"></i>Viết Đánh Giá
+                            </h1>
+                            <p class="text-muted small">Chia sẻ ý kiến của bạn về sách này để giúp độc giả khác</p>
+                        </div>
+                    </div>
+
+                    <!-- Alert Container -->
+                    <div id="alertContainer"></div>
+
+                    <div class="row">
+                        <!-- Main Form -->
+                        <div class="col-lg-8">
+                            <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px;">
+                                <div class="card-body p-4">
+                                    
+                                    <!-- Book Selection (if not from book detail) -->
+                                    <div class="form-group mb-4" id="bookSelectionGroup" style="display: none;">
+                                        <label for="bookId" class="form-label fw-600 text-dark mb-2">
+                                            <i class="fas fa-book me-2 text-primary"></i>Chọn Sách
+                                        </label>
+                                        <select 
+                                            class="form-select form-select-lg" 
+                                            id="bookId" 
+                                            name="bookId"
+                                            required
+                                            onchange="loadBookInfo()"
+                                            style="border-radius: 8px; border: 1px solid #ddd;">
+                                            <option value="">-- Chọn sách --</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Book Info Display -->
+                                    <div id="selectedBookInfo" class="card bg-light border-0 mb-4" style="border-radius: 8px; display: none;">
+                                        <div class="card-body d-flex align-items-center">
+                                            <img id="bookCover" src="" alt="" class="rounded" style="width: 80px; height: auto; object-fit: cover;">
+                                            <div class="ms-3 flex-grow-1">
+                                                <h6 class="mb-1 fw-600" id="selectedBookTitle">-</h6>
+                                                <small class="text-muted" id="selectedBookAuthor">-</small><br>
+                                                <small class="text-muted" id="selectedBookPrice">-</small>
+                                            </div>
+                                            <button 
+                                                type="button" 
+                                                class="btn btn-sm btn-outline-secondary"
+                                                onclick="changeBook()"
+                                                id="changeBookBtn"
+                                                style="display: none;">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <form id="reviewForm">
+                                        <!-- Rating Stars -->
+                                        <div class="form-group mb-4">
+                                            <label class="form-label fw-600 text-dark mb-3">
+                                                <i class="fas fa-rating me-2 text-warning"></i>Xếp Hạng (*)
+                                            </label>
+                                            <div id="starRating" class="mb-2">
+                                                <span class="star" data-rating="1" style="font-size: 32px; cursor: pointer; color: #ddd; transition: all 0.2s;">
+                                                    <i class="fas fa-star"></i>
+                                                </span>
+                                                <span class="star" data-rating="2" style="font-size: 32px; cursor: pointer; color: #ddd; transition: all 0.2s; margin-left: 5px;">
+                                                    <i class="fas fa-star"></i>
+                                                </span>
+                                                <span class="star" data-rating="3" style="font-size: 32px; cursor: pointer; color: #ddd; transition: all 0.2s; margin-left: 5px;">
+                                                    <i class="fas fa-star"></i>
+                                                </span>
+                                                <span class="star" data-rating="4" style="font-size: 32px; cursor: pointer; color: #ddd; transition: all 0.2s; margin-left: 5px;">
+                                                    <i class="fas fa-star"></i>
+                                                </span>
+                                                <span class="star" data-rating="5" style="font-size: 32px; cursor: pointer; color: #ddd; transition: all 0.2s; margin-left: 5px;">
+                                                    <i class="fas fa-star"></i>
+                                                </span>
+                                            </div>
+                                            <small class="text-muted" id="ratingText">Vui lòng chọn xếp hạng</small>
+                                            <input type="hidden" id="rating" name="rating" value="0" required>
+                                        </div>
+
+                                        <!-- Review Title -->
+                                        <div class="form-group mb-4">
+                                            <label for="title" class="form-label fw-600 text-dark mb-2">
+                                                <i class="fas fa-heading me-2 text-success"></i>Tiêu Đề Đánh Giá (*)
+                                            </label>
+                                            <input 
+                                                type="text" 
+                                                class="form-control form-control-lg" 
+                                                id="title" 
+                                                name="title"
+                                                placeholder="Ví dụ: Quyển sách tuyệt vời với nội dung hay..."
+                                                maxlength="100"
+                                                required
+                                                style="border-radius: 8px; border: 1px solid #ddd;">
+                                            <small class="text-muted d-block mt-2" id="titleCount">0/100</small>
+                                        </div>
+
+                                        <!-- Review Content -->
+                                        <div class="form-group mb-4">
+                                            <label for="content" class="form-label fw-600 text-dark mb-2">
+                                                <i class="fas fa-align-left me-2 text-info"></i>Nội Dung Đánh Giá (*)
+                                            </label>
+                                            <textarea 
+                                                class="form-control" 
+                                                id="content" 
+                                                name="content"
+                                                rows="6"
+                                                placeholder="Chia sẻ chi tiết ý kiến của bạn về sách này..."
+                                                maxlength="1000"
+                                                required
+                                                style="border-radius: 8px; border: 1px solid #ddd; resize: vertical;"></textarea>
+                                            <small class="text-muted d-block mt-2" id="contentCount">0/1000</small>
+                                        </div>
+
+                                        <!-- Highlight Points -->
+                                        <div class="form-group mb-4">
+                                            <label class="form-label fw-600 text-dark mb-2">
+                                                <i class="fas fa-check-double me-2 text-success"></i>Những Điểm Tích Cực (Tùy chọn)
+                                            </label>
+                                            <div class="row">
+                                                <div class="col-sm-6 mb-2">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input highlight-checkbox" type="checkbox" id="highlight1" value="Nội dung hay">
+                                                        <label class="form-check-label" for="highlight1">Nội dung hay</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 mb-2">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input highlight-checkbox" type="checkbox" id="highlight2" value="Cốt truyện hấp dẫn">
+                                                        <label class="form-check-label" for="highlight2">Cốt truyện hấp dẫn</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 mb-2">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input highlight-checkbox" type="checkbox" id="highlight3" value="Nhân vật lý tưởng">
+                                                        <label class="form-check-label" for="highlight3">Nhân vật lý tưởng</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 mb-2">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input highlight-checkbox" type="checkbox" id="highlight4" value="Bìa sách đẹp">
+                                                        <label class="form-check-label" for="highlight4">Bìa sách đẹp</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 mb-2">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input highlight-checkbox" type="checkbox" id="highlight5" value="Chất lượng in tốt">
+                                                        <label class="form-check-label" for="highlight5">Chất lượng in tốt</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 mb-2">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input highlight-checkbox" type="checkbox" id="highlight6" value="Giá tiền hợp lý">
+                                                        <label class="form-check-label" for="highlight6">Giá tiền hợp lý</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Buttons -->
+                                        <div class="d-flex gap-2 mt-4">
+                                            <button 
+                                                type="submit" 
+                                                id="submitBtn"
+                                                class="btn btn-primary py-2 px-4 fw-600" 
+                                                style="border-radius: 8px; min-width: 150px;">
+                                                <i class="fas fa-paper-plane me-2"></i>Gửi Đánh Giá
+                                            </button>
+                                            <button 
+                                                type="reset" 
+                                                class="btn btn-light py-2 px-4 fw-600" 
+                                                style="border-radius: 8px; border: 1px solid #ddd;">
+                                                <i class="fas fa-redo me-2"></i>Nhập Lại
+                                            </button>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sidebar: Guidelines -->
+                        <div class="col-lg-4">
+                            <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;">
+                                <div class="card-body p-4 text-white">
+                                    <h6 class="fw-600 mb-3">
+                                        <i class="fas fa-lightbulb me-2"></i>Hướng Dẫn Viết Đánh Giá Hay
+                                    </h6>
+                                    <ul class="small list-unstyled">
+                                        <li class="mb-2">
+                                            <i class="fas fa-check-circle me-2"></i>
+                                            <strong>Hữu ích:</strong> Mô tả chi tiết cảm nhận thực của bạn
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-check-circle me-2"></i>
+                                            <strong>Chân thành:</strong> Chia sẻ ý kiến trung thực, thậm chí là nhận xét tiêu cực
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-check-circle me-2"></i>
+                                            <strong>Tôn trọng:</strong> Không sử dụng từ ngôn tục hay xúc phạm
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-check-circle me-2"></i>
+                                            <strong>Liên quan:</strong> Chỉ đánh giá sách, không quảng cáo
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="card shadow-sm border-0" style="border-radius: 12px;">
+                                <div class="card-body p-4">
+                                    <h6 class="fw-600 mb-3">
+                                        <i class="fas fa-question-circle me-2 text-primary"></i>Xếp Hạng Có Nghĩa Là Gì?
+                                    </h6>
+                                    <div class="small">
+                                        <div class="mb-2">
+                                            <strong class="text-warning">⭐ 5 Sao:</strong> Tuyệt vời, rất khuyến cáo
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong class="text-warning">⭐⭐⭐⭐ 4 Sao:</strong> Rất tốt, xứng đáng đọc
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong class="text-warning">⭐⭐⭐ 3 Sao:</strong> Tạm được, có thể đọc
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong class="text-warning">⭐⭐ 2 Sao:</strong> Không tốt lắm
+                                        </div>
+                                        <div>
+                                            <strong class="text-warning">⭐ 1 Sao:</strong> Rất tệ, không khuyến cáo
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </main>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+
+    .star:hover,
+    .star.active {
+        color: #ffc107 !important;
+    }
+
+    .form-check-input:checked {
+        background-color: #667eea;
+        border-color: #667eea;
+    }
+
+    .card {
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
+    }
+</style>
+
+<script>
+    let selectedBookId = null;
+    let selectedRating = 0;
+
+    $(document).ready(function() {
+        // Get book ID from URL params if available
+        const urlParams = new URLSearchParams(window.location.search);
+        const bookIdParam = urlParams.get('bookId');
+
+        if (bookIdParam) {
+            selectedBookId = bookIdParam;
+            loadBookInfo();
+            $("#bookSelectionGroup").hide();
+            $("#selectedBookInfo").show();
+            $("#changeBookBtn").show();
+        } else {
+            loadAvailableBooks();
+            $("#bookSelectionGroup").show();
+            $("#selectedBookInfo").hide();
+        }
+
+        // Star rating interaction
+        $("#starRating .star").on("click", function() {
+            selectedRating = $(this).data("rating");
+            $("#rating").val(selectedRating);
+            updateStarDisplay(selectedRating);
+            updateRatingText();
+        });
+
+        $("#starRating .star").on("mouseover", function() {
+            const hoverRating = $(this).data("rating");
+            updateStarDisplay(hoverRating);
+        });
+
+        $("#starRating").on("mouseout", function() {
+            updateStarDisplay(selectedRating);
+        });
+
+        // Character counters
+        $("#title").on("keyup", function() {
+            $("#titleCount").text($(this).val().length + "/100");
+        });
+
+        $("#content").on("keyup", function() {
+            $("#contentCount").text($(this).val().length + "/1000");
+        });
+
+        // Form submission
+        $("#reviewForm").on("submit", function(e) {
+            e.preventDefault();
+
+            if (!validateForm()) return;
+
+            const highlights = [];
+            $(".highlight-checkbox:checked").each(function() {
+                highlights.push($(this).val());
+            });
+
+            const reviewData = {
+                bookId: selectedBookId,
+                rating: selectedRating,
+                title: $("#title").val(),
+                content: $("#content").val(),
+                highlights: highlights
+            };
+
+            const submitBtn = $("#submitBtn");
+            submitBtn.prop("disabled", true);
+            submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i>Đang gửi...');
+
+            // API call
+            api.post("/reviews/create", reviewData)
+                .done(function(response) {
+                    showAlert("success", "✓ Cảm ơn! Đánh giá của bạn đã được gửi thành công. Sẽ được xuất bản sau khi kiểm duyệt.", "alertContainer");
+                    
+                    setTimeout(function() {
+                        layout.render("Books", "Details", selectedBookId);
+                    }, 2000);
+                })
+                .fail(function(jqXHR) {
+                    const errorMsg = jqXHR.responseJSON?.message || "Có lỗi xảy ra. Vui lòng thử lại.";
+                    showAlert("danger", errorMsg, "alertContainer");
+                })
+                .always(function() {
+                    submitBtn.prop("disabled", false);
+                    submitBtn.html('<i class="fas fa-paper-plane me-2"></i>Gửi Đánh Giá');
+                });
+        });
+    });
+
+    function loadAvailableBooks() {
+        api.get("/books/list?limit=100")
+            .done(function(response) {
+                const select = $("#bookId");
+                select.empty().append('<option value="">-- Chọn sách --</option>');
+                
+                if (response.data && response.data.length > 0) {
+                    response.data.forEach(function(book) {
+                        select.append(`<option value="${book.id}">${book.title}</option>`);
+                    });
+                }
+            });
+    }
+
+    function loadBookInfo() {
+        if (!selectedBookId) {
+            selectedBookId = $("#bookId").val();
+        }
+
+        if (!selectedBookId) return;
+
+        api.get(`/books/${selectedBookId}`)
+            .done(function(response) {
+                const book = response.data;
+                $("#selectedBookTitle").text(book.title);
+                $("#selectedBookAuthor").text(book.author || "Tác giả không xác định");
+                $("#selectedBookPrice").text(formatCurrency(book.price || 0));
+                $("#bookCover").attr("src", book.coverImage || "/assets/images/default-book.jpg");
+                $("#selectedBookInfo").show();
+            });
+    }
+
+    function changeBook() {
+        selectedBookId = null;
+        selectedRating = 0;
+        $("#rating").val(0);
+        updateStarDisplay(0);
+        $("#bookSelectionGroup").show();
+        $("#selectedBookInfo").hide();
+        $("#changeBookBtn").hide();
+        $("#reviewForm")[0].reset();
+        $("#titleCount").text("0/100");
+        $("#contentCount").text("0/1000");
+        updateRatingText();
+    }
+
+    function updateStarDisplay(rating) {
+        $("#starRating .star").each(function() {
+            if ($(this).data("rating") <= rating) {
+                $(this).addClass("active");
+            } else {
+                $(this).removeClass("active");
+            }
+        });
+    }
+
+    function updateRatingText() {
+        const texts = {
+            0: "Vui lòng chọn xếp hạng",
+            1: "Rất tệ",
+            2: "Không tốt",
+            3: "Tạm được",
+            4: "Rất tốt",
+            5: "Tuyệt vời!"
+        };
+        $("#ratingText").text(texts[selectedRating]);
+    }
+
+    function validateForm() {
+        if (!selectedBookId) {
+            showAlert("danger", "Vui lòng chọn sách", "alertContainer");
+            return false;
+        }
+
+        if (selectedRating === 0) {
+            showAlert("danger", "Vui lòng chọn xếp hạng", "alertContainer");
+            return false;
+        }
+
+        if (!$("#title").val().trim()) {
+            showAlert("danger", "Vui lòng nhập tiêu đề đánh giá", "alertContainer");
+            return false;
+        }
+
+        if (!$("#content").val().trim()) {
+            showAlert("danger", "Vui lòng nhập nội dung đánh giá", "alertContainer");
+            return false;
+        }
+
+        if ($("#content").val().trim().length < 20) {
+            showAlert("danger", "Nội dung đánh giá cần có ít nhất 20 ký tự", "alertContainer");
+            return false;
+        }
+
+        return true;
+    }
+
+    function showAlert(type, message, containerId) {
+        const alertHTML = `
+            <div class="alert alert-${type === 'danger' ? 'danger' : type} alert-dismissible fade show" role="alert" style="border-radius: 8px;">
+                <i class="fas fa-${type === 'danger' ? 'exclamation-circle' : 'check-circle'} me-2"></i>${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        $("#" + containerId).html(alertHTML);
+    }
+
+    function formatCurrency(value) {
+        return new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND'
+        }).format(value);
+    }
+</script>

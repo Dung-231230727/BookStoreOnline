@@ -4,19 +4,19 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class VoucherDTO {
-    private String maVoucher;
-    private BigDecimal giaTriGiam;
-    private BigDecimal dieuKienToiThieu;
-    private LocalDateTime thoiHan;
+    private String voucherCode;
+    private BigDecimal discountValue;
+    private BigDecimal minCondition;
+    private LocalDateTime expiryDate;
 
     public VoucherDTO() {}
 
-    public String getMaVoucher() { return maVoucher; }
-    public void setMaVoucher(String maVoucher) { this.maVoucher = maVoucher; }
-    public BigDecimal getGiaTriGiam() { return giaTriGiam; }
-    public void setGiaTriGiam(BigDecimal giaTriGiam) { this.giaTriGiam = giaTriGiam; }
-    public BigDecimal getDieuKienToiThieu() { return dieuKienToiThieu; }
-    public void setDieuKienToiThieu(BigDecimal dieuKienToiThieu) { this.dieuKienToiThieu = dieuKienToiThieu; }
-    public LocalDateTime getThoiHan() { return thoiHan; }
-    public void setThoiHan(LocalDateTime thoiHan) { this.thoiHan = thoiHan; }
+    public String getVoucherCode() { return voucherCode; }
+    public void setVoucherCode(String voucherCode) { this.voucherCode = voucherCode; }
+    public BigDecimal getDiscountValue() { return discountValue; }
+    public void setDiscountValue(BigDecimal discountValue) { this.discountValue = discountValue; }
+    public BigDecimal getMinCondition() { return minCondition; }
+    public void setMinCondition(BigDecimal minCondition) { this.minCondition = minCondition; }
+    public LocalDateTime getExpiryDate() { return expiryDate; }
+    public void setExpiryDate(LocalDateTime expiryDate) { this.expiryDate = expiryDate; }
 }

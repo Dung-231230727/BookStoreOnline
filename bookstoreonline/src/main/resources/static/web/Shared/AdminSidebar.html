@@ -1,82 +1,114 @@
-<!-- Reusable Admin Sidebar (Person 1-5 Unified) -->
-<aside class="admin-sidebar bg-dark text-white p-4 d-flex flex-column shadow-lg h-100" style="min-width: 280px;">
-    <div class="mb-5 px-3">
-        <h4 class="fw-bold text-accent font-serif mb-0">QUẢN TRỊ</h4>
-        <small class="text-white-50">Booksaw Management</small>
+<!-- AdminSidebar.html -->
+<aside class="admin-sidebar bg-white shadow-sm h-100 d-flex flex-column rounded-4 overflow-hidden border">
+    <div class="sidebar-header p-4 text-center border-bottom bg-light">
+        <h4 class="fw-bold text-accent mb-0 font-serif">Admin <span class="text-dark">Hub</span></h4>
+        <small class="text-muted">Bookstore Management</small>
     </div>
 
-    <nav class="nav flex-column gap-2 mb-auto" id="admin-nav">
-        <div class="text-white-25 small text-uppercase mb-2 tracking-widest fw-bold">Hệ thống</div>
-        <a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')"
-            class="nav-link text-white-50 p-3 hvr-admin" data-view="Dashboard/Admin/Index">
-            <i class="icon icon-clipboard me-2"></i> Tổng quan
-        </a>
+    <div class="sidebar-content flex-grow-1 overflow-auto p-3">
+        <div class="nav-group mb-4">
+            <small class="text-uppercase text-muted fw-bold extra-small px-3 mb-2 d-block opacity-50">Analytics</small>
+            <ul class="nav flex-column gap-1">
+                <li class="nav-item">
+                    <a href="javascript:void(0)" onclick="layout.render('Dashboard', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3 active">
+                        <i class="icon icon-ns-dashboard fs-5"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
 
-        <div class="text-white-25 small text-uppercase mt-4 mb-2 tracking-widest fw-bold">Cửa hàng</div>
-        <a href="javascript:void(0)" onclick="layout.render('Books/Admin', 'Index')"
-            class="nav-link text-white-50 p-3 hvr-admin" data-view="Books/Admin/Index">
-            <i class="icon icon-notes me-2"></i> Sản phẩm
-        </a>
-        <a href="javascript:void(0)" onclick="layout.render('Categories/Admin', 'Index')"
-            class="nav-link text-white-50 p-3 hvr-admin" data-view="Categories/Admin/Index">
-            <i class="icon icon-clipboard me-2"></i> Danh mục
-        </a>
-        <a href="javascript:void(0)" onclick="layout.render('Vouchers/Admin', 'Index')"
-            class="nav-link text-white-50 p-3 hvr-admin" data-view="Vouchers/Admin/Index">
-            <i class="icon icon-paper-plane me-2"></i> Mã giảm giá
-        </a>
-        <a href="javascript:void(0)" onclick="layout.render('Reviews/Admin', 'Index')"
-            class="nav-link text-white-50 p-3 hvr-admin" data-view="Reviews/Admin/Index">
-            <i class="icon icon-star me-2"></i> Feedback & Đánh giá
-        </a>
+        <div class="nav-group mb-4">
+            <small class="text-uppercase text-muted fw-bold extra-small px-3 mb-2 d-block opacity-50">Catalog</small>
+            <ul class="nav flex-column gap-1">
+                <li class="nav-item">
+                    <a href="javascript:void(0)" onclick="layout.render('Books', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3">
+                        <i class="icon icon-ns-book fs-5"></i>
+                        <span>Products</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="javascript:void(0)" onclick="layout.render('Categories', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3">
+                        <i class="icon icon-ns-category fs-5"></i>
+                        <span>Categories</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="javascript:void(0)" onclick="layout.render('Suppliers', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3 text-muted">
+                        <i class="icon icon-ns-supplier fs-5"></i>
+                        <span>Suppliers</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
 
-        <div class="text-white-25 small text-uppercase mt-4 mb-2 tracking-widest fw-bold">Vận hành</div>
-        <a href="javascript:void(0)" onclick="layout.render('Orders/Admin', 'Index')"
-            class="nav-link text-white-50 p-3 hvr-admin" data-view="Orders/Admin/Index">
-            <i class="icon icon-clipboard me-2"></i> Đơn hàng
-        </a>
-        <a href="javascript:void(0)" onclick="layout.render('Inventory/Admin', 'Index')"
-            class="nav-link text-white-50 p-3 hvr-admin" data-view="Inventory/Admin/Index">
-            <i class="icon icon-inbox me-2"></i> Quản lý kho
-        </a>
-        <a href="javascript:void(0)" onclick="layout.render('Suppliers/Admin', 'Index')"
-            class="nav-link text-white-50 p-3 hvr-admin" data-view="Suppliers/Admin/Index">
-            <i class="icon icon-truck me-2"></i> Đối tác NCC
-        </a>
-        <a href="javascript:void(0)" onclick="layout.render('Shipping', 'Tracking')"
-            class="nav-link text-white-50 p-3 hvr-admin" data-view="Shipping/Tracking">
-            <i class="icon icon-location me-2"></i> Tra Logistics
-        </a>
-        <a href="javascript:void(0)" onclick="layout.render('Users/Admin', 'Index')"
-            class="nav-link text-white-50 p-3 hvr-admin" data-view="Users/Admin/Index">
-            <i class="icon icon-user me-2"></i> Thành viên
-        </a>
-    </nav>
+        <div class="nav-group mb-4">
+            <small class="text-uppercase text-muted fw-bold extra-small px-3 mb-2 d-block opacity-50">Operations</small>
+            <ul class="nav flex-column gap-1">
+                <li class="nav-item">
+                    <a href="javascript:void(0)" onclick="layout.render('Orders', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3">
+                        <i class="icon icon-ns-order fs-5"></i>
+                        <span>Customer Orders</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="javascript:void(0)" onclick="layout.render('Inventory', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3">
+                        <i class="icon icon-ns-inventory fs-5"></i>
+                        <span>Inventory / Stock</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="javascript:void(0)" onclick="layout.render('Vouchers', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3">
+                        <i class="icon icon-ns-voucher fs-5"></i>
+                        <span>Promotions</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
 
-    <div class="border-top border-white border-opacity-10 pt-4 mt-5">
-        <a href="javascript:void(0)" onclick="layout.render('', 'Home/Index')"
-            class="btn btn-outline-light w-100 rounded-pill small mb-2">Xem Website</a>
-        <a href="javascript:void(0)" onclick="auth.logout()"
-            class="btn btn-accent w-100 rounded-pill small fw-bold">Đăng xuất</a>
+        <div class="nav-group mb-4">
+            <small class="text-uppercase text-muted fw-bold extra-small px-3 mb-2 d-block opacity-50">Administration</small>
+            <ul class="nav flex-column gap-1">
+                <li class="nav-item">
+                    <a href="javascript:void(0)" onclick="layout.render('AuditLogs', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3">
+                        <i class="icon icon-ns-audit fs-5 text-warning"></i>
+                        <span>Audit Logs</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="javascript:void(0)" onclick="layout.render('Support', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3">
+                        <i class="icon icon-ns-support fs-5"></i>
+                        <span>Support Tickets</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="sidebar-footer p-3 border-top bg-light">
+        <a href="javascript:void(0)" onclick="auth.logout()" class="btn btn-outline-danger w-100 rounded-3 d-flex align-items-center justify-content-center gap-2 py-2">
+            <i class="icon icon-ns-logout"></i>
+            <span>Sign Out</span>
+        </a>
     </div>
 </aside>
 
 <style>
-    .hvr-admin:hover {
-        transform: translateX(5px);
-        color: white !important;
-        background: rgba(255, 255, 255, 0.05);
-        transition: all 0.3s ease;
+    .admin-sidebar .nav-link {
+        color: #4b5563;
+        font-weight: 500;
+        transition: all 0.2s ease;
     }
-
-    .nav-link.active-admin {
-        color: white !important;
-        font-weight: bold;
-        background: rgba(197, 169, 146, 0.2);
-        border-radius: 10px;
+    .admin-sidebar .nav-link:hover {
+        background-color: #f3f4f6;
+        color: var(--accent-color);
     }
-
-    .nav-link i {
-        width: 20px;
+    .admin-sidebar .nav-link.active {
+        background-color: var(--accent-color);
+        color: white;
+    }
+    .extra-small {
+        font-size: 0.65rem;
+        letter-spacing: 0.05em;
     }
 </style>

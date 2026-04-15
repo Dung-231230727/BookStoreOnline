@@ -1,40 +1,47 @@
 package com.bookstore.controller;
 
-import com.bookstore.dto.NhaCungCapDto;
-import com.bookstore.service.NhaCungCapService; // Đã đổi
-import org.springframework.http.ResponseEntity;
+import com.bookstore.dto.ApiResponse;
+import com.bookstore.dto.SupplierDTO;
+import com.bookstore.service.SupplierService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/suppliers")
+@Tag(name = "Supplier Management", description = "Quản lý nhà cung cấp (Admin)")
 public class SupplierController {
 
-    private final NhaCungCapService nhaCungCapService; // Đã đổi
+    private final SupplierService supplierService;
 
-    public SupplierController(NhaCungCapService nhaCungCapService) {
-        this.nhaCungCapService = nhaCungCapService;
+    public SupplierController(SupplierService supplierService) {
+        this.supplierService = supplierService;
     }
 
     @GetMapping
-    public ResponseEntity<List<NhaCungCapDto>> getAll() {
-        return ResponseEntity.ok(nhaCungCapService.layTatCaNhaCungCap());
+    @Operation(summary = "Lấy danh sách nhà cung cấp")
+    public ApiResponse<List<SupplierDTO>> getAllSuppliers() {
+        return ApiResponse.success(supplierService.getAllSuppliers());
     }
 
     @PostMapping
-    public ResponseEntity<NhaCungCapDto> create(@RequestBody NhaCungCapDto request) {
-        return ResponseEntity.ok(nhaCungCapService.themNhaCungCap(request));
+    @Operation(summary = "Thêm nhà cung cấp mới")
+    public ApiResponse<SupplierDTO> addSupplier(@RequestBody SupplierDTO request) {
+        return ApiResponse.created(supplierService.addSupplier(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<NhaCungCapDto> update(@PathVariable Integer id, @RequestBody NhaCungCapDto request) {
-        return ResponseEntity.ok(nhaCungCapService.suaNhaCungCap(id, request));
+    @Operation(summary = "Cập nhật nhà cung cấp")
+    public ApiResponse<SupplierDTO> updateSupplier(@PathVariable Integer id, @RequestBody SupplierDTO request) {
+        return ApiResponse.success("Cập nhật thành công", supplierService.updateSupplier(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable Integer id) {
-        nhaCungCapService.xoaNhaCungCap(id);
-        return ResponseEntity.ok("Xóa thành công nhà cung cấp!");
+    @Operation(summary = "Xóa nhà cung cấp")
+    public ApiResponse<String> deleteSupplier(@PathVariable Integer id) {
+        supplierService.deleteSupplier(id);
+        return ApiResponse.success("Xóa thành công nhà cung cấp!", null);
     }
 }

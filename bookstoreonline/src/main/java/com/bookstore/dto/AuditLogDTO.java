@@ -11,30 +11,30 @@ public class AuditLogDTO {
     @Schema(example = "admin")
     private String username;
 
-    @Schema(example = "UPDATE_ROLE")
-    private String hanhDong;
+    @Schema(example = "UPDATE_ORDER_STATUS")
+    private String action;
 
-    @Schema(example = "Thay đổi quyền user 'nv01' thành STOREKEEPER")
-    private String chiTiet;
+    @Schema(example = "Order ORD-1234: NEW -> CONFIRMED")
+    private String details;
 
     @Schema(example = "13/04/2024 08:30:45")
-    private String thoiDiem;
+    private String timestamp;
 
     public AuditLogDTO(AuditLog log) {
         this.id = log.getLogId();
-        if (log.getTaiKhoan() != null) {
-            this.username = log.getTaiKhoan().getUsername();
+        if (log.getAccount() != null) {
+            this.username = log.getAccount().getUsername();
         }
-        this.hanhDong = log.getHanhDong();
-        this.chiTiet = log.getChiTiet();
-        if (log.getThoiDiem() != null) {
-            this.thoiDiem = log.getThoiDiem().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+        this.action = log.getAction();
+        this.details = log.getDetails();
+        if (log.getTimestamp() != null) {
+            this.timestamp = log.getTimestamp().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
         }
     }
 
     public Long getId() { return id; }
     public String getUsername() { return username; }
-    public String getHanhDong() { return hanhDong; }
-    public String getChiTiet() { return chiTiet; }
-    public String getThoiDiem() { return thoiDiem; }
+    public String getAction() { return action; }
+    public String getDetails() { return details; }
+    public String getTimestamp() { return timestamp; }
 }
