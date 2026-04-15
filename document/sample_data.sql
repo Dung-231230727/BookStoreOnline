@@ -34,11 +34,12 @@ DELETE FROM [dbo].[tac_gia];
 DELETE FROM [dbo].[nha_cung_cap];
 DELETE FROM [dbo].[voucher];
 
--- RESET ID TỰ TĂNG (IDENTITY) VỀ 0
+-- RESET ID TỰ TĂNG (IDENTITY) 
+-- Lưu ý: RESEED to 0 means next insert gets ID 1
+-- Lưu ý: gio_hang không có IDENTITY column (composite key), bỏ qua
 DBCC CHECKIDENT ('[dbo].[audit_log]', RESEED, 0);
 DBCC CHECKIDENT ('[dbo].[ho_tro]', RESEED, 0);
 DBCC CHECKIDENT ('[dbo].[danh_gia]', RESEED, 0);
-DBCC CHECKIDENT ('[dbo].[gio_hang]', RESEED, 0);
 DBCC CHECKIDENT ('[dbo].[nhan_vien]', RESEED, 0);
 DBCC CHECKIDENT ('[dbo].[khach_hang]', RESEED, 0);
 DBCC CHECKIDENT ('[dbo].[danh_muc]', RESEED, 0);
@@ -48,26 +49,14 @@ DBCC CHECKIDENT ('[dbo].[nha_cung_cap]', RESEED, 0);
 DBCC CHECKIDENT ('[dbo].[kho_hang]', RESEED, 0);
 GO
 
--- 0.1. LOOKUP TABLES (INSERT ENUM/STATUS VALUES)
-INSERT INTO [dbo].[trang_thai_don_hang] ([ma_trang_thai]) VALUES
-(N'MOI'), (N'DA_XAC_NHAN'), (N'CHO_LAY_HANG'), (N'DANG_GIAO'), (N'HOAN_TAT'), (N'DA_HUY');
-GO
-
-INSERT INTO [dbo].[trang_thai_thanh_toan] ([ma_trang_thai]) VALUES
-(N'PENDING'), (N'SUCCESS'), (N'FAILED');
-GO
-
-INSERT INTO [dbo].[phuong_thuc_thanh_toan] ([ma_pt]) VALUES
-(N'COD'), (N'MOMO'), (N'VNPAY');
-GO
-
-INSERT INTO [dbo].[trang_thai_ho_tro] ([ma_trang_thai]) VALUES
-(N'OPEN'), (N'PROCESSING'), (N'CLOSED');
+-- 0.1. LOOKUP TABLES (ALREADY INSERTED IN SCHEMA - SKIP DUPLICATES)
+-- Lookup tables: trang_thai_don_hang, trang_thai_thanh_toan, phuong_thuc_thanh_toan, trang_thai_ho_tro
+-- đã được tạo và nạp dữ liệu trong file schema
 GO
 
 -- 1. TAI_KHOAN (Mật khẩu mặc định: admin123)
 -- Chú ý: Roles: 'ADMIN', 'STAFF', 'STOREKEEPER', 'CUSTOMER'
-INSERT INTO [dbo].[tai_khoan] ([username], [password], [role], [trang_thai], [ngay_tao]) VALUES
+INSERT INTO [dbo].[tai_khoan] ([username], [password], [role], [trang_thai], [created_at]) VALUES
 ('admin', '$2a$10$hn.nR/A4Jw0/sgMHZfu4UeIv5owT5mTcpLVHgnHj4xMK4CT1z0YOu', 'ADMIN', 1, GETDATE()),
 ('staff1', '$2a$10$hn.nR/A4Jw0/sgMHZfu4UeIv5owT5mTcpLVHgnHj4xMK4CT1z0YOu', 'STAFF', 1, GETDATE()),
 ('staff2', '$2a$10$hn.nR/A4Jw0/sgMHZfu4UeIv5owT5mTcpLVHgnHj4xMK4CT1z0YOu', 'STAFF', 1, GETDATE()),
@@ -86,10 +75,10 @@ INSERT INTO [dbo].[nhan_vien] ([username], [ho_ten], [sdt], [bo_phan]) VALUES
 GO
 
 -- 3. KHACH_HANG (Phần khách hàng)
-INSERT INTO [dbo].[khach_hang] ([username], [ho_ten], [sdt], [dia_chi_giao_hang], [diem_tich_luy]) VALUES
-('customer1', N'Lê Minh Khôi', '0987123456', N'123 Đường Lê Lợi, Quận 1, TP.HCM', 150),
-('customer2', N'Hoàng Thanh Trúc', '0987234567', N'456 Đường Nguyễn Huệ, Quận 3, TP.HCM', 50),
-('customer3', N'Đặng Quốc Bảo', '0987345678', N'789 Đường CMT8, Quận Tân Bình, TP.HCM', 0);
+INSERT INTO [dbo].[khach_hang] ([username], [ho_ten], [sdt], [diem_tich_luy]) VALUES
+('customer1', N'Lê Minh Khôi', '0987123456', 150),
+('customer2', N'Hoàng Thanh Trúc', '0987234567', 50),
+('customer3', N'Đặng Quốc Bảo', '0987345678', 0);
 GO
 
 -- 4. DANH_MUC (Phân cấp cha-con)
@@ -97,9 +86,9 @@ INSERT INTO [dbo].[danh_muc] ([ten_danhmuc], [danh_muc_cha_id]) VALUES
 (N'Sách Kinh Tế', NULL),      -- ID 1
 (N'Sách Văn Học', NULL),      -- ID 2
 (N'Sách Kỹ Năng', NULL),      -- ID 3
-(N'Kinh Tế Học Cơ Bản', 1),   -- ID 4
-(N'Tiểu Thuyết Trinh Thám', 2), -- ID 5
-(N'Phát Triển Bản Thân', 3);  -- ID 6
+(N'Kinh Tế Học Cơ Bản', 1),   -- ID 4 (parent: Kinh Tế = 1)
+(N'Tiểu Thuyết Trinh Thám', 2), -- ID 5 (parent: Văn Học = 2)
+(N'Phát Triển Bản Thân', 3);  -- ID 6 (parent: Kỹ Năng = 3)
 GO
 
 -- 5. NXB (Nhà xuất bản)
@@ -117,13 +106,13 @@ INSERT INTO [dbo].[tac_gia] ([ten_tacgia], [tieu_su]) VALUES
 GO
 
 -- 7. SACH (Thông tin sách)
-INSERT INTO [dbo].[sach] ([isbn], [ten_sach], [gia_niem_yet], [so_trang], [ma_danhmuc], [ma_nxb], [mo_ta_ngu_nghia], [anh_bia], [da_xoa]) VALUES
-('9786041123456', N'Cho Tôi Xin Một Vé Đi Tuổi Thơ', 85000, 210, 2, 1, N'Tuổi thơ hồn nhiên.', 'chotoixinmotvedituoitho.jpg', 0),
-('9780062315007', N'Nhà Giả Kim', 79000, 180, 2, 5, N'Hành trình vận mệnh.', 'nhagiakim.jpg', 0),
-('9786045612345', N'Đắc Nhân Tâm', 95000, 320, 6, 4, N'Nghệ thuật lòng người.', 'dacnhantam.jpg', 0),
-('9781234567890', N'Kinh Tế Học Cơ Bản', 150000, 450, 4, 3, N'Kinh tế học đại cương.', 'kinhtehoccoban.jpg', 0),
-('9780987654321', N'Sherlock Holmes Toàn Tập', 250000, 1200, 5, 5, N'Trinh thám kinh điển.', 'sherlockholmestoantap.jpg', 0),
-('9781111111111', N'Sách Cũ Lỗi Thời', 50000, 100, 1, 1, N'Dừng kinh doanh.', 'sachculoithoi.jpg', 1);
+INSERT INTO [dbo].[sach] ([isbn], [ten_sach], [gia_niem_yet], [ma_danhmuc], [ma_nxb], [mo_ta_ngu_nghia], [anh_bia], [da_xoa]) VALUES
+('9786041123456', N'Cho Tôi Xin Một Vé Đi Tuổi Thơ', 85000, 2, 2, N'Tuổi thơ hồn nhiên.', 'chotoixinmotvedituoitho.jpg', 0),
+('9780062315007', N'Nhà Giả Kim', 79000, 2, 5, N'Hành trình vận mệnh.', 'nhagiakim.jpg', 0),
+('9786045612345', N'Đắc Nhân Tâm', 95000, 6, 4, N'Nghệ thuật lòng người.', 'dacnhantam.jpg', 0),
+('9781234567890', N'Kinh Tế Học Cơ Bản', 150000, 4, 3, N'Kinh tế học đại cương.', 'kinhtehoccoban.jpg', 0),
+('9780987654321', N'Sherlock Holmes Toàn Tập', 250000, 5, 5, N'Trinh thám kinh điển.', 'sherlockholmestoantap.jpg', 0),
+('9781111111111', N'Sách Cũ Lỗi Thời', 50000, 1, 1, N'Dừng kinh doanh.', 'sachculoithoi.jpg', 1);
 GO
 
 -- 8. SACH_VAT_LY & SACH_DIEN_TU
@@ -162,7 +151,7 @@ INSERT INTO [dbo].[don_hang] ([ma_donhang], [ma_khachhang], [ma_voucher], [ngay_
 ('ORD-002', 2, NULL, GETDATE(), 85000, 20000, 105000, 'DANG_GIAO', N'Kiệt 12/4, HCM'),
 ('ORD-003', 1, 'FREESHIP', GETDATE(), 520000, 0, 520000, 'MOI', N'Văn phòng HCM'),
 ('ORD-004', 3, NULL, GETDATE(), 150000, 30000, 180000, 'DA_HUY', N'Số 1 Trần Phú'),
-('ORD-005', 2, 'WELCOME10', GETDATE(), 95000, 20000, 105000, 'CHO_LAY_HANG', N'HCM');
+('ORD-005', 2, 'WELCOME10', GETDATE(), 95000, 20000, 115000, 'CHO_LAY_HANG', N'HCM');
 
 INSERT INTO [dbo].[chi_tiet_don_hang] ([ma_donhang], [isbn], [so_luong], [gia_ban_chot]) VALUES
 ('ORD-001', '9786041123456', 2, 85000), ('ORD-001', '9780062315007', 1, 80000),
