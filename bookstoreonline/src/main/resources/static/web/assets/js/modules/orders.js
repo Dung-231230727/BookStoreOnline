@@ -60,6 +60,29 @@ const orders = {
         $("#summary-total").text(api.formatCurrency(total + shipping));
     },
 
+    applyVoucher: async () => {
+        const voucherCode = $("#voucher-input").val().trim();
+        if (!voucherCode) {
+            $("#voucher-message").text("Vui lòng nhập mã giảm giá").addClass("text-danger").show();
+            return;
+        }
+
+        try {
+            const res = await api.post(`/vouchers/apply/${voucherCode}`);
+            const voucher = res.data;
+            sessionStorage.setItem('applied_voucher', JSON.stringify(voucher));
+            
+            const msgDiv = $("#voucher-message");
+            msgDiv.html(`<i class="icon icon-check text-success me-2"></i><span class="text-success">Áp dụng thành công! Giảm ${api.formatCurrency(voucher.giaTriGiam)}</span>`)
+                .removeClass("text-danger").addClass("text-success").show();
+            
+            orders.renderSummary(); // Re-render với discount
+        } catch (e) {
+            const msgDiv = $("#voucher-message");
+            msgDiv.text("Mã giảm giá không hợp lệ hoặc đã hết hạn").addClass("text-danger").show();
+        }
+    },
+
     processCheckout: async () => {
         const form = $("#checkout-form");
         if (!form[0].checkValidity()) {
@@ -95,6 +118,10 @@ const orders = {
                 // 2. Nếu là VNPay, gọi tiếp API lấy URL thanh toán
                 const vnpayRes = await api.get(`/payments/vnpay/create?orderId=${orderId}`);
                 window.location.href = vnpayRes.data; // Chuyển hướng sang cổng VNPay
+            } else if (paymentMethod === 'MOMO') {
+                // 2b. Nếu là MOMO, gọi API lấy URL thanh toán MOMO (tương tự VNPay)
+                const momoRes = await api.get(`/payments/momo/create?orderId=${orderId}`);
+                window.location.href = momoRes.data; // Chuyển hướng sang cổng MOMO
             } else {
                 // 3. Thanh toán COD
                 api.showToast("Đơn hàng đã được đặt thành công!");
@@ -103,6 +130,18 @@ const orders = {
             }
         } catch (error) {
             api.showToast("Lỗi khi tạo đơn hàng: " + error.message, "error");
+        }
+    },
+
+    trackOrder: async (orderId) => {
+        try {
+            const res = await api.get(`/shipping/tracking/${orderId}`);
+            const tracking = res.data;
+            // Render tracking details in modal or new view
+            api.showToast(`Số tracking: ${tracking.trackingId}`, "info");
+            layout.render('Shipping', 'Tracking', orderId); // Render tracking page
+        } catch (e) {
+            api.showToast("Không thể tìm thấy thông tin vận chuyển cho đơn hàng này", "error");
         }
     },
 
@@ -128,6 +167,7 @@ const orders = {
             data.forEach(order => {
                 const statusBadge = orders.getStatusBadge(order.trangThai);
                 const canCancel = order.trangThai === 'MOI';
+                const canTrack = order.trangThai === 'DANG_GIAO' || order.trangThai === 'HOAN_TAT';
                 container.append(`
                     <tr>
                         <td class="fw-bold ps-4">#${order.maDonHang}</td>
@@ -137,12 +177,13 @@ const orders = {
                         <td>${statusBadge}</td>
                         <td class="text-end pe-4 d-flex gap-2 justify-content-end">
                             <button class="btn btn-sm btn-light rounded-pill px-3"
-                                onclick="layout.render('Orders', 'Details', '${order.maDonHang}')">Chi tiết</button>
+                                onclick="layout.render('Orders', 'Details', '${order.maDonHang}')"><i class="icon icon-document me-1"></i>Chi tiết</button>
+                            <button class="btn btn-sm btn-outline-info rounded-pill px-3"
+                                onclick="orders.trackOrder('${order.maDonHang}')"
+                                ${!canTrack ? 'disabled title="Chỉ theo dõi khi đang giao/đã giao"' : ''}><i class="icon icon-map-pin me-1"></i>Theo dõi</button>
                             <button class="btn btn-sm btn-outline-danger rounded-pill px-3"
                                 onclick="orders.cancelOrder('${order.maDonHang}')"
-                                ${!canCancel ? 'disabled title="Chỉ có thể hủy đơn mới"' : ''}>
-                                Hủy
-                            </button>
+                                ${!canCancel ? 'disabled title="Chỉ có thể hủy đơn mới"' : ''}>Hủy</button>
                         </td>
                     </tr>
                 `);
@@ -293,4 +334,8 @@ const orders = {
 
 $(document).on('click', '#btn-place-order', function() {
     orders.processCheckout();
+});
+
+$(document).on('click', '#btn-apply-voucher', function() {
+    orders.applyVoucher();
 });

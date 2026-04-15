@@ -216,6 +216,20 @@ const layout = {
             case "Orders/Cart":
                 cart.load();
                 break;
+            case "Shipping/Tracking":
+                if (id) {
+                    // Load tracking details for the order
+                    const trackingData = sessionStorage.getItem('tracking_' + id);
+                    if (trackingData) {
+                        const tracking = JSON.parse(trackingData);
+                        $("#tracking-display-id").text(tracking.maVanChuyen);
+                        $("#tracking-status-badge").text(tracking.trangThaiTracking);
+                    }
+                }
+                break;
+            case "Support/Index":
+                hoTro.loadList();
+                break;
             case "Users/Admin/Index":
                 users.loadAdminList();
                 break;
