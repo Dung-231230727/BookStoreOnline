@@ -70,7 +70,7 @@ public class AdminService {
         response.setUsername(taiKhoan.getUsername());
         response.setRole(taiKhoan.getRole());
         response.setTrangThai(taiKhoan.getTrangThai());
-        response.setNgayTao(taiKhoan.getNgayTao());
+        response.setNgayTao(taiKhoan.getCreatedAt());
         response.setBoPhan(nhanVien.getBoPhan());
         return response;
     }

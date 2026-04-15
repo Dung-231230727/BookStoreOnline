@@ -20,8 +20,14 @@ public class TaiKhoan {
     @Column(name = "trang_thai")
     private Boolean trangThai = true;
 
-    @Column(name = "ngay_tao")
-    private LocalDateTime ngayTao = LocalDateTime.now();
+    @Column(name = "created_at")
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     public TaiKhoan() {}
 
@@ -39,6 +45,10 @@ public class TaiKhoan {
     public void setRole(String role) { this.role = role; }
     public Boolean getTrangThai() { return trangThai; }
     public void setTrangThai(Boolean trangThai) { this.trangThai = trangThai; }
-    public LocalDateTime getNgayTao() { return ngayTao; }
-    public void setNgayTao(LocalDateTime ngayTao) { this.ngayTao = ngayTao; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public LocalDateTime getDeletedAt() { return deletedAt; }
+    public void setDeletedAt(LocalDateTime deletedAt) { this.deletedAt = deletedAt; }
 }
