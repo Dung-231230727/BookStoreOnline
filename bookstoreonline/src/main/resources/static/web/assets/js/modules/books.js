@@ -45,9 +45,12 @@ const books = {
             container.append(`
                 <div class="col-xl-3 col-lg-4 col-sm-6 mb-4">
                     <div class="product-item bg-white p-3 rounded-4 shadow-sm h-100 text-center transition-all hvr-float border-0">
-                        <div class="image-holder position-relative mb-3 overflow-hidden rounded-3 bg-light p-2">
-                            <img src="${imagePath}" alt="${book.title}" class="img-fluid" style="height:200px;object-fit:contain">
-                        </div>
+                        <a href="javascript:void(0)" onclick="layout.render('Books','Details','${book.isbn}')" class="d-block image-holder position-relative mb-3 overflow-hidden rounded-3 bg-light p-2 book-img-link" style="cursor:pointer;">
+                            <img src="${imagePath}" alt="${book.title}" class="img-fluid book-cover-img" style="height:200px;object-fit:contain;transition:transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94);">
+                            <div class="book-img-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background:rgba(47,47,47,0);transition:background 0.3s ease;border-radius:inherit;">
+                                <span class="text-white fw-bold small" style="opacity:0;transition:opacity 0.3s ease;letter-spacing:0.05em;">Xem chi tiết</span>
+                            </div>
+                        </a>
                         <h6 class="fw-bold mb-1"><a href="javascript:void(0)" onclick="layout.render('Books','Details','${book.isbn}')" class="text-decoration-none text-dark">${book.title}</a></h6>
                         <div class="fw-bold text-accent mb-2">${api.formatCurrency(book.price)}</div>
                         <button class="btn btn-outline-dark btn-sm rounded-pill px-3" onclick="cart.add('${book.isbn}',1)"><i class="icon icon-plus me-1"></i>Thêm vào giỏ</button>
@@ -200,16 +203,15 @@ const books = {
             container.append(`
                 <div class="col-xl-3 col-lg-4 col-sm-6 mb-4">
                     <div class="product-item bg-white p-3 rounded-4 shadow-sm h-100 text-center transition-all hvr-float border-0">
-                        <div class="image-holder position-relative mb-4 overflow-hidden rounded-3 bg-light p-2 shadow-sm">
-                            <img src="${imagePath}" alt="${book.title}" class="img-fluid" style="height: 250px; object-fit: contain;">
-                            <button type="button" class="btn btn-accent w-100 position-absolute bottom-0 start-0 py-2 border-0 opacity-0 transition-all add-to-cart-btn" onclick="cart.add('${book.isbn}', 1)">
-                                <i class="icon icon-plus me-2"></i> Add to Cart
-                            </button>
-                        </div>
-                        <div class="product-detail">
-                            <h6 class="fw-bold mb-1"><a href="javascript:void(0)" onclick="layout.render('Books', 'Details', '${book.isbn}')" class="text-decoration-none text-dark hvr-accent">${book.title}</a></h6>
-                            <div class="product-price fw-bold text-accent">${priceLabel}</div>
-                        </div>
+                        <a href="javascript:void(0)" onclick="layout.render('Books', 'Details', '${book.isbn}')" class="d-block image-holder position-relative mb-3 overflow-hidden rounded-3 bg-light p-2 book-img-link" style="cursor:pointer;">
+                            <img src="${imagePath}" alt="${book.title}" class="img-fluid book-cover-img" style="height:200px;object-fit:contain;transition:transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94);">
+                            <div class="book-img-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background:rgba(47,47,47,0);transition:background 0.3s ease;border-radius:inherit;">
+                                <span class="text-white fw-bold small" style="opacity:0;transition:opacity 0.3s ease;letter-spacing:0.05em;">Xem chi tiết</span>
+                            </div>
+                        </a>
+                        <h6 class="fw-bold mb-1"><a href="javascript:void(0)" onclick="layout.render('Books', 'Details', '${book.isbn}')" class="text-decoration-none text-dark hvr-accent">${book.title}</a></h6>
+                        <div class="product-price fw-bold text-accent mb-2">${priceLabel}</div>
+                        <button class="btn btn-outline-dark btn-sm rounded-pill px-3" onclick="cart.add('${book.isbn}', 1)"><i class="icon icon-plus me-1"></i>Thêm vào giỏ</button>
                     </div>
                 </div>
             `);

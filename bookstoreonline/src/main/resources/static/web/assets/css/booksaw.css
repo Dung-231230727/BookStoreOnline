@@ -1863,3 +1863,22 @@ footer#footer {
     width: 100%;
   }
 }
+
+/* ─── Book Image Hover Effect ───────────────────────── */
+.book-img-link {
+    display: block;
+    text-decoration: none !important;
+}
+.book-img-link:hover .book-cover-img {
+    transform: scale(1.06);
+}
+.book-img-link:hover .book-img-overlay {
+    background: rgba(47, 47, 47, 0.45) !important;
+}
+.book-img-link:hover .book-img-overlay span {
+    opacity: 1 !important;
+}
+.book-img-link:active .book-cover-img {
+    transform: scale(1.02);
+    transition-duration: 0.1s;
+}
