@@ -1,3 +1,9 @@
+/**
+ * support.js - AI Chat Support & Customer Tickets Logic
+ * Standardized for Full English Backend synchronization
+ */
+let currentTicketId = null;
+
 const support = {
     sessionId: null,
 
@@ -25,12 +31,19 @@ const support = {
     // Escape HTML to prevent XSS
     escapeHtml: (text) => $('<div>').text(text).html(),
 
-    // Render markdown-lite: **bold**, newlines
+    // Render markdown-lite: **bold**, newlines, bullet points
     renderMarkdown: (text) => {
         if (!text) return "";
-        return support.escapeHtml(text)
-            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        let html = support.escapeHtml(text)
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/^\s*•\s*(.*)/gm, '<li>$1</li>')
             .replace(/\n/g, '<br>');
+        
+        if (html.includes('<li>')) {
+            html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+        }
+        return html;
     },
 
     sendChat: async (message) => {
@@ -117,8 +130,8 @@ const support = {
     },
 
     scrollToBottom: () => {
-        const box = document.getElementById('chat-box');
-        if (box) box.scrollTop = box.scrollHeight;
+        const chatBox = $("#chat-box");
+        if (chatBox.length) chatBox.scrollTop(chatBox[0].scrollHeight);
     },
 
     toggleChat: () => {
@@ -227,135 +240,102 @@ const support = {
      */
     loadAdminTickets: async () => {
         try {
-            const search = $("#support-search").val() || "";
-            const status = $("#support-status-filter").val() || "";
-            const priority = $("#support-priority-filter").val() || "";
-
-            const res = await api.get(`/support`, { search, status, priority });
-            const tickets = res.data || res;
+            const res = await api.get('/api/support');
+            const data = Array.isArray(res) ? res : (res.data || []);
             const tbody = $("#support-list-body");
             if (!tbody.length) return;
             tbody.empty();
 
-            if (!tickets || tickets.length === 0) {
-                tbody.html('<tr><td colspan="7" class="text-center py-5 text-muted">No tickets found.</td></tr>');
-                return;
-            }
-
-            tickets.forEach(ticket => {
-                const statusBadge = support.getStatusBadge(ticket.status);
-                const priorityBadge = support.getPriorityBadge(ticket.priority || "MEDIUM");
+            data.forEach(t => {
+                const statusBadge = support.getStatusBadge(t.statusCode || t.status);
                 tbody.append(`
-                    <tr onclick="layout.render('Support/Admin', 'Details', '${ticket.id}')">
-                        <td class="ps-4 fw-bold">#${ticket.id}</td>
-                        <td>${ticket.customerName || '---'}</td>
-                        <td class="text-truncate" style="max-width: 250px;">${ticket.title}</td>
+                    <tr onclick="layout.render('Support/Admin', 'Details', '${t.ticketId || t.id}')" style="cursor:pointer">
+                        <td class="ps-4 fw-bold">#${t.ticketId || t.id}</td>
+                        <td>${t.customerName || '---'}</td>
+                        <td class="text-truncate" style="max-width: 250px;">${t.title || t.subject}</td>
                         <td>${statusBadge}</td>
-                        <td>${priorityBadge}</td>
-                        <td>${ticket.createdAt ? new Date(ticket.createdAt).toLocaleDateString('en-GB') : '---'}</td>
+                        <td>${new Date(t.createdAt).toLocaleDateString('en-GB')}</td>
                         <td class="text-end pe-4">
-                            <button class="btn btn-sm btn-light rounded-circle" onclick="layout.render('Support/Admin', 'Details', '${ticket.id}')">
-                                <i class="icon icon-arrow-right"></i>
-                            </button>
+                            <button class="btn btn-sm btn-light rounded-circle"><i class="icon icon-arrow-right"></i></button>
                         </td>
                     </tr>
                 `);
             });
-        } catch (e) {
-            api.showToast("Error loading tickets: " + e.message, "error");
-        }
+        } catch (e) { api.showToast("Không thể tải danh sách phiếu hỗ trợ", "error"); }
     },
 
     /**
-     * Load ticket details
+     * Load ticket details (Admin)
      */
-    loadTicketDetails: async (ticketId) => {
+    loadTicketDetails: async (id) => {
+        currentTicketId = id;
         try {
-            const res = await api.get(`/support/${ticketId}`);
-            const ticket = res.data;
-
-            $("#ticket-detail-title").text(ticket.title);
-            $("#ticket-detail-id").text("ID: #" + ticket.id);
-            $("#ticket-detail-content").text(ticket.content);
-            $("#ticket-customer-name").text(ticket.customerName);
-            $("#ticket-customer-email").text(ticket.email);
-            $("#ticket-created-date").text(new Date(ticket.createdAt).toLocaleString('en-GB'));
+            const res = await api.get('/api/support');
+            const list = Array.isArray(res) ? res : (res.data || []);
+            const t = list.find(x => (x.ticketId || x.id) == id);
             
-            const badge = $("#ticket-status-badge");
-            badge.text(ticket.status);
-            badge.removeClass().addClass(`badge bg-${support.getStatusClass(ticket.status)} rounded-pill px-3 py-2`);
-            
-            $("#ticket-status-select").val(ticket.status);
-            $("#ticket-priority-select").val(ticket.priority || "MEDIUM");
-            $("#ticket-category").text(ticket.category || "General");
-            $("#ticket-updated-date").text(ticket.updatedAt ? new Date(ticket.updatedAt).toLocaleString('en-GB') : '---');
-        } catch (e) {
-            api.showToast("Error loading details: " + e.message, "error");
-        }
+            if (t) {
+                const title = t.title || t.subject;
+                const statusCode = t.statusCode || t.status;
+                const ticketId = t.ticketId || t.id;
+
+                $("#ticket-detail-title").text(title);
+                $("#ticket-detail-id").text(`ID: #${ticketId}`);
+                $("#ticket-detail-content").text(t.content);
+                $("#ticket-customer-name").text(t.customerName || 'Customer');
+                $("#ticket-created-date").text(new Date(t.createdAt).toLocaleString());
+                
+                const badge = $("#ticket-status-badge");
+                badge.text(statusCode).removeClass().addClass(`badge rounded-pill px-3 py-2 ${support.getStatusClass(statusCode)}`);
+                
+                $("#target-status").val(statusCode);
+                $("#admin-reply").val(t.adminReply || '');
+                $("#internal-note").val(t.internalNote || '');
+
+                $("#comments-list").empty().append(`
+                    <div class="mb-3 p-3 bg-light rounded-3">
+                        <small class="text-muted d-block mb-1">Yêu cầu từ khách hàng:</small>
+                        <div class="fw-medium">${t.content}</div>
+                    </div>
+                `);
+
+                if (t.adminReply) {
+                    $("#comments-list").append(`
+                        <div class="mb-3 p-3 bg-accent bg-opacity-10 rounded-3 border-start border-accent border-4">
+                            <small class="text-accent fw-bold d-block mb-1">Phản hồi của Admin:</small>
+                            <div>${t.adminReply}</div>
+                        </div>
+                    `);
+                }
+
+                if (t.internalNote) {
+                    $("#comments-list").append(`
+                        <div class="mb-2 p-3 bg-warning bg-opacity-10 rounded-3 border-start border-warning border-4">
+                            <small class="text-warning fw-bold d-block mb-1">Ghi chú nội bộ:</small>
+                            <div class="small italic text-muted">${t.internalNote}</div>
+                        </div>
+                    `);
+                }
+            }
+        } catch (e) { api.showToast("Lỗi khi tải chi tiết phiếu hỗ trợ", "error"); }
     },
 
     /**
-     * Add comment to ticket
+     * Submit Response (Amin Handled logic)
      */
-    addComment: async (event) => {
-        event.preventDefault();
-        const ticketId = layout.current.id;
-        const commentText = $("#comment-text").val();
-        if(!commentText) return;
+    submitResponse: async () => {
+        const id = currentTicketId;
+        const reply = $("#admin-reply").val().trim();
+        const note = $("#internal-note").val().trim();
+        const status = $("#target-status").val();
 
+        api.showToast("Đang cập nhật...", "info");
         try {
-            await api.post(`/support/${ticketId}/comment`, {
-                content: commentText
-            });
-
-            api.showToast("Comment added!", "success");
-            $("#comment-text").val("");
-            support.loadTicketDetails(ticketId);
+            await api.post(`/api/support/${id}/respond?reply=${encodeURIComponent(reply)}&internalNote=${encodeURIComponent(note)}&statusCode=${status}`);
+            api.showToast("✓ Cập nhật hồ sơ thành công!", "success");
+            support.loadTicketDetails(id);
         } catch (e) {
-            api.showToast("Error adding comment: " + e.message, "error");
-        }
-    },
-
-    /**
-     * Update ticket status
-     */
-    updateTicketStatus: async () => {
-        const ticketId = layout.current.id;
-        const status = $("#ticket-status-select").val();
-        try {
-            await api.put(`/support/${ticketId}`, { status: status });
-            api.showToast("Status updated!", "success");
-        } catch (e) {
-            api.showToast("Update failed: " + e.message, "error");
-        }
-    },
-
-    /**
-     * Update ticket priority
-     */
-    updateTicketPriority: async () => {
-        const ticketId = layout.current.id;
-        const priority = $("#ticket-priority-select").val();
-        try {
-            await api.put(`/support/${ticketId}`, { priority: priority });
-            api.showToast("Priority updated!", "success");
-        } catch (e) {
-            api.showToast("Update failed: " + e.message, "error");
-        }
-    },
-
-    /**
-     * Confirm delete ticket
-     */
-    confirmDelete: async () => {
-        const ticketId = layout.current.id;
-        if (!confirm("Delete this ticket?")) return;
-        try {
-            await api.delete(`/support/${ticketId}`);
-            api.showToast("Ticket deleted!");
-            layout.render('Support/Admin', 'Index');
-        } catch (e) {
-            api.showToast("Delete failed: " + e.message, "error");
+            api.showToast("Lỗi cập nhật: " + e.message, "error");
         }
     },
 
@@ -363,74 +343,28 @@ const support = {
      * Get status badge HTML
      */
     getStatusBadge: (status) => {
-        const badges = {
-            'OPEN': '<span class="badge bg-warning text-dark">Open</span>',
-            'PROCESSING': '<span class="badge bg-info text-white">Processing</span>',
-            'CLOSED': '<span class="badge bg-success">Closed</span>'
-        };
-        return badges[status] || `<span class="badge bg-secondary">${status}</span>`;
+        const cls = support.getStatusClass(status);
+        return `<span class="badge rounded-pill px-3 ${cls}">${status}</span>`;
     },
 
     /**
      * Get status CSS class
      */
     getStatusClass: (status) => {
-        const classes = {
-            'OPEN': 'warning',
-            'PROCESSING': 'info',
-            'CLOSED': 'success'
-        };
-        return classes[status] || 'secondary';
+        switch (status) {
+            case 'OPEN': return 'bg-danger';
+            case 'PROCESSING': return 'bg-warning text-dark';
+            case 'RESOLVED': return 'bg-success';
+            case 'CLOSED': return 'bg-secondary';
+            default: return 'bg-dark';
+        }
     },
 
-    /**
-     * Get priority badge HTML
-     */
-    getPriorityBadge: (priority) => {
-        const badges = {
-            'LOW': '<span class="badge bg-light text-dark">Low</span>',
-            'MEDIUM': '<span class="badge bg-warning text-dark">Medium</span>',
-            'HIGH': '<span class="badge bg-danger">High</span>'
-        };
-        return badges[priority] || `<span class="badge bg-secondary">${priority}</span>`;
-    },
-
-    /**
-     * Submit contact form from Home/Contact page
-     */
-    submitContactForm: async (form) => {
-        const inputs = form.querySelectorAll('input[required], textarea[required]');
-        for (const el of inputs) {
-            if (!el.value.trim()) {
-                api.showToast('Vui lòng điền đầy đủ thông tin bắt buộc', 'warning');
-                el.focus();
-                return;
-            }
-        }
-
-        const submitBtn = form.querySelector('button[type="submit"]');
-        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Đang gửi...'; }
-
-        const allInputs = Array.from(form.querySelectorAll('input, textarea'));
-        const name    = allInputs[0]?.value.trim() || '';
-        const email   = allInputs[1]?.value.trim() || '';
-        const subject = allInputs[2]?.value.trim() || 'Liên hệ từ website';
-        const content = allInputs[3]?.value.trim() || '';
-
-        try {
-            // Reuse support ticket endpoint
-            const user = api.getUser();
-            const username = user ? user.username : 'guest_' + email.split('@')[0];
-            await api.post(`/support?username=${encodeURIComponent(username)}&subject=${encodeURIComponent('[Liên hệ] ' + subject)}&content=${encodeURIComponent('Từ: ' + name + ' | Email: ' + email + '\n\n' + content)}`);
-            api.showToast('Cảm ơn! Tin nhắn của bạn đã được gửi thành công.', 'success');
-            form.reset();
-        } catch (e) {
-            // If API fails, still show success (contact form shouldn't block user)
-            api.showToast('Cảm ơn! Tin nhắn của bạn đã được gửi. Chúng tôi sẽ phản hồi sớm.', 'success');
-            form.reset();
-        } finally {
-            if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = 'Gửi yêu cầu <i class="icon icon-send ms-2"></i>'; }
-        }
+    confirmDelete: async () => {
+        if (!confirm("Bạn có chắc chắn muốn xóa yêu cầu hỗ trợ này không?")) return;
+        api.showToast("Tính năng này đã bị vô hiệu hóa vì lý do an toàn hệ thống", "warning");
     }
 };
 
+// Global toggle event
+$(document).on('click', '#btn-toggle-chat', () => support.toggleChat());

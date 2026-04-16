@@ -92,14 +92,29 @@
                 <div class="card border-0 shadow-sm rounded-4 p-4">
                     <h5 class="fw-bold mb-4 border-bottom pb-2">Hình ảnh bìa</h5>
                     <div class="text-center mb-3">
-                        <img id="edit-book-preview" src="assets/images/product-item1.jpg"
-                            class="img-fluid rounded-4" style="max-height:240px; object-fit:contain;"
-                            onerror="this.src='assets/images/product-item1.jpg'">
+                        <div id="clickable-preview" class="rounded-4 bg-light d-flex align-items-center justify-content-center border-dashed position-relative overflow-hidden" style="height:280px; cursor:pointer;" onclick="document.getElementById('image-upload-input').click()">
+                            <img id="book-preview-img" src="assets/images/product-item1.jpg" class="img-fluid rounded-4" style="max-height:260px;object-fit:contain; z-index:1;">
+                            <div id="upload-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-none flex-column align-items-center justify-content-center rounded-4" style="background:rgba(255,255,255,0.8); z-index:10;">
+                                <div class="spinner-border text-accent mb-2"></div>
+                                <small class="fw-bold">Đang tải lên...</small>
+                            </div>
+                        </div>
                     </div>
-                    <input type="text" name="anhBia" id="edit-anhBia" class="form-control rounded-pill small mt-2"
-                        placeholder="Tên file ảnh (VD: book1.jpg)"
-                        oninput="document.getElementById('edit-book-preview').src = 'assets/images/' + (this.value || 'product-item1.jpg')">
-                    <small class="text-muted mt-2 d-block">Đặt ảnh trong thư mục assets/images/</small>
+                    <input type="file" id="image-upload-input" class="d-none" accept="image/*" onchange="books.handleImageUpload(this)">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0 rounded-start-pill"><i class="icon icon-image"></i></span>
+                        <input type="text" name="anhBia" id="edit-anhBia" class="form-control rounded-end-pill small bg-light" 
+                               placeholder="Tên file hệ thống..." readonly required>
+                    </div>
+                    <div class="mt-3">
+                        <label class="form-label small fw-bold">Mô tả ảnh (Alt-text)</label>
+                        <input type="text" name="coverAlt" id="edit-coverAlt" class="form-control rounded-pill small px-3" 
+                               placeholder="VD: Mô tả nội dung ảnh bìa...">
+                    </div>
+                    <div id="file-info" class="mt-2 text-center d-none">
+                        <small class="text-muted">Tên gốc: <span id="original-filename-info" class="fw-bold"></span></small>
+                    </div>
+                    <small class="text-muted mt-2 d-block text-center">Nhấp vào ảnh để thay đổi từ thiết bị</small>
                 </div>
             </div>
         </div>
@@ -111,28 +126,44 @@
     // Self-contained edit loader — does NOT override books.loadDetail
     async function loadBookForEdit(isbn) {
         try {
-            const res = await api.get(`/sach/${isbn}`);
+            // Updated to English endpoint
+            const res = await api.get(`/books/${isbn}`);
             const b = res.data || res;
 
             // Store ISBN on button
-            document.getElementById('btn-update-book').dataset.isbn = b.isbn;
-            document.getElementById('edit-isbn-display').value = b.isbn;
-            document.getElementById('edit-tenSach').value = b.tenSach || '';
-            document.getElementById('edit-moTa').value = b.moTaNguNghia || b.moTa || '';
-            // soTrang removed
-            document.getElementById('edit-trongLuong').value = b.trongLuong || '';
-            document.getElementById('edit-namXuatBan').value = b.namXuatBan || '';
-            document.getElementById('edit-giaNiemYet').value = b.giaNiemYet || '';
-            document.getElementById('edit-price-display').innerText = api.formatCurrency(b.giaNiemYet || 0);
-            document.getElementById('edit-anhBia').value = b.anhBia || '';
-            if (b.anhBia) document.getElementById('edit-book-preview').src = 'assets/images/' + b.anhBia;
-            if (b.ngonNgu) document.getElementById('edit-ngonNgu').value = b.ngonNgu;
+            const btn = document.getElementById('btn-update-book');
+            if (btn) btn.dataset.isbn = b.isbn;
+            
+            // Map English fields to form elements
+            if (document.getElementById('edit-isbn-display')) document.getElementById('edit-isbn-display').value = b.isbn || isbn;
+            if (document.getElementById('edit-tenSach')) document.getElementById('edit-tenSach').value = b.title || '';
+            if (document.getElementById('edit-moTa')) document.getElementById('edit-moTa').value = b.description || '';
+            if (document.getElementById('edit-trongLuong')) document.getElementById('edit-trongLuong').value = b.weight || '';
+            if (document.getElementById('edit-namXuatBan')) document.getElementById('edit-namXuatBan').value = b.publishYear || '';
+            if (document.getElementById('edit-giaNiemYet')) document.getElementById('edit-giaNiemYet').value = b.price || '';
+            
+            const priceDisplay = document.getElementById('edit-price-display');
+            if (priceDisplay) priceDisplay.innerText = api.formatCurrency(b.price || 0);
+            
+            if (document.getElementById('edit-anhBia')) document.getElementById('edit-anhBia').value = b.coverImage || '';
+            if (document.getElementById('edit-coverAlt')) document.getElementById('edit-coverAlt').value = b.coverAlt || '';
+            
+            const preview = document.getElementById('book-preview-img');
+            if (preview && b.coverImage) preview.src = 'assets/images/' + b.coverImage;
+            
+            if (document.getElementById('edit-ngonNgu')) document.getElementById('edit-ngonNgu').value = b.language || 'Tiếng Việt';
 
-            // After dropdowns are populated, select correct values
+            // After dropdowns are populated, select correct values using English structure
             setTimeout(() => {
-                if (b.danhMuc) document.getElementById('maDanhMuc').value = b.danhMuc.maDanhMuc;
-                if (b.nxb)     document.getElementById('maNxb').value = b.nxb.maNxb;
-            }, 700);
+                const catSel = document.getElementById('maDanhMuc');
+                if (catSel && b.category) catSel.value = b.category.id || b.category.categoryId || '';
+                
+                const pubSel = document.getElementById('maNxb');
+                if (pubSel && b.publisher) pubSel.value = b.publisher.id || b.publisher.publisherId || '';
+                
+                const authSel = document.getElementById('maTacGia');
+                if (authSel && b.authors && b.authors.length > 0) authSel.value = b.authors[0].id || '';
+            }, 800);
         } catch (e) {
             api.showToast('Không thể tải dữ liệu sách: ' + e.message, 'error');
         }

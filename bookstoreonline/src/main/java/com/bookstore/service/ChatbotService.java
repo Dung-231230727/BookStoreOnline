@@ -89,7 +89,7 @@ public class ChatbotService {
                 sb.append("💡 **Tôi đã lục tìm trong kho và ghi nhớ ý bạn... Dưới đây là những sách phù hợp nhất:**\n\n");
                 
                 int limit = Math.min(foundBooks.size(), 4);
-                Locale locale = new Locale("vi", "VN");
+                Locale locale = Locale.forLanguageTag("vi-VN");
                 NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
                 
                 for (int i = 0; i < limit; i++) {
