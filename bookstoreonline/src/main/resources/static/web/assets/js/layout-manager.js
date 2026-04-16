@@ -11,7 +11,7 @@ const layout = {
      * @param {string} area - e.g., 'Auth', 'Books', 'Orders'
      * @param {string} view - e.g., 'Login', 'Details', 'Index'
      */
-    render: async (area, view, id) => {
+    render: async (area, view, id, targetId) => {
         console.log(`Rendering View: ${area}/${view}`);
         
         // 1. Manage Global Layout (Admin vs Customer)
@@ -71,8 +71,15 @@ const layout = {
 
                 layout.updateActiveNav();
 
-                // Scroll to top after every navigation
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                // Scroll handling
+                if (targetId) {
+                    setTimeout(() => {
+                        const el = document.getElementById(targetId);
+                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 50);
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'auto' });
+                }
 
                 resolve();
             });

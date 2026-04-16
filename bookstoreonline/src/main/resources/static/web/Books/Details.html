@@ -60,23 +60,40 @@
                         </p>
                     </div>
 
-                    <div class="purchase-box bg-white p-4 rounded-5 shadow-lg border-accent border border-2 border-opacity-25">
-                        <div class="row align-items-end g-4">
-                            <div class="col-md-3">
-                                <label class="form-label small fw-bold text-muted mb-2">Số lượng</label>
-                                <div class="quantity-input d-flex align-items-center border rounded-pill bg-light">
-                                    <button class="btn btn-link link-dark border-0 p-2 shadow-none" onclick="this.parentNode.querySelector('input').stepDown()"><i class="icon icon-minus"></i></button>
-                                    <input type="number" id="quantity" class="form-control border-0 bg-transparent text-center fw-bold shadow-none" value="1" min="1">
-                                    <button class="btn btn-link link-dark border-0 p-2 shadow-none" onclick="this.parentNode.querySelector('input').stepUp()"><i class="icon icon-plus"></i></button>
+                    <div class="purchase-box bg-white p-4 rounded-4 shadow-sm border border-opacity-10 border-dark mt-4">
+                        <label class="form-label fw-bold text-muted mb-3 text-uppercase tracking-widest d-block" style="font-size: 0.75rem; letter-spacing: 1px;">Số lượng</label>
+                        <div class="d-flex flex-wrap align-items-center gap-3 w-100">
+                            <!-- Nút 1: Chỉnh số lượng -->
+                            <div style="width: 115px !important; min-width: 115px !important; max-width: 115px !important; flex-shrink: 0;">
+                                <div class="custom-qty-box d-flex justify-content-between align-items-center border rounded-pill bg-light overflow-hidden" style="height: 48px;" id="qty-wrapper">
+                                    <button type="button" class="btn btn-link link-dark border-0 p-0 shadow-none text-decoration-none d-flex align-items-center justify-content-center" style="width: 35px; height: 100%;" onclick="this.parentNode.querySelector('input').stepDown()">
+                                        <b style="font-size: 20px; font-family: monospace; line-height: 1; padding-bottom: 2px;">-</b>
+                                    </button>
+                                    <input type="number" id="quantity" class="border-0 bg-transparent text-center fw-bold shadow-none p-0 m-0 w-100" style="height: 100%; min-width: 0; outline: none; font-size: 16px; -moz-appearance: textfield;" value="1" min="1">
+                                    <button type="button" class="btn btn-link link-dark border-0 p-0 shadow-none text-decoration-none d-flex align-items-center justify-content-center" style="width: 35px; height: 100%;" onclick="this.parentNode.querySelector('input').stepUp()">
+                                        <b style="font-size: 20px; font-family: monospace; line-height: 1; padding-bottom: 2px;">+</b>
+                                    </button>
                                 </div>
+                                <style>
+                                    #qty-wrapper input[type=number]::-webkit-inner-spin-button, 
+                                    #qty-wrapper input[type=number]::-webkit-outer-spin-button { 
+                                        -webkit-appearance: none; margin: 0; display: none;
+                                    }
+                                </style>
                             </div>
-                            <div class="col-md-6">
-                                <button type="button" id="btn-add-to-cart" class="btn btn-accent btn-lg w-100 py-3 fw-bold shadow-sm rounded-pill transition-all" onclick="cart.handleAdd()">
-                                    Thêm vào giỏ hàng <i class="icon icon-clipboard ms-2"></i>
+                            <!-- Nút 2: Thêm giỏ hàng -->
+                            <div class="flex-grow-1" style="min-width: 200px;">
+                                <button type="button" id="btn-add-to-cart" class="btn btn-accent w-100 fw-bold shadow-sm rounded-pill transition-all" style="height: 48px; font-size: 16px; text-transform: uppercase;" onclick="cart.handleAdd()">
+                                    Thêm vào giỏ <i class="icon icon-clipboard ms-1"></i>
                                 </button>
                             </div>
-                            <div class="col-md-3">
-                                <button class="btn btn-outline-dark btn-lg w-100 py-3 rounded-pill shadow-sm hvr-accent"><i class="icon icon-heart"></i></button>
+                            <!-- Nút 3: Quay lại -->
+                            <div style="flex-shrink: 0; min-width: 115px;">
+                                <button class="btn btn-outline-dark w-100 px-3 fw-bold rounded-pill shadow-none hvr-accent" style="height: 48px; font-size: 14px;"
+                                        onclick="layout.render('Home', 'Index', null, 'featured-books')"
+                                        title="Quay lại trang chính">
+                                    <i class="icon icon-ns-arrow-left me-1"></i> Quay lại
+                                </button>
                             </div>
                         </div>
                     </div>
