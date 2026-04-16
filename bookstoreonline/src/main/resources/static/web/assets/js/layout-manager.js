@@ -284,6 +284,12 @@ const layout = {
             case "Support/Index":
                 support.loadUserTickets();
                 break;
+            case "Support/Admin/Index":
+                support.loadAdminTickets();
+                break;
+            case "Support/Admin/Details":
+                if (id) support.loadTicketDetails(id);
+                break;
             case "Users/Admin/Index":
                 users.loadAdminList();
                 break;
