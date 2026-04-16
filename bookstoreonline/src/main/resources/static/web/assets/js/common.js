@@ -107,10 +107,10 @@ const api = {
         if (!toastEl) { console.warn('[Toast]', message); return; }
 
         const configs = {
-            success: { icon: '✅', title: 'Thành công', color: '#16a34a', bg: 'rgba(22,163,74,0.08)'  },
-            error:   { icon: '❌', title: 'Lỗi',        color: '#dc2626', bg: 'rgba(220,38,38,0.08)'  },
-            warning: { icon: '⚠️', title: 'Cảnh báo',   color: '#d97706', bg: 'rgba(217,119,6,0.08)'  },
-            info:    { icon: 'ℹ️', title: 'Thông tin',  color: '#0284c7', bg: 'rgba(2,132,199,0.08)'  },
+            success: { icon: '✓', title: 'Thành công', iconColor: '#C5A992', iconBg: '#f5f0eb' },
+            error:   { icon: '✕', title: 'Lỗi',        iconColor: '#a07060', iconBg: '#f5eeeb' },
+            warning: { icon: '!', title: 'Cảnh báo',   iconColor: '#b08050', iconBg: '#f5eedf' },
+            info:    { icon: 'i', title: 'Thông tin',  iconColor: '#7090a0', iconBg: '#eaf0f5' },
         };
         const cfg = configs[type] || configs.success;
 
@@ -118,24 +118,25 @@ const api = {
         const set = (id, prop, val) => { const el = document.getElementById(id); if (el) el[prop] = val; };
         const style = (id, prop, val) => { const el = document.getElementById(id); if (el) el.style[prop] = val; };
 
-        set('toastIcon',  'textContent', cfg.icon);
-        set('toastTitle', 'textContent', cfg.title);
+        set('toastIcon',    'textContent', cfg.icon);
+        set('toastTitle',   'textContent', cfg.title);
         set('toastMessage', 'textContent', message);
-        style('toastTitle',    'color',      cfg.color);
-        style('toastStripe',   'background', cfg.color);
-        style('toastIconWrap', 'background', cfg.bg);
-        style('toastProgress', 'background', cfg.color);
+        style('toastTitle',    'color',      '#2f2f2f');
+        style('toastIcon',     'color',      cfg.iconColor);
+        style('toastIcon',     'fontWeight', '700');
+        style('toastIconWrap', 'background', cfg.iconBg);
+        style('toastProgress', 'background', cfg.iconColor);
         style('toastProgress', 'width',      '100%');
         style('toastProgress', 'transition', 'none');
 
-        // Slide in
+        // Slide in from left
         toastEl.style.display    = 'block';
         toastEl.style.opacity    = '0';
-        toastEl.style.transform  = 'translateX(30px)';
-        toastEl.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+        toastEl.style.transform  = 'translateX(-24px) scale(0.97)';
+        toastEl.style.transition = 'opacity 0.28s cubic-bezier(0.22,1,0.36,1), transform 0.28s cubic-bezier(0.22,1,0.36,1)';
         requestAnimationFrame(() => requestAnimationFrame(() => {
             toastEl.style.opacity   = '1';
-            toastEl.style.transform = 'translateX(0)';
+            toastEl.style.transform = 'translateX(0) scale(1)';
         }));
 
         // Shrink progress bar
@@ -152,9 +153,10 @@ const api = {
     hideToast: () => {
         const toastEl = document.getElementById('appToast');
         if (!toastEl) return;
+        toastEl.style.transition = 'opacity 0.22s ease, transform 0.22s ease';
         toastEl.style.opacity   = '0';
-        toastEl.style.transform = 'translateX(30px)';
-        setTimeout(() => { toastEl.style.display = 'none'; }, 260);
+        toastEl.style.transform = 'translateX(-20px) scale(0.97)';
+        setTimeout(() => { toastEl.style.display = 'none'; }, 240);
         if (api._toastTimer) { clearTimeout(api._toastTimer); api._toastTimer = null; }
     },
 

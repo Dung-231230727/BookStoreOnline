@@ -106,42 +106,40 @@
     </div>
 </div>
 
-<!-- Toast Notifications - Modern Design -->
-<div class="position-fixed end-0 p-3" style="z-index: 9999; top: 75px; pointer-events: none;">
+<!-- Toast Notifications -->
+<div class="position-fixed start-0 p-4" style="z-index: 9999; bottom: 24px; pointer-events: none;">
     <div id="appToast" role="alert" aria-live="assertive" aria-atomic="true" style="
         display: none;
         pointer-events: all;
-        min-width: 320px;
-        max-width: 380px;
+        min-width: 300px;
+        max-width: 370px;
         background: #ffffff;
-        border-radius: 16px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.08);
+        border-radius: 14px;
+        border: 1px solid #ede8e3;
+        box-shadow: 0 4px 24px rgba(47,47,47,0.10), 0 1px 4px rgba(47,47,47,0.06);
         overflow: hidden;
-        font-family: 'Inter', 'Outfit', sans-serif;
+        font-family: 'Raleway', sans-serif;
     ">
-        <!-- Colored top stripe -->
-        <div id="toastStripe" style="height: 4px; width: 100%; background: #28a745;"></div>
-
-        <div style="display: flex; align-items: flex-start; gap: 12px; padding: 14px 14px 10px 14px;">
-            <!-- Icon bubble -->
+        <!-- Body -->
+        <div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px;">
+            <!-- Icon -->
             <div id="toastIconWrap" style="
-                width: 38px; height: 38px; border-radius: 12px;
+                width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
                 display: flex; align-items: center; justify-content: center;
-                font-size: 1.1rem; flex-shrink: 0; margin-top: 1px;
-                background: rgba(40,167,69,0.1);
+                background: #F3F2EC;
             ">
-                <span id="toastIcon">✅</span>
+                <span id="toastIcon" style="font-size: 1rem; line-height: 1;">✓</span>
             </div>
 
             <!-- Text -->
             <div style="flex: 1; min-width: 0;">
                 <div id="toastTitle" style="
-                    font-weight: 700; font-size: 0.8rem;
-                    text-transform: uppercase; letter-spacing: 0.06em;
-                    margin-bottom: 3px; color: #28a745;
+                    font-weight: 700; font-size: 0.72rem;
+                    text-transform: uppercase; letter-spacing: 0.08em;
+                    margin-bottom: 2px; color: #2f2f2f;
                 ">Thành công</div>
                 <div id="toastMessage" style="
-                    font-size: 0.875rem; color: #374151;
+                    font-size: 0.85rem; color: #757575;
                     line-height: 1.5; word-break: break-word;
                 ">Thao tác thành công.</div>
             </div>
@@ -149,23 +147,21 @@
             <!-- Close -->
             <button onclick="api.hideToast()" style="
                 background: none; border: none; cursor: pointer;
-                color: #9ca3af; font-size: 1.05rem; line-height: 1;
-                padding: 2px; flex-shrink: 0; border-radius: 6px;
-                transition: color 0.15s, background 0.15s;
-            " onmouseover="this.style.color='#374151';this.style.background='#f3f4f6'"
-               onmouseout="this.style.color='#9ca3af';this.style.background='none'">&times;</button>
+                color: #afafaf; font-size: 1.2rem; line-height: 1;
+                padding: 2px 4px; flex-shrink: 0; border-radius: 6px;
+                transition: color 0.15s;
+                margin-top: -1px;
+            " onmouseover="this.style.color='#2f2f2f'"
+               onmouseout="this.style.color='#afafaf'">&times;</button>
         </div>
 
         <!-- Progress bar -->
-        <div style="padding: 0 14px 12px 64px;">
-            <div style="height: 3px; background: #f3f4f6; border-radius: 99px; overflow: hidden;">
-                <div id="toastProgress" style="
-                    height: 100%; width: 100%;
-                    background: #28a745;
-                    border-radius: 99px;
-                    transition: none;
-                "></div>
-            </div>
+        <div style="height: 2px; background: #F3F2EC;">
+            <div id="toastProgress" style="
+                height: 100%; width: 100%;
+                background: #C5A992;
+                transition: none;
+            "></div>
         </div>
     </div>
 </div>
