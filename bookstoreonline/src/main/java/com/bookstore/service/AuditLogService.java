@@ -91,7 +91,9 @@ public class AuditLogService {
 
     private Account getCurrentAccount() {
         try {
-            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth == null || auth.getName() == null) return null;
+            String username = auth.getName();
             return accountRepository.findById(username).orElse(null);
         } catch (Exception e) {
             return null;

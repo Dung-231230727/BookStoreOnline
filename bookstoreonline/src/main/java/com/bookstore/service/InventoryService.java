@@ -97,14 +97,16 @@ public class InventoryService {
         if (request.getSupplierId() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Supplier ID cannot be empty");
         }
-        Supplier supplier = supplierRepository.findById(request.getSupplierId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Supplier not found with ID: " + request.getSupplierId()));
+        Integer supplierId = request.getSupplierId();
+        Supplier supplier = supplierRepository.findById(java.util.Objects.requireNonNull(supplierId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Supplier not found with ID: " + supplierId));
 
         if (request.getStaffId() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Staff ID cannot be empty");
         }
-        Staff staff = staffRepository.findById(request.getStaffId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Staff not found with ID: " + request.getStaffId()));
+        Integer staffId = request.getStaffId();
+        Staff staff = staffRepository.findById(java.util.Objects.requireNonNull(staffId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Staff not found with ID: " + staffId));
 
         BigDecimal totalAmount = request.getDetails().stream()
                 .map(item -> item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
@@ -124,7 +126,7 @@ public class InventoryService {
         for (PurchaseOrderDetailRequest item : request.getDetails()) {
             if (item.getIsbn() == null) continue;
             
-            Book book = bookRepository.findById(item.getIsbn())
+            Book book = bookRepository.findById(java.util.Objects.requireNonNull(item.getIsbn()))
                     .orElseGet(() -> {
                         // 1. Tạo bản ghi Book mới
                         Book newBook = new Book();
@@ -144,7 +146,7 @@ public class InventoryService {
                     });
 
             // Chặn đứng nhập kho nếu là sách điện tử (Phải có bản ghi trong physical_books)
-            if (!physicalBookRepository.existsById(book.getIsbn())) {
+            if (!physicalBookRepository.existsById(java.util.Objects.requireNonNull(book.getIsbn()))) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "Logic Error: Sách " + book.getTitle() + " là E-Book, không thể nhập kho vật lý!");
             }
