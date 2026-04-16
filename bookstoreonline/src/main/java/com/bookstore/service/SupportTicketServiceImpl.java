@@ -8,7 +8,7 @@ import com.bookstore.entity.Customer;
 import com.bookstore.repository.SupportMessageRepository;
 import com.bookstore.repository.SupportTicketRepository;
 import com.bookstore.repository.CustomerRepository;
-import com.bookstore.service.AuditLogService;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

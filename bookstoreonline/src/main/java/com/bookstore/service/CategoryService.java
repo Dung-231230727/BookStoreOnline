@@ -57,6 +57,10 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
+    private CategoryDTO convertToDTO(Category entity) {
+        return convertToDTO(entity, new java.util.HashSet<>());
+    }
+
     private CategoryDTO convertToDTO(Category entity, java.util.Set<Integer> visited) {
         if (entity == null || visited.contains(entity.getCategoryId())) return null;
         visited.add(entity.getCategoryId());

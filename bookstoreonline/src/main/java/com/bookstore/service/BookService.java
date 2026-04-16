@@ -5,7 +5,7 @@ import com.bookstore.repository.*;
 import com.bookstore.dto.BookCreateRequest;
 import com.bookstore.dto.BookUpdateRequest;
 import com.bookstore.entity.*;
-import com.bookstore.service.AuditLogService;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

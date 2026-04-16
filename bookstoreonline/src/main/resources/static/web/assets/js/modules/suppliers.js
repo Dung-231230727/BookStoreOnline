@@ -2,10 +2,14 @@
  * suppliers.js - Supplier & Partner Management
  */
 const suppliers = {
+    supplierData: [],
+
     loadList: async () => {
         try {
             const res = await api.get('/admin/suppliers');
-            const list = res.data || [];
+            const list = res.data.data ? res.data.data : (res.data || []);
+            suppliers.supplierData = list;
+            
             const tbody = $("#suppliers-list");
             if (!tbody.length) return;
             tbody.empty();
@@ -26,17 +30,12 @@ const suppliers = {
                             <div class="small"><i class="icon icon-map-pin me-1 opacity-50"></i>${s.contactInfo || 'Chưa cập nhật'}</div>
                         </td>
                         <td class="text-end pe-4">
-                            <div class="d-flex justify-content-end gap-2">
-                                <button onclick="layout.render('Suppliers/Admin', 'Details', ${s.supplierId})" class="btn btn-sm btn-light rounded-pill px-3" title="Chi tiết">
-                                    <i class="icon icon-eye me-1"></i> Chi tiết
-                                </button>
-                                <button onclick="layout.render('Suppliers/Admin', 'Edit', ${s.supplierId})" class="btn btn-sm btn-outline-accent rounded-pill px-3" title="Sửa">
-                                    <i class="icon icon-edit me-1"></i> Sửa
-                                </button>
-                                <button onclick="layout.render('Suppliers/Admin', 'Delete', ${s.supplierId})" class="btn btn-sm btn-outline-danger rounded-pill px-3" title="Xóa">
-                                    <i class="icon icon-trash me-1"></i> Xóa
-                                </button>
-                            </div>
+                            <button onclick="suppliers.edit(${s.supplierId})" class="btn btn-sm btn-light rounded-pill px-3 me-1">
+                                <i class="icon icon-edit me-1"></i> Sửa
+                            </button>
+                            <button onclick="suppliers.delete(${s.supplierId})" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                                <i class="icon icon-trash me-1"></i> Xóa
+                            </button>
                         </td>
                     </tr>
                 `);
@@ -47,67 +46,66 @@ const suppliers = {
         }
     },
 
-    save: async (event) => {
-        if (event) event.preventDefault();
-        const id = $("#supplier-id").val();
-        const dto = {
-            supplierName: $("#supplier-name").val().trim(),
-            contactInfo: $("#supplier-contact").val().trim()
+    addSupplier: () => {
+        $("#supplierId").val('');
+        $("#supplierName").val('');
+        $("#supplierContactInfo").val('');
+        
+        $("#supplierModalTitle").text("Thêm Đối tác mới");
+        const modal = new bootstrap.Modal(document.getElementById('supplierModal'));
+        modal.show();
+    },
+
+    edit: (id) => {
+        const s = suppliers.supplierData.find(item => item.supplierId === id);
+        if (!s) return;
+
+        $("#supplierId").val(s.supplierId);
+        $("#supplierName").val(s.supplierName);
+        $("#supplierContactInfo").val(s.contactInfo || '');
+
+        $("#supplierModalTitle").text("Cập nhật thông tin Đối tác");
+        const modal = new bootstrap.Modal(document.getElementById('supplierModal'));
+        modal.show();
+    },
+
+    saveSupplier: async () => {
+        const id = $("#supplierId").val();
+        const data = {
+            supplierName: $("#supplierName").val().trim(),
+            contactInfo: $("#supplierContactInfo").val().trim() 
         };
 
-        if (!dto.supplierName) {
-            api.showToast("Vui lòng nhập tên nhà cung cấp", "warning"); return;
+        if (!data.supplierName) {
+            api.showToast("Vui lòng nhập tên nhà cung cấp", "error");
+            return;
         }
 
         try {
             if (id) {
-                await api.put(`/admin/suppliers/${id}`, dto);
-                api.showToast("Đã cập nhật nhà cung cấp thành công");
+                await api.put(`/admin/suppliers/${id}`, data);
+                api.showToast("Đã cập nhật thông tin thành công!", "success");
             } else {
-                await api.post('/admin/suppliers', dto);
-                api.showToast("Đã thêm nhà cung cấp mới");
+                await api.post('/admin/suppliers', data);
+                api.showToast("Đã thêm đối tác mới thành công!", "success");
             }
-            layout.render('Suppliers/Admin', 'Index');
+            
+            bootstrap.Modal.getInstance(document.getElementById('supplierModal')).hide();
+            suppliers.loadList();
         } catch (e) {
-            api.showToast("Lỗi vận hành: " + e.message, "error");
+            console.error(e);
+            api.showToast("Lỗi lưu thông tin đối tác", "error");
         }
     },
 
-    loadDetail: async (id) => {
-        if (!id) return;
-        try {
-            // Usually we'd use GET /api/admin/suppliers/{id}, 
-            // but sticking to searching the list if specific endpoint not confirmed
-            const res = await api.get(`/admin/suppliers`);
-            const list = res.data || [];
-            const s = list.find(item => item.supplierId == id);
-            
-            if (s) {
-                // For Edit View
-                $("#supplier-id").val(s.supplierId);
-                $("#supplier-name").val(s.supplierName);
-                $("#supplier-contact").val(s.contactInfo);
-
-                // For Details View
-                $("#detail-supplier-id").text(s.supplierId);
-                $("#detail-supplier-name").text(s.supplierName);
-                $("#disp-supplier-name").text(s.supplierName);
-                $("#disp-supplier-contact").text(s.contactInfo || 'Chưa cập nhật');
-                $("#btn-edit-redirect").attr("onclick", `layout.render('Suppliers/Admin', 'Edit', ${s.supplierId})`);
-
-                // For Delete View
-                $("#del-supplier-id").text(s.supplierId);
-                $("#del-supplier-name").text(s.supplierName);
-                $("#btn-confirm-delete").attr("onclick", `suppliers.performDelete(${s.supplierId})`);
-            }
-        } catch (e) { console.error(e); }
-    },
-
-    performDelete: async (id) => {
+    delete: async (id) => {
+        if (!confirm("Bạn có chắc chắn muốn xóa đối tác này?")) return;
         try {
             await api.delete(`/admin/suppliers/${id}`);
-            api.showToast("Đã xóa bản ghi nhà cung cấp thành công");
-            layout.render('Suppliers/Admin', 'Index');
-        } catch (e) { api.showToast("Không thể xóa nhà cung cấp", "error"); }
+            api.showToast("Đã xóa đối tác thành công", "success");
+            suppliers.loadList();
+        } catch (e) { 
+            api.showToast("Lỗi: Không thể xóa đối tác (có thể đang có ràng buộc dữ liệu)", "error"); 
+        }
     }
 };
