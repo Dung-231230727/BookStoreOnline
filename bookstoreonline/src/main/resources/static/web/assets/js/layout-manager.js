@@ -203,6 +203,13 @@ const layout = {
                 menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
             });
         }
+
+        // --- Start Global Notifications ---
+        if (isAdmin && typeof support !== 'undefined' && support.startGlobalStaffNotifications) {
+            support.startGlobalStaffNotifications();
+        } else if (!isAdmin && typeof support !== 'undefined' && support.startGlobalCustomerNotifications) {
+            support.startGlobalCustomerNotifications();
+        }
     },
 
 
