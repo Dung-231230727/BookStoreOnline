@@ -73,8 +73,13 @@ a:hover {
 
 /* Header Tweaks */
 #header-wrap {
-    background: #fff;
-    border-bottom: 1px solid #eee;
+    /* Fixed positioning handled by inline style in Header.html */
+    border-bottom: none;
+}
+
+/* Push content below fixed header */
+body {
+    padding-top: 90px;
 }
 
 .top-content {

@@ -1,5 +1,14 @@
 <!-- Booksaw Header - Compact & Modern -->
-<div id="header-wrap" class="sticky-top" style="z-index: 1030;">
+<div id="header-wrap" style="
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1030;
+    backdrop-filter: blur(10px) saturate(160%);
+    -webkit-backdrop-filter: blur(10px) saturate(160%);
+    background: rgba(255,255,255,0.97);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.07);
+    transition: box-shadow 0.3s ease;
+">
 
     <!-- ===== TOP BAR (compact) ===== -->
     <div id="top-bar" class="d-none d-md-block" style="background:#2F2F2F; padding: 2px 0;">
@@ -74,16 +83,21 @@
                                 <ul class="dropdown-menu border-0 shadow rounded-4 py-2" style="min-width:220px;">
                                     <li><a class="dropdown-item small py-2 fw-bold" href="javascript:void(0)"
                                             onclick="layout.render('Books','Index')">📚 Tất cả sách</a></li>
-                                    <li><hr class="dropdown-divider my-1"></li>
+                                    <li>
+                                        <hr class="dropdown-divider my-1">
+                                    </li>
                                     <!-- Dynamic categories loaded by loadCategoryDropdown() -->
                                     <div id="header-category-items">
                                         <li><a class="dropdown-item small py-2 text-muted" href="javascript:void(0)">
-                                            <span class="spinner-border spinner-border-sm me-2"></span>Đang tải...
-                                        </a></li>
+                                                <span class="spinner-border spinner-border-sm me-2"></span>Đang tải...
+                                            </a></li>
                                     </div>
-                                    <li><hr class="dropdown-divider my-1"></li>
+                                    <li>
+                                        <hr class="dropdown-divider my-1">
+                                    </li>
                                     <li><a class="dropdown-item small py-2 fw-bold" href="javascript:void(0)"
-                                            onclick="layout.render('Categories','Index')">🏷️ Xem tất cả danh mục →</a></li>
+                                            onclick="layout.render('Categories','Index')">🏷️ Xem tất cả danh mục →</a>
+                                    </li>
                                 </ul>
                             </li>
                             <li class="nav-item">
@@ -129,7 +143,8 @@
                                 style="font-size:0.9rem;" type="search"
                                 placeholder="VD: sách kinh doanh dưới 200k, lập trình Python...">
                             <button class="btn rounded-pill fw-bold px-4"
-                                style="background:#C5A992; color:white; font-size:0.85rem; white-space:nowrap;" type="submit">
+                                style="background:#C5A992; color:white; font-size:0.85rem; white-space:nowrap;"
+                                type="submit">
                                 <i class="icon icon-search me-1"></i> AI Search
                             </button>
                         </form>
@@ -218,14 +233,15 @@
     #user-account-wrapper a {
         transition: color 0.2s;
     }
+
     #user-account-wrapper a:hover {
         color: #fff !important;
     }
 
     /* Hover effect cho nút đã login */
     #userDropdownBtn:hover {
-        background: rgba(255,255,255,0.15) !important;
-        border-color: rgba(255,255,255,0.3) !important;
+        background: rgba(255, 255, 255, 0.15) !important;
+        border-color: rgba(255, 255, 255, 0.3) !important;
     }
 
     /* ── Accent badge (role label) ── */
@@ -238,4 +254,105 @@
         display: inline-block;
         margin-top: 2px;
     }
+
+    /* ── Header transparent background (let wrapper handle it) ── */
+    #header {
+        background: transparent !important;
+        border-bottom: none !important;
+        padding: 10px 0;
+    }
 </style>
+
+<script>
+    (function () {
+        const SCROLL_THRESHOLD = 40;  // px scroll để thu nav
+        const HIDE_DELAY = 2000; // ms idle trước khi ẩn toàn bộ
+        const TRIGGER_ZONE = 55;   // px từ đỉnh để hiện lại khi hover
+
+        const wrap = document.getElementById('header-wrap');
+        const topBar = document.getElementById('top-bar');
+        const header = document.getElementById('header');
+
+        let hideTimer = null;
+        let isHidden = false;
+        let isHovering = false;
+
+        /* ── Khởi tạo transitions ── */
+        if (wrap) wrap.style.transition = 'transform 0.35s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s ease';
+        if (header) header.style.transition = 'padding 0.3s ease';
+
+        /* ── Shrink: thu gọn navbar khi scroll ── */
+        function applyScrollState() {
+            const scrolled = window.scrollY > SCROLL_THRESHOLD;
+
+            if (header) {
+                header.style.padding = scrolled ? '0px 0' : '12px 0';
+            }
+
+            const logo = document.querySelector('.navbar-brand img');
+            if (logo) {
+                logo.style.transition = 'height 0.3s ease';
+                logo.style.height = scrolled ? '24px' : '36px';
+            }
+
+            if (wrap) {
+                wrap.style.boxShadow = scrolled
+                    ? '0 4px 20px rgba(0,0,0,0.12)'
+                    : '0 1px 0 rgba(0,0,0,0.07)';
+            }
+        }
+
+        /* ── Auto-hide: ẩn/hiện toàn bộ header-wrap ── */
+        function showWrap() {
+            if (!wrap) return;
+            isHidden = false;
+            wrap.style.transform = 'translateY(0)';
+        }
+
+        function hideWrap() {
+            // Không ẩn nếu đang hover hoặc đang ở đầu trang
+            if (!wrap || isHovering || window.scrollY <= SCROLL_THRESHOLD) return;
+            
+            isHidden = true;
+            wrap.style.transform = 'translateY(-100%)';
+        }
+
+        function resetHideTimer() {
+            clearTimeout(hideTimer);
+            if (isHidden) showWrap();
+            // Đặt lại timer, nhưng hideWrap sẽ tự huỷ nếu đang ở đầu trang
+            hideTimer = setTimeout(hideWrap, HIDE_DELAY);
+        }
+
+        /* ── Event: scroll ── */
+        window.addEventListener('scroll', function () {
+            applyScrollState();
+            resetHideTimer();
+        }, { passive: true });
+
+        /* ── Event: mouse move ── */
+        document.addEventListener('mousemove', function (e) {
+            if (!wrap) return;
+
+            const inTrigger = e.clientY < TRIGGER_ZONE;
+            const inWrap = wrap.contains(e.target);
+
+            if (inTrigger || inWrap) {
+                if (!isHovering) {
+                    isHovering = true;
+                    clearTimeout(hideTimer);
+                    showWrap();
+                }
+            } else {
+                if (isHovering) {
+                    isHovering = false;
+                    resetHideTimer();
+                }
+            }
+        });
+
+        /* ── Khởi chạy ── */
+        applyScrollState();
+        hideTimer = setTimeout(hideWrap, HIDE_DELAY);
+    })();
+</script>
