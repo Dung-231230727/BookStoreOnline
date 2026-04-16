@@ -6,12 +6,12 @@ const auditlog = {
     /**
      * Load audit logs with filters
      */
-    loadLogs: async () => {
+    loadList: async () => {
         try {
             const username = $("#audit-username").val() || "";
             const action = $("#audit-action-filter").val() || "";
             
-            let url = `/api/admin/audit-logs?`;
+            let url = `/admin/audit-logs?`;
             if (username) url += `username=${encodeURIComponent(username)}&`;
             if (action) url += `action=${encodeURIComponent(action)}&`;
 
@@ -28,7 +28,7 @@ const auditlog = {
 
             logs.forEach(log => {
                 const actionBadge = auditlog.getActionBadge(log.action);
-                const displayUser = log.account ? log.account.username : 'System';
+                const displayUser = log.username || 'System';
                 const timeStr = api.formatDate ? api.formatDate(log.timestamp, true) : log.timestamp;
                 
                 tbody.append(`

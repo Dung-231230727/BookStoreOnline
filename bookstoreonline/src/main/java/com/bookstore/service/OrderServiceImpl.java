@@ -189,7 +189,7 @@ public class OrderServiceImpl implements OrderService {
 
             InventoryLog log = new InventoryLog();
             log.setBook(book);
-            log.setChangeType("RESTOCK");
+            log.setChangeType("RETURN");
             log.setQuantityChanged(restockQuantity);
             log.setQuantityAfter(oldStock + restockQuantity);
             log.setNotes("Restock from cancelled order: " + orderId);

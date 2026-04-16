@@ -36,6 +36,7 @@ public class BookCreateRequest {
     private String downloadUrl;
 
     private String coverImage;
+    private String coverAlt;
 
     private Set<Integer> authorIds;
 
@@ -62,6 +63,8 @@ public class BookCreateRequest {
     public void setDescription(String description) { this.description = description; }
     public String getCoverImage() { return coverImage; }
     public void setCoverImage(String coverImage) { this.coverImage = coverImage; }
+    public String getCoverAlt() { return coverAlt; }
+    public void setCoverAlt(String coverAlt) { this.coverAlt = coverAlt; }
     public Set<Integer> getAuthorIds() { return authorIds; }
     public void setAuthorIds(Set<Integer> authorIds) { this.authorIds = authorIds; }
 }

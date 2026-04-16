@@ -1,40 +1,43 @@
 package com.bookstore.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import com.bookstore.entity.AuditLog;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 
 public class AuditLogDTO {
-    @Schema(example = "1")
-    private Long id;
-
-    @Schema(example = "admin")
+    private Long logId;
     private String username;
-
-    @Schema(example = "UPDATE_ORDER_STATUS")
     private String action;
-
-    @Schema(example = "Order ORD-1234: NEW -> CONFIRMED")
     private String details;
+    private LocalDateTime timestamp;
 
-    @Schema(example = "13/04/2024 08:30:45")
-    private String timestamp;
+    public AuditLogDTO() {}
 
     public AuditLogDTO(AuditLog log) {
-        this.id = log.getLogId();
-        if (log.getAccount() != null) {
-            this.username = log.getAccount().getUsername();
-        }
-        this.action = log.getAction();
-        this.details = log.getDetails();
-        if (log.getTimestamp() != null) {
-            this.timestamp = log.getTimestamp().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+        if (log != null) {
+            this.logId = log.getLogId();
+            this.username = log.getAccount() != null ? log.getAccount().getUsername() : null;
+            this.action = log.getAction();
+            this.details = log.getDetails();
+            this.timestamp = log.getTimestamp();
         }
     }
 
-    public Long getId() { return id; }
+    public AuditLogDTO(Long logId, String username, String action, String details, LocalDateTime timestamp) {
+        this.logId = logId;
+        this.username = username;
+        this.action = action;
+        this.details = details;
+        this.timestamp = timestamp;
+    }
+
+    public Long getLogId() { return logId; }
+    public void setLogId(Long logId) { this.logId = logId; }
     public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
     public String getAction() { return action; }
+    public void setAction(String action) { this.action = action; }
     public String getDetails() { return details; }
-    public String getTimestamp() { return timestamp; }
+    public void setDetails(String details) { this.details = details; }
+    public LocalDateTime getTimestamp() { return timestamp; }
+    public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
 }

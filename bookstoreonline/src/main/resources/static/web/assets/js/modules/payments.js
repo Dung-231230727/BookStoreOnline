@@ -6,9 +6,9 @@ const payments = {
     /**
      * Load admin payments list with filters
      */
-    loadAdminPayments: async () => {
+    loadAdminList: async () => {
         try {
-            const res = await api.get(`/api/payments/admin/all`);
+            const res = await api.get(`/payments/admin/all`);
             const paymentsList = res.data || res;
             const tbody = $("#payment-list-body");
             if (!tbody.length) return;

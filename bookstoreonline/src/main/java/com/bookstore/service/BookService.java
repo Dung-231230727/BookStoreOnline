@@ -68,6 +68,7 @@ public class BookService {
         book.setPrice(request.getPrice());
         book.setDescription(request.getDescription());
         book.setCoverImage(request.getCoverImage());
+        book.setCoverAlt(request.getCoverAlt());
 
         Category category = categoryRepository.findById(java.util.Objects.requireNonNull(request.getCategoryId()))
                 .orElseThrow(() -> new IllegalArgumentException(
@@ -87,18 +88,16 @@ public class BookService {
             book.setAuthors(new java.util.HashSet<>(authors));
         }
 
-        Book savedBook = bookRepository.save(book);
+        Book savedBook = bookRepository.saveAndFlush(book);
 
         // Core Book + Subtype composition
         if ("PHYSICAL".equalsIgnoreCase(request.getBookType())) {
             PhysicalBook physical = new PhysicalBook();
-            physical.setIsbn(savedBook.getIsbn());
             physical.setWeight(request.getWeight());
             physical.setBook(savedBook);
             physicalBookRepository.save(physical);
         } else if ("EBOOK".equalsIgnoreCase(request.getBookType())) {
             EBook ebook = new EBook();
-            ebook.setIsbn(savedBook.getIsbn());
             ebook.setFileSize(request.getFileSize());
             ebook.setDownloadUrl(request.getDownloadUrl());
             ebook.setBook(savedBook);
@@ -121,6 +120,7 @@ public class BookService {
         book.setPrice(request.getPrice());
         book.setDescription(request.getDescription());
         book.setCoverImage(request.getCoverImage());
+        book.setCoverAlt(request.getCoverAlt());
 
         Category category = categoryRepository.findById(java.util.Objects.requireNonNull(request.getCategoryId()))
                 .orElseThrow(() -> new IllegalArgumentException(
@@ -142,7 +142,7 @@ public class BookService {
             book.setAuthors(new java.util.HashSet<>());
         }
 
-        Book savedBook = bookRepository.save(book);
+        Book savedBook = bookRepository.saveAndFlush(book);
 
         // TYPE SWITCHING / UPDATE LOGIC
         // 1. Remove old subtypes
@@ -152,13 +152,11 @@ public class BookService {
         // 2. Add new subtype
         if ("PHYSICAL".equalsIgnoreCase(request.getBookType())) {
             PhysicalBook physical = new PhysicalBook();
-            physical.setIsbn(isbn);
             physical.setWeight(request.getWeight());
             physical.setBook(savedBook);
             physicalBookRepository.save(physical);
         } else if ("EBOOK".equalsIgnoreCase(request.getBookType())) {
             EBook ebook = new EBook();
-            ebook.setIsbn(isbn);
             ebook.setFileSize(request.getFileSize());
             ebook.setDownloadUrl(request.getDownloadUrl());
             ebook.setBook(savedBook);

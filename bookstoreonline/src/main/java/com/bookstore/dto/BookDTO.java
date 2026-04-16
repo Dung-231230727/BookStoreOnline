@@ -14,6 +14,7 @@ public class BookDTO {
     private Integer publisherId;
     private String publisherName;
     private String coverImage;
+    private String coverAlt;
     private Set<String> authorNames;
     private String description;
 
@@ -34,6 +35,7 @@ public class BookDTO {
             dto.setPublisherName(book.getPublisher().getPublisherName());
         }
         dto.setCoverImage(book.getCoverImage());
+        dto.setCoverAlt(book.getCoverAlt());
         if (book.getAuthors() != null) {
             dto.setAuthorNames(book.getAuthors().stream()
                 .map(author -> author.getAuthorName())
@@ -58,6 +60,8 @@ public class BookDTO {
     public void setPublisherName(String publisherName) { this.publisherName = publisherName; }
     public String getCoverImage() { return coverImage; }
     public void setCoverImage(String coverImage) { this.coverImage = coverImage; }
+    public String getCoverAlt() { return coverAlt; }
+    public void setCoverAlt(String coverAlt) { this.coverAlt = coverAlt; }
     public Set<String> getAuthorNames() { return authorNames; }
     public void setAuthorNames(Set<String> authorNames) { this.authorNames = authorNames; }
     public String getDescription() { return description; }

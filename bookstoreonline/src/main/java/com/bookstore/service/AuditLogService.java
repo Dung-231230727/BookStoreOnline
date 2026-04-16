@@ -1,5 +1,6 @@
 package com.bookstore.service;
 
+import com.bookstore.dto.AuditLogDTO;
 import com.bookstore.entity.AuditLog;
 import com.bookstore.repository.AuditLogRepository;
 import org.springframework.stereotype.Service;
@@ -7,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,12 +21,14 @@ public class AuditLogService {
     }
 
     @Transactional(readOnly = true)
-    public List<AuditLog> getAllLogs() {
-        return auditLogRepository.findAllByOrderByTimestampDesc();
+    public List<AuditLogDTO> getAllLogs() {
+        return auditLogRepository.findAllByOrderByTimestampDesc().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<AuditLog> filterLogs(String username, String actionKeyword, LocalDateTime startDate, LocalDateTime endDate) {
+    public List<AuditLogDTO> filterLogs(String username, String actionKeyword, LocalDateTime startDate, LocalDateTime endDate) {
         List<AuditLog> logs = auditLogRepository.findAllByOrderByTimestampDesc();
         
         return logs.stream()
@@ -32,13 +36,14 @@ public class AuditLogService {
                 .filter(log -> actionKeyword == null || log.getAction().toLowerCase().contains(actionKeyword.toLowerCase()))
                 .filter(log -> startDate == null || !log.getTimestamp().isBefore(startDate))
                 .filter(log -> endDate == null || !log.getTimestamp().isAfter(endDate))
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public java.util.Optional<AuditLog> getLogById(Long id) {
-        if (id == null) return java.util.Optional.empty();
-        return auditLogRepository.findById(id);
+    public Optional<AuditLogDTO> getLogById(Long id) {
+        if (id == null) return Optional.empty();
+        return auditLogRepository.findById(id).map(this::convertToDTO);
     }
 
     @Transactional
@@ -49,5 +54,15 @@ public class AuditLogService {
         log.setDetails(details);
         log.setTimestamp(LocalDateTime.now());
         auditLogRepository.save(log);
+    }
+
+    private AuditLogDTO convertToDTO(AuditLog log) {
+        return new AuditLogDTO(
+                log.getLogId(),
+                log.getAccount().getUsername(),
+                log.getAction(),
+                log.getDetails(),
+                log.getTimestamp()
+        );
     }
 }

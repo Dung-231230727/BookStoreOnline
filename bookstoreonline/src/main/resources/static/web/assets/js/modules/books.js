@@ -161,7 +161,8 @@ const books = {
             categoryId: raw.maDanhMuc ? parseInt(raw.maDanhMuc) : (raw.categoryId ? parseInt(raw.categoryId) : null),
             publisherId: raw.maNxb ? parseInt(raw.maNxb) : (raw.publisherId ? parseInt(raw.publisherId) : null),
             description: raw.moTa || raw.description || '',
-            coverImage: raw.anhBia || raw.coverImage || '',
+            coverImage: ($('#anhBia').val() || $('#edit-anhBia').val() || raw.anhBia || ''),
+            coverAlt: ($('#coverAlt').val() || $('#edit-coverAlt').val() || raw.coverAlt || ''),
             authorIds: raw.maTacGia ? [parseInt(raw.maTacGia)] : (raw.authorId ? [parseInt(raw.authorId)] : []),
             bookType: raw.bookType,
             weight: raw.weight ? parseFloat(raw.weight) : null,
@@ -169,6 +170,7 @@ const books = {
             downloadUrl: raw.downloadUrl || null
         };
 
+        console.log("Create Book Payload:", payload);
         api.showToast("Đang lưu thông tin sách...", "info");
         try {
             await api.post('/admin/books', payload);
@@ -191,6 +193,7 @@ const books = {
             publisherId: raw.maNxb ? parseInt(raw.maNxb) : (raw.publisherId ? parseInt(raw.publisherId) : null),
             description: raw.moTa || raw.description || '',
             coverImage: raw.anhBia || raw.coverImage || '',
+            coverAlt: raw.coverAlt || '',
             authorIds: raw.maTacGia ? [parseInt(raw.maTacGia)] : (raw.authorId ? [parseInt(raw.authorId)] : []),
             bookType: raw.bookType,
             weight: raw.weight ? parseFloat(raw.weight) : null,
@@ -198,6 +201,7 @@ const books = {
             downloadUrl: raw.downloadUrl || null
         };
 
+        console.log("Update Book Payload:", payload);
         api.showToast("Đang cập nhật thông tin sách...", "info");
         try {
             await api.put(`/admin/books/${isbn}`, payload);
@@ -214,6 +218,70 @@ const books = {
             books.loadAdminList();
         } catch (e) {
             api.showToast("Xóa sản phẩm thất bại", "error");
+        }
+    },
+
+    handleImageUpload: async (input) => {
+        const file = input.files[0];
+        if (!file) return;
+
+        console.log("Starting upload for file:", file.name);
+
+        // Instant Local Preview
+        const objectUrl = URL.createObjectURL(file);
+        const previewImg = $('#book-preview-img');
+        const placeholder = $('#preview-placeholder');
+
+        if (previewImg.length) {
+            console.log("Updating preview image src");
+            previewImg.attr('src', objectUrl).removeClass('d-none').show();
+            if (placeholder.length) placeholder.addClass('d-none');
+        } else {
+            console.warn("Element #book-preview-img not found!");
+        }
+
+        // Show original filename info
+        const originalInfo = $('#original-filename-info');
+        if (originalInfo.length) {
+            originalInfo.text(file.name);
+            $('#file-info').removeClass('d-none');
+        }
+
+        // Show loading state
+        const overlay = $('#upload-overlay');
+        overlay.removeClass('d-none').addClass('d-flex');
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const response = await fetch('/api/admin/upload-image', {
+                method: 'POST',
+                headers: {
+                    'Authorization': localStorage.getItem('token') ? 'Bearer ' + localStorage.getItem('token') : ''
+                },
+                body: formData
+            });
+
+            const result = await response.json();
+            if (result.status === 200 || result.status === 201) {
+                const fileName = result.data.fileName;
+                // Update hidden inputs (system fileName)
+                $('#anhBia').val(fileName).trigger('input');
+                $('#edit-anhBia').val(fileName).trigger('input');
+                
+                api.showToast("Tải ảnh lên thành công!", "success");
+            } else {
+                api.showToast("Lỗi: " + result.message, "error");
+            }
+        } catch (e) {
+            console.error("Upload error:", e);
+            api.showToast("Không thể kết nối đến máy chủ để tải ảnh", "error");
+        } finally {
+            overlay.addClass('d-none').removeClass('d-flex');
+            // Cleanup object URL to avoid memory leaks
+            // URL.revokeObjectURL(objectUrl); // Don't revoke yet as user might want to see it
+            input.value = "";
         }
     },
 
@@ -245,26 +313,46 @@ const books = {
         try {
             const res = await api.get('/authors');
             const data = res.data || res;
-            const sel = $('#maTacGia') || $('#authorId');
+            const sel = $('#maTacGia').length ? $('#maTacGia') : $('#authorId');
             if (!sel.length) return;
             sel.empty().append('<option value="">-- Chọn tác giả --</option>');
             (Array.isArray(data) ? data : []).forEach(a => {
-                sel.append(`<option value="${a.id}">${a.fullName || a.name}</option>`);
+                sel.append(`<option value="${a.authorId}">${a.authorName}</option>`);
             });
-        } catch (e) { }
+        } catch (e) { console.error("loadAuthors error:", e); }
     },
 
     loadPublishers: async () => {
         try {
             const res = await api.get('/publishers');
             const data = res.data || res;
-            const sel = $('#maNxb') || $('#publisherId');
+            const sel = $('#maNxb').length ? $('#maNxb') : $('#publisherId');
             if (!sel.length) return;
             sel.empty().append('<option value="">-- Chọn NXB --</option>');
             (Array.isArray(data) ? data : []).forEach(p => {
-                sel.append(`<option value="${p.id}">${p.name}</option>`);
+                sel.append(`<option value="${p.publisherId}">${p.publisherName}</option>`);
             });
-        } catch (e) { }
+        } catch (e) { console.error("loadPublishers error:", e); }
+    },
+
+    adminSearch: (query) => {
+        const grid = $("#books-admin-list");
+        if (!grid.length) return;
+        
+        const rows = grid.find("tr");
+        rows.each(function() {
+            const row = $(this);
+            const text = row.text().toLowerCase();
+            if (text.includes(query.toLowerCase())) {
+                row.show();
+            } else {
+                row.hide();
+            }
+        });
+    },
+
+    toggleAdvancedFilters: () => {
+        api.showToast("Tính năng lọc nâng cao đang được phát triển", "info");
     },
 
     renderGrid: (selector, itemList) => {

@@ -34,6 +34,9 @@ public class Book {
     @Column(name = "cover_image", length = 255)
     private String coverImage;
 
+    @Column(name = "cover_alt", length = 255)
+    private String coverAlt;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "book_authors",
@@ -72,6 +75,8 @@ public class Book {
     public void setDescription(String description) { this.description = description; }
     public String getCoverImage() { return coverImage; }
     public void setCoverImage(String coverImage) { this.coverImage = coverImage; }
+    public String getCoverAlt() { return coverAlt; }
+    public void setCoverAlt(String coverAlt) { this.coverAlt = coverAlt; }
     public Set<Author> getAuthors() { return authors; }
     public void setAuthors(Set<Author> authors) { this.authors = authors; }
     public Boolean getIsDeleted() { return isDeleted; }

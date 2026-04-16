@@ -1,7 +1,7 @@
 package com.bookstore.controller;
 
 import com.bookstore.dto.ApiResponse;
-import com.bookstore.entity.AuditLog;
+import com.bookstore.dto.AuditLogDTO;
 import com.bookstore.service.AuditLogService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,13 +27,13 @@ public class AuditLogController {
 
     @GetMapping
     @Operation(summary = "Lấy tất cả nhật ký hệ thống", description = "Lấy danh sách log hoạt động có hỗ trợ lọc theo user, hành động và thời gian.")
-    public ResponseEntity<ApiResponse<List<AuditLog>>> getLogs(
+    public ResponseEntity<ApiResponse<List<AuditLogDTO>>> getLogs(
             @RequestParam(required = false) String username,
             @RequestParam(required = false) String action,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
         
-        List<AuditLog> logs;
+        List<AuditLogDTO> logs;
         if (username != null || action != null || startDate != null || endDate != null) {
             logs = auditLogService.filterLogs(username, action, startDate, endDate);
         } else {
@@ -45,7 +45,7 @@ public class AuditLogController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Lấy chi tiết nhật ký", description = "Tìm kiếm chi tiết một bản ghi log cụ thể theo ID.")
-    public ResponseEntity<ApiResponse<AuditLog>> getLogDetail(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<AuditLogDTO>> getLogDetail(@PathVariable Long id) {
         return auditLogService.getLogById(id)
                 .map(log -> ResponseEntity.ok(ApiResponse.success("Lấy chi tiết nhật ký thành công", log)))
                 .orElse(ResponseEntity.notFound().build());

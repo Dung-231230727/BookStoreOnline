@@ -161,7 +161,7 @@ const cart = {
 
     loadAdminCarts: async () => {
         try {
-            const res = await api.get(`/api/cart/admin/all`);
+            const res = await api.get(`/cart/admin/all`);
             const carts = res.data || res;
             const tbody = $("#cart-admin-list-body");
             if (!tbody.length) return;
