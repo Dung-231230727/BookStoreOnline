@@ -77,10 +77,9 @@ a:hover {
     border-bottom: none;
 }
 
-/* Push content below fixed header */
+/* Push content below header (now handled by sticky positioning) */
 body {
-    padding-top: 90px;
-    transition: padding-top 0.3s ease;
+
 }
 
 /* No padding-top for Admin views since header is hidden */

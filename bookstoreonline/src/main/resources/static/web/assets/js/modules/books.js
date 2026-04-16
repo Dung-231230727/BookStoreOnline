@@ -1,54 +1,111 @@
 /**
  * books.js - Product Management & AI Search
- * Standardized for Full English Backend synchronization
  */
 
 let currentBookIsbn = null;
 
 const books = {
+    // === PRIVATE STATE ===
+    _allBooksCache: [],
+    _categoriesCache: [],
+
+    // === HELPERS ===
+    _createBookCardHtml: (book, options = {}) => {
+        const imagePath = book.coverImage ? `assets/images/${book.coverImage}` : 'assets/images/product-item1.jpg';
+        const isPopular = options.isPopular || false;
+        const columnClass = options.columnClass || "col-xl-3 col-lg-4 col-sm-6 mb-4";
+        
+        // Dynamic overlay text/style
+        const overlayText = isPopular ? 'Xem nhanh' : 'Xem chi tiết';
+        
+        return `
+            <div class="${columnClass}">
+                <div class="product-item bg-white p-3 rounded-4 shadow-sm h-100 text-center transition-all hvr-float border-0">
+                    <a href="javascript:void(0)" onclick="layout.render('Books','Details','${book.isbn}')" 
+                       class="d-block image-holder position-relative mb-3 overflow-hidden rounded-3 bg-light p-2" style="cursor:pointer;">
+                        <img src="${imagePath}" alt="${book.title}" class="img-fluid book-cover-img" 
+                             style="height:${isPopular ? '200px' : '200px'}; object-fit:contain; transition:transform 0.35s ease;">
+                        <div class="book-img-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" 
+                             style="background:rgba(47,47,47,0); transition:background 0.3s ease; border-radius:inherit;">
+                            <span class="text-white fw-bold small" style="opacity:0; transition:opacity 0.3s ease; letter-spacing:0.05em;">${overlayText}</span>
+                        </div>
+                    </a>
+                    <h6 class="fw-bold mb-1">
+                        <a href="javascript:void(0)" onclick="layout.render('Books','Details','${book.isbn}')" class="text-decoration-none text-dark">${book.title}</a>
+                    </h6>
+                    <div class="fw-bold text-accent mb-2">${api.formatCurrency(book.price)}</div>
+                    <button class="btn btn-outline-dark btn-sm rounded-pill px-3" onclick="cart.add('${book.isbn}',1)">
+                        <i class="icon icon-plus me-1"></i>Thêm vào giỏ
+                    </button>
+                </div>
+            </div>
+        `;
+    },
+
     // 1. Fetch and display featured books on homepage
     loadFeatured: async () => {
         try {
-            const res = await api.get('/books');
-            const itemList = res.data || res;
+            if (books._allBooksCache.length === 0) {
+                const res = await api.get('/books');
+                books._allBooksCache = res.data || [];
+            }
+            const itemList = books._allBooksCache;
             if (Array.isArray(itemList)) {
                 books.renderGrid("#featured-books-container", itemList.slice(0, 8));
                 books.renderPopular("#popular-books-container", itemList.slice(0, 8));
-                // Populate best seller
-                if (itemList.length > 0) {
-                    books.renderBestSeller(itemList[0]);
-                }
+                if (itemList.length > 0) books.renderBestSeller(itemList[0]);
             }
         } catch (error) {
             console.error("Failed to load featured books", error);
         }
     },
-
-    // 1d. Public Load all books & categories for Index page
-    _allBooksCache: [],
-
-    loadAll: async () => {
-        const grid = $("#books-grid");
-        const catList = $("#categories-filter-list");
-
+    
+    // 1b. Load books by category for Homepage Tabs (Optimized to use cache)
+    loadByCategory: async (categoryName) => {
+        const container = $("#popular-books-container");
+        if (!container.length) return;
+        container.html('<div class="col-12 text-center py-5"><div class="spinner-border text-accent spinner-border-sm"></div></div>');
+        
         try {
-            // 1. Load Categories for sidebar with individual error handling
-            try {
-                const catRes = await api.get('/categories');
-                const categoriesData = catRes.data || [];
-                books.renderCategories(categoriesData);
-            } catch (catErr) {
-                console.error("Failed to load categories", catErr);
-                catList.html('<li class="small text-muted text-center py-3">Không thể tải danh mục</li>');
+            // Use cache if available for faster, more accurate switching
+            if (books._allBooksCache.length === 0) {
+                const res = await api.get('/books');
+                books._allBooksCache = res.data || [];
             }
 
-            // 2. Load Books
-            grid.html(`
-                <div class="col-12 text-center py-5">
-                    <div class="spinner-border text-accent mb-3"></div>
-                    <div class="text-muted">Đang tải danh sách sách...</div>
-                </div>
-            `);
+            let filtered = [];
+            if (categoryName === 'ALL') {
+                filtered = books._allBooksCache;
+            } else {
+                filtered = books._allBooksCache.filter(b => 
+                    b.categoryName && b.categoryName.trim().toLowerCase() === categoryName.trim().toLowerCase()
+                );
+            }
+            books.renderPopular("#popular-books-container", filtered.slice(0, 8));
+        } catch (error) {
+            console.error("loadByCategory error", error);
+            container.html('<div class="col-12 text-center py-4 text-muted">Không tải được dữ liệu.</div>');
+        }
+    },
+
+    // 1d. Main store loader
+    loadAll: async () => {
+        const grid = $("#books-grid");
+        try {
+            // 1. Categories
+            const catRes = await api.get('/categories');
+            books._categoriesCache = catRes.data || [];
+            books.renderCategories(books._categoriesCache);
+
+            // 2. Books
+            grid.html('<div class="col-12 text-center py-5"><div class="spinner-border text-accent mb-3"></div><div class="text-muted">Đang tải danh sách sách...</div></div>');
+
+            if (layout.pendingCategory) {
+                const p = layout.pendingCategory;
+                layout.pendingCategory = null;
+                await books.filterByCategory(p.id, p.name);
+                return;
+            }
 
             const res = await api.get('/books');
             books._allBooksCache = res.data || [];
@@ -56,7 +113,7 @@ const books = {
 
         } catch (error) {
             console.error("Failed to load books index", error);
-            grid.html('<div class="col-12 text-center py-5 text-danger">Lỗi khi tải dữ liệu sách. Vui lòng thử lại.</div>');
+            grid.html('<div class="col-12 text-center py-5 text-danger">Lỗi khi tải dữ liệu.</div>');
         }
     },
 
@@ -64,67 +121,103 @@ const books = {
         const container = $("#categories-filter-list");
         if (!container.length) return;
         container.empty();
-
-        // 1. Add "All" option
         container.append(`
             <li class="mb-1">
-                <a href="javascript:void(0)" onclick="books.loadAll()" class="text-decoration-none text-dark d-flex justify-content-between align-items-center py-2 px-3 rounded-3 category-link active bg-light shadow-sm" style="transition: all 0.2s ease;">
+                <a href="javascript:void(0)" onclick="books.loadAll()" class="text-decoration-none text-dark d-flex justify-content-between align-items-center py-2 px-3 rounded-3 category-link active bg-light shadow-sm">
                     <span class="small fw-bold"><i class="icon icon-grid me-2"></i>Tất cả sản phẩm</span>
                 </a>
             </li>
         `);
 
-        // 2. Render nested tree
         const renderLevel = (items, parentElement, depth = 0) => {
-            if (!items || !Array.isArray(items) || items.length === 0) return;
-            
-            items.forEach(cat => {
+            (items || []).forEach(cat => {
                 const hasChildren = cat.subCategories && cat.subCategories.length > 0;
-                const paddingStart = depth * 15 + 16;
                 const subListId = `sub-cat-list-${cat.categoryId}`;
-                
                 const itemHtml = `
                     <li class="category-item-wrapper" style="margin-bottom: 2px;">
                         <a href="javascript:void(0)" 
-                           onclick="books.filterByCategory(${cat.categoryId}, '${cat.categoryName.replace(/'/g, "\\'")}')" 
+                           onclick="layout.pendingCategory = { id: ${cat.categoryId}, name: '${cat.categoryName.replace(/'/g, "\\'")}' }; layout.render('Books','Index');" 
+                           data-id="${cat.categoryId}"
                            class="text-decoration-none text-muted d-flex justify-content-between align-items-center py-2 px-3 rounded-2 category-link"
-                           style="padding-left: ${paddingStart}px !important; transition: all 0.2s ease; border-left: ${depth > 0 ? '1px solid #eee' : 'none'};">
-                            <span class="small ${depth === 0 ? 'fw-bold text-dark' : ''}">
-                                ${depth > 0 ? '<span class="text-light-emphasis me-1 opacity-50">└</span>' : ''}
-                                ${cat.categoryName}
-                            </span>
+                           style="padding-left: ${depth * 15 + 16}px !important; border-left: ${depth > 0 ? '1px solid #eee' : 'none'};">
+                            <span class="small ${depth === 0 ? 'fw-bold text-dark' : ''}">${depth > 0 ? '└ ' : ''}${cat.categoryName}</span>
                             ${hasChildren ? '<i class="icon icon-chevron-down extra-small opacity-50" style="font-size:0.5rem;"></i>' : ''}
                         </a>
                         <ul class="list-unstyled sub-category-list" id="${subListId}"></ul>
                     </li>
                 `;
-                
                 const $item = $(itemHtml);
                 parentElement.append($item);
-                
-                if (hasChildren) {
-                    renderLevel(cat.subCategories, $item.find(`#${subListId}`), depth + 1);
-                }
+                if (hasChildren) renderLevel(cat.subCategories, $item.find(`#${subListId}`), depth + 1);
             });
         };
-
         renderLevel(data, container);
     },
 
-    filterByCategory: async (categoryId, categoryName) => {
+    _getAllChildIds: (categoryId, nodes = null) => {
+        const validId = parseInt(categoryId);
+        if (isNaN(validId)) return [];
+        if (!nodes) nodes = books._categoriesCache;
+        
+        let ids = [validId];
+        const findAndCollect = (list) => {
+            for (const node of list) {
+                const nodeId = parseInt(node.categoryId || node.id); 
+                if (nodeId === validId) {
+                    const collect = (children) => {
+                        children.forEach(c => {
+                            ids.push(parseInt(c.categoryId || c.id));
+                            if (c.subCategories) collect(c.subCategories);
+                        });
+                    };
+                    if (node.subCategories) collect(node.subCategories);
+                    return true;
+                }
+                if (node.subCategories && findAndCollect(node.subCategories)) return true;
+            }
+            return false;
+        };
+        findAndCollect(nodes || []);
+        return ids;
+    },
+
+    filterByCategory: async (categoryId, categoryName, element) => {
+        const validCatId = parseInt(categoryId);
+        const isIdValid = !isNaN(validCatId);
         $("#category-title").text(categoryName || "Danh mục");
-        $(".category-link").removeClass("active fw-bold text-dark").addClass("text-muted");
-        $(event.currentTarget).addClass("active fw-bold text-dark").removeClass("text-muted");
+        $(".category-link").removeClass("active fw-bold text-dark bg-light shadow-sm").addClass("text-muted");
+        
+        let target = element || (isIdValid ? $(`.category-link[data-id="${validCatId}"]`) : null);
+        if (target) $(target).addClass("active fw-bold text-dark bg-light shadow-sm").removeClass("text-muted");
 
         const grid = $("#books-grid");
         grid.html('<div class="col-12 text-center py-5"><div class="spinner-border text-accent"></div></div>');
 
         try {
-            const res = await api.get(`/books?categoryName=${encodeURIComponent(categoryName)}`);
-            books.renderGrid("#books-grid", res.data || []);
+            if (books._allBooksCache.length === 0) {
+                const res = await api.get('/books');
+                books._allBooksCache = res.data || [];
+            }
+            const targetIds = isIdValid ? books._getAllChildIds(validCatId) : [];
+            const filtered = books._allBooksCache.filter(book => {
+                const bookCatId = parseInt(book.categoryId || book.category_id || book.id);
+                const matchById = isIdValid && !isNaN(bookCatId) && targetIds.includes(bookCatId);
+                const matchByName = categoryName && book.categoryName && (book.categoryName.trim().toLowerCase() === categoryName.trim().toLowerCase());
+                return matchById || matchByName;
+            });
+            books.renderGrid("#books-grid", filtered);
         } catch (e) {
-            grid.html('<div class="col-12 text-center py-5 text-danger">Không thể lọc theo danh mục này.</div>');
+            grid.html('<div class="col-12 text-center py-5 text-danger">Lỗi lọc danh mục.</div>');
         }
+    },
+
+    // 2. Search & Sort
+    handleSort: (criteria) => {
+        let sorted = [...books._allBooksCache];
+        if (criteria === 'price-asc') sorted.sort((a, b) => a.price - b.price);
+        else if (criteria === 'price-desc') sorted.sort((a, b) => b.price - a.price);
+        else if (criteria === 'newest') sorted.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        books.renderGrid("#books-grid", sorted);
     },
 
     loadByPriceRange: async (min, max) => {
@@ -132,27 +225,12 @@ const books = {
         grid.html('<div class="col-12 text-center py-5"><div class="spinner-border text-accent"></div></div>');
         try {
             const res = await api.get(`/books?minPrice=${min}&maxPrice=${max}`);
-            books.renderGrid("#books-grid", res.data || []);
+            books._allBooksCache = res.data || []; // Refresh cache with filtered results if desired, or just render
+            books.renderGrid("#books-grid", books._allBooksCache);
+            $("#category-title").text(`Sách giá từ ${api.formatCurrency(min)} đến ${api.formatCurrency(max)}`);
         } catch (e) {
-            grid.html('<div class="col-12 text-center py-5 text-danger">Lỗi khi lọc theo giá.</div>');
+            grid.html('<div class="col-12 text-center py-5 text-danger">Lỗi lọc giá.</div>');
         }
-    },
-
-    handleSort: (criteria) => {
-        let sorted = [...books._allBooksCache];
-        if (criteria === 'price-asc') {
-            sorted.sort((a, b) => a.price - b.price);
-        } else if (criteria === 'price-desc') {
-            sorted.sort((a, b) => b.price - a.price);
-        } else if (criteria === 'newest') {
-            sorted.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-        }
-        books.renderGrid("#books-grid", sorted);
-    },
-
-    loadDetail: async (isbn) => {
-        // Implementation for details page initialization if needed via layout-manager
-        // (Details are often handled by a separate call but good to have a placeholder)
     },
 
 
@@ -166,60 +244,33 @@ const books = {
         $('#best-seller-link').attr('onclick', `layout.render('Books','Details','${book.isbn}')`);
     },
 
-    // 1c. Render popular books grid (for Home page tabs)
+    // 1c. Popular books grid
     renderPopular: (selector, items) => {
         const container = $(selector);
         if (!container.length) return;
         container.empty();
-        if (!items || items.length === 0) return;
-        items.forEach(book => {
-            const imagePath = book.coverImage ? `assets/images/${book.coverImage}` : 'assets/images/product-item1.jpg';
-            container.append(`
-                <div class="col-xl-3 col-lg-4 col-sm-6 mb-4">
-                    <div class="product-item bg-white p-3 rounded-4 shadow-sm h-100 text-center transition-all hvr-float border-0">
-                        <a href="javascript:void(0)" onclick="layout.render('Books','Details','${book.isbn}')" class="d-block image-holder position-relative mb-3 overflow-hidden rounded-3 bg-light p-2 book-img-link" style="cursor:pointer;">
-                            <img src="${imagePath}" alt="${book.title}" class="img-fluid book-cover-img" style="height:200px;object-fit:contain;transition:transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94);">
-                            <div class="book-img-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background:rgba(47,47,47,0);transition:background 0.3s ease;border-radius:inherit;">
-                                <span class="text-white fw-bold small" style="opacity:0;transition:opacity 0.3s ease;letter-spacing:0.05em;">Xem chi tiết</span>
-                            </div>
-                        </a>
-                        <h6 class="fw-bold mb-1"><a href="javascript:void(0)" onclick="layout.render('Books','Details','${book.isbn}')" class="text-decoration-none text-dark">${book.title}</a></h6>
-                        <div class="fw-bold text-accent mb-2">${api.formatCurrency(book.price)}</div>
-                        <button class="btn btn-outline-dark btn-sm rounded-pill px-3" onclick="cart.add('${book.isbn}',1)"><i class="icon icon-plus me-1"></i>Thêm vào giỏ</button>
-                    </div>
-                </div>
-            `);
+        (items || []).forEach(book => {
+            container.append(books._createBookCardHtml(book, { isPopular: true }));
         });
     },
 
-    // 2. AI Search Integration
+    // 2. AI Search
     searchAI: async (query) => {
         if (!query || !query.trim()) return;
-        query = query.trim();
-
         layout.current.isSearching = true;
         if (layout.current.area !== 'Books' || layout.current.view !== 'Index') {
             await layout.render('Books', 'Index');
         }
-
         const grid = $("#books-grid");
-        grid.html(`
-            <div class="col-12 text-center py-5">
-                <div class="spinner-border text-accent mb-3" style="width:2.5rem;height:2.5rem;"></div>
-                <p class="text-muted">AI đang tìm kiếm: <strong>"${$('<div>').text(query).html()}"</strong></p>
-            </div>
-        `);
+        grid.html(`<div class="col-12 text-center py-5"><div class="spinner-border text-accent mb-3"></div><p class="text-muted">AI đang tìm: <strong>"${$('<div>').text(query).html()}"</strong></p></div>`);
 
         try {
             const res = await api.post('/books/ai-search', { query });
-            const results = res.data || [];
-            books.renderGrid("#books-grid", results);
-        } catch (error) {
-            console.error("AI Search error:", error);
-        }
+            books.renderGrid("#books-grid", res.data || []);
+        } catch (error) { console.error("AI Search error:", error); }
     },
 
-    // 3. Admin Management
+    // 3. Admin Views
     loadAdminList: async () => {
         try {
             const res = await api.get('/books');
@@ -227,12 +278,10 @@ const books = {
             const tbody = $("#books-admin-list");
             if (!tbody.length) return;
             tbody.empty();
-
             data.forEach(book => {
                 const typeBadge = book.bookType === 'EBOOK'
                     ? '<span class="badge bg-info text-dark rounded-pill px-2">EBOOK</span>'
                     : '<span class="badge bg-secondary rounded-pill px-2">PHYSICAL</span>';
-
                 tbody.append(`
                     <tr>
                         <td class="ps-4 py-4">
@@ -240,10 +289,7 @@ const books = {
                                 <img src="${book.coverImage ? 'assets/images/' + book.coverImage : 'assets/images/product-item1.jpg'}" class="rounded shadow-sm" width="50">
                                 <div>
                                     <h6 class="fw-bold mb-0">${book.title}</h6>
-                                    <div class="d-flex align-items-center gap-2 mt-1">
-                                        <small class="text-muted">ISBN: ${book.isbn}</small>
-                                        ${typeBadge}
-                                    </div>
+                                    <div class="d-flex align-items-center gap-2 mt-1"><small class="text-muted">ISBN: ${book.isbn}</small>${typeBadge}</div>
                                 </div>
                             </div>
                         </td>
@@ -252,348 +298,174 @@ const books = {
                         <td>${book.stockQuantity || 0}</td>
                         <td class="text-end pe-4">
                             <div class="btn-group gap-2">
-                                <button class="btn btn-sm btn-light rounded-pill shadow-sm py-1 px-3" onclick="layout.render('Books/Admin', 'Edit', '${book.isbn}')">Edit</button>
+                                <button class="btn btn-sm btn-light rounded-pill shadow-sm py-1 px-3" onclick="layout.render('Books/Admin', 'Edit', '${book.isbn}')">Sửa</button>
                                 <button class="btn btn-sm btn-outline-danger rounded-pill shadow-sm" onclick="books.delete('${book.isbn}')"><i class="icon icon-close"></i></button>
                             </div>
                         </td>
                     </tr>
                 `);
             });
-        } catch (e) {
-            api.showToast("Không thể tải danh sách sách quản trị", "error");
-        }
+        } catch (e) { api.showToast("Lỗi tải danh mục admin", "error"); }
     },
 
-    // 4. Load specialized detail view
+    // 4. Detail & Related
     loadDetail: async (isbn) => {
         try {
             const res = await api.get(`/books/${isbn}`);
             const book = res.data || res;
-            if (!book) {
-                api.showToast("Không tìm thấy thông tin sách", "error");
-                return;
-            }
+            if (!book) return api.showToast("Không tìm thấy sách", "error");
 
             currentBookIsbn = book.isbn;
-            
-            // Populate DOM
             $('#book-title').text(book.title);
             $('#book-author').text(book.authorNames ? Array.from(book.authorNames).join(', ') : 'Chưa cập nhật');
             $('#book-isbn').text(book.isbn);
             $('#book-price').text(api.formatCurrency(book.price));
-            $('#book-price-old').text(api.formatCurrency(book.price * 1.2)); // Fake old price for UI
-            $('#book-description').text(book.description || 'Không có mô tả cho sản phẩm này.');
+            $('#book-price-old').text(api.formatCurrency(book.price * 1.2));
+            $('#book-description').text(book.description || 'Không có mô tả.');
             $('#breadcrumb-category').text(book.categoryName || 'Sách');
-            
-            const imagePath = book.coverImage ? `assets/images/${book.coverImage}` : 'assets/images/main-banner2.jpg';
-            $('#book-image').attr('src', imagePath);
+            $('#book-image').attr('src', book.coverImage ? `assets/images/${book.coverImage}` : 'assets/images/main-banner2.jpg');
 
-            // Load related books based on category
-            if (book.categoryName) {
-                books.loadRelated(book.categoryName, book.isbn);
-            }
-        } catch (error) {
-            console.error("Failed to load book details", error);
-            api.showToast("Lỗi khi tải chi tiết sách", "error");
-        }
+            if (book.categoryName) books.loadRelated(book.categoryName, book.isbn);
+        } catch (error) { api.showToast("Lỗi tải chi tiết", "error"); }
     },
 
-    // 5. Load all books (Store Index)
-    loadAll: async () => {
-        try {
-            const res = await api.get('/books');
-            const data = res.data || res;
-            books.renderGrid("#books-grid", data);
-        } catch (error) {
-            api.showToast("Không thể tải danh sách sản phẩm", "error");
-        }
-    },
-
-    // 6. Load related products
     loadRelated: async (categoryName, excludeIsbn) => {
         try {
             const res = await api.get(`/books?categoryName=${encodeURIComponent(categoryName)}`);
-            const data = res.data || res;
-            const filtered = data.filter(b => b.isbn !== excludeIsbn).slice(0, 4);
-            
+            const data = (res.data || res).filter(b => b.isbn !== excludeIsbn).slice(0, 4);
             const container = $("#related-books-grid");
             if (!container.length) return;
             container.empty();
-            
-            if (filtered.length === 0) {
-                container.html('<div class="col-12 text-center py-4 text-muted">Không có sản phẩm liên quan.</div>');
-                return;
-            }
-
-            filtered.forEach(book => {
-                const imagePath = book.coverImage ? `assets/images/${book.coverImage}` : 'assets/images/product-item1.jpg';
-                container.append(`
-                    <div class="col-md-3">
-                        <div class="product-item bg-white p-3 rounded-4 shadow-sm h-100 text-center transition-all hvr-float border-0">
-                            <a href="javascript:void(0)" onclick="layout.render('Books','Details','${book.isbn}')" class="d-block image-holder mb-3 overflow-hidden rounded-3 bg-light p-2">
-                                <img src="${imagePath}" class="img-fluid" style="height:180px;object-fit:contain;">
-                            </a>
-                            <h6 class="fw-bold mb-1 small">${book.title}</h6>
-                            <div class="text-accent fw-bold mb-2">${api.formatCurrency(book.price)}</div>
-                            <button class="btn btn-outline-dark btn-sm rounded-pill px-3" style="font-size: 0.7rem;" onclick="cart.add('${book.isbn}',1)">Thêm vào giỏ</button>
-                        </div>
-                    </div>
-                `);
+            if (data.length === 0) return container.html('<div class="col-12 text-center py-4 text-muted">Không có sản phẩm liên quan.</div>');
+            data.forEach(book => {
+                container.append(books._createBookCardHtml(book, { columnClass: "col-md-3" }));
             });
-        } catch (e) { console.error("Load related books failed", e); }
+        } catch (e) { console.error("loadRelated failed", e); }
     },
 
-    // 7. Filtering and Sorting
-    handleSort: (criteria) => {
-        const grid = $("#books-grid");
-        const items = grid.children('.col-xl-3').get();
-        if (items.length === 0) return;
-
-        items.sort((a, b) => {
-            const priceA = parseFloat($(a).find('.text-accent').first().text().replace(/\D/g,'')) || 0;
-            const priceB = parseFloat($(b).find('.text-accent').first().text().replace(/\D/g,'')) || 0;
-            
-            if (criteria === 'price-asc') return priceA - priceB;
-            if (criteria === 'price-desc') return priceB - priceA;
-            return 0;
-        });
-        
-        grid.empty().append(items);
-    },
-
-    loadByPriceRange: async (min, max) => {
-        try {
-            const res = await api.get(`/books?minPrice=${min}&maxPrice=${max}`);
-            const data = res.data || res;
-            books.renderGrid("#books-grid", data);
-            $("#category-title").text(`Sách giá từ ${api.formatCurrency(min)} đến ${api.formatCurrency(max)}`);
-        } catch (e) { 
-            console.error("Price filter error:", e);
-            api.showToast("Không thể lọc sản phẩm theo giá", "error"); 
-        }
-    },
-
+    // 5. Form Helpers
     toggleTypeFields: () => {
         const type = $('input[name="bookType"]:checked').val();
+        $('#physical-fields-section, #ebook-fields-section').addClass('d-none').find('input').removeAttr('required');
         if (type === 'PHYSICAL') {
-            $('#physical-fields-section').removeClass('d-none');
-            $('#ebook-fields-section').addClass('d-none');
-            $('#physical-fields-section input').attr('required', true);
-            $('#ebook-fields-section input').removeAttr('required');
+            $('#physical-fields-section').removeClass('d-none').find('input').attr('required', true);
         } else {
-            $('#physical-fields-section').addClass('d-none');
-            $('#ebook-fields-section').removeClass('d-none');
-            $('#ebook-fields-section input').attr('required', true);
-            $('#physical-fields-section input').removeAttr('required');
+            $('#ebook-fields-section').removeClass('d-none').find('input').attr('required', true);
         }
     },
 
     create: async () => {
         const form = $("#create-book-form");
         if (!form[0].checkValidity()) { form[0].reportValidity(); return; }
-
         const raw = {};
         form.serializeArray().forEach(item => { raw[item.name] = item.value; });
-
         const payload = {
-            isbn: raw.isbn,
-            title: raw.title,
-            price: parseFloat(raw.price) || 0,
+            isbn: raw.isbn, title: raw.title, price: parseFloat(raw.price) || 0,
             categoryId: raw.categoryId ? parseInt(raw.categoryId) : null,
             publisherId: raw.publisherId ? parseInt(raw.publisherId) : null,
-            description: raw.description || '',
-            coverImage: raw.coverImage || '',
-            coverAlt: raw.coverAlt || '',
+            description: raw.description || '', coverImage: raw.coverImage || '',
             authorIds: raw.authorId ? [parseInt(raw.authorId)] : [],
-            bookType: raw.bookType,
-            weight: raw.weight ? parseFloat(raw.weight) : null,
-            fileSize: raw.fileSize ? parseFloat(raw.fileSize) : null,
-            downloadUrl: raw.downloadUrl || null
+            bookType: raw.bookType, weight: parseFloat(raw.weight) || null,
+            fileSize: parseFloat(raw.fileSize) || null, downloadUrl: raw.downloadUrl || null
         };
-
-        console.log("Create Book Payload:", payload);
-        api.showToast("Đang lưu thông tin sách...", "info");
         try {
             await api.post('/admin/books', payload);
-            api.showToast("Đã thêm sách mới thành công!", "success");
+            api.showToast("Đã thêm sách!");
             layout.render('Books', 'Admin/Index');
-        } catch (e) { api.showToast("Lỗi khi thêm sách: " + e.message, "error"); }
+        } catch (e) { api.showToast("Lỗi: " + e.message, "error"); }
     },
 
     update: async (isbn) => {
         const form = $("#edit-book-form") || $("#create-book-form");
         if (!form[0].checkValidity()) { form[0].reportValidity(); return; }
-
         const raw = {};
         form.serializeArray().forEach(item => { raw[item.name] = item.value; });
-
         const payload = {
-            title: raw.title,
-            price: parseFloat(raw.price) || 0,
+            title: raw.title, price: parseFloat(raw.price) || 0,
             categoryId: raw.categoryId ? parseInt(raw.categoryId) : null,
             publisherId: raw.publisherId ? parseInt(raw.publisherId) : null,
-            description: raw.description || '',
-            coverImage: raw.coverImage || '',
-            coverAlt: raw.coverAlt || '',
+            description: raw.description || '', coverImage: raw.coverImage || '',
             authorIds: raw.authorId ? [parseInt(raw.authorId)] : [],
-            bookType: raw.bookType,
-            weight: raw.weight ? parseFloat(raw.weight) : null,
-            fileSize: raw.fileSize ? parseFloat(raw.fileSize) : null,
-            downloadUrl: raw.downloadUrl || null
+            bookType: raw.bookType, weight: parseFloat(raw.weight) || null,
+            fileSize: parseFloat(raw.fileSize) || null, downloadUrl: raw.downloadUrl || null
         };
-
-        console.log("Update Book Payload:", payload);
-        api.showToast("Đang cập nhật thông tin sách...", "info");
         try {
             await api.put(`/admin/books/${isbn}`, payload);
-            api.showToast("Đã cập nhật sách thành công!", "success");
+            api.showToast("Đã cập nhật!");
             layout.render('Books', 'Admin/Index');
-        } catch (e) { api.showToast("Lỗi khi cập nhật: " + e.message, "error"); }
+        } catch (e) { api.showToast("Lỗi: " + e.message, "error"); }
     },
 
     delete: async (isbn) => {
-        if (!confirm("Bạn có chắc chắn muốn xóa cuốn sách này không?")) return;
+        if (!confirm("Xóa cuốn sách này?")) return;
         try {
             await api.delete(`/admin/books/${isbn}`);
-            api.showToast("Đã xóa sản phẩm thành công");
+            api.showToast("Đã xóa");
             books.loadAdminList();
-        } catch (e) {
-            api.showToast("Xóa sản phẩm thất bại", "error");
-        }
+        } catch (e) { api.showToast("Xóa thất bại", "error"); }
     },
 
     handleImageUpload: async (input) => {
         const file = input.files[0];
         if (!file) return;
-
-        console.log("Starting upload for file:", file.name);
-
-        // Instant Local Preview
         const objectUrl = URL.createObjectURL(file);
-        const previewImg = $('#book-preview-img');
-        const placeholder = $('#preview-placeholder');
-
-        if (previewImg.length) {
-            console.log("Updating preview image src");
-            previewImg.attr('src', objectUrl).removeClass('d-none').show();
-            if (placeholder.length) placeholder.addClass('d-none');
-        } else {
-            console.warn("Element #book-preview-img not found!");
-        }
-
-        // Show original filename info
-        const originalInfo = $('#original-filename-info');
-        if (originalInfo.length) {
-            originalInfo.text(file.name);
-            $('#file-info').removeClass('d-none');
-        }
-
-        // Show loading state
-        const overlay = $('#upload-overlay');
-        overlay.removeClass('d-none').addClass('d-flex');
-
+        $('#book-preview-img').attr('src', objectUrl).show();
+        $('#upload-overlay').removeClass('d-none').addClass('d-flex');
         const formData = new FormData();
         formData.append('file', file);
-
         try {
-            const response = await fetch('/api/admin/upload-image', {
+            const res = await fetch('/api/admin/upload-image', {
                 method: 'POST',
-                headers: {
-                    'Authorization': localStorage.getItem('token') ? 'Bearer ' + localStorage.getItem('token') : ''
-                },
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') },
                 body: formData
             });
-
-            const result = await response.json();
+            const result = await res.json();
             if (result.status === 200 || result.status === 201) {
-                const fileName = result.data.fileName;
-                // Update hidden inputs (system fileName)
-                $('#anhBia').val(fileName).trigger('input');
-                $('#edit-anhBia').val(fileName).trigger('input');
-
-                api.showToast("Tải ảnh lên thành công!", "success");
-            } else {
-                api.showToast("Lỗi: " + result.message, "error");
+                $('#anhBia, #edit-anhBia').val(result.data.fileName);
+                api.showToast("Tải ảnh thành công!");
             }
-        } catch (e) {
-            console.error("Upload error:", e);
-            api.showToast("Không thể kết nối đến máy chủ để tải ảnh", "error");
-        } finally {
-            overlay.addClass('d-none').removeClass('d-flex');
-            // Cleanup object URL to avoid memory leaks
-            // URL.revokeObjectURL(objectUrl); // Don't revoke yet as user might want to see it
-            input.value = "";
-        }
+        } catch (e) { api.showToast("Lỗi upload", "error"); }
+        finally { $('#upload-overlay').addClass('d-none'); }
     },
 
     loadCategoriesIntoForm: async () => {
         try {
             const res = await api.get('/categories');
             const data = res.data || res;
-            const sel = $('#maDanhMuc') || $('#categoryId');
-            if (!sel.length) return;
+            const sel = $('#maDanhMuc, #categoryId');
             sel.empty().append('<option value="">-- Chọn danh mục --</option>');
-
-            const options = [];
             const walk = (nodes, depth = 0) => {
-                (Array.isArray(nodes) ? nodes : []).forEach(n => {
-                    options.push({ id: n.categoryId, name: n.categoryName, depth: depth });
+                nodes.forEach(n => {
+                    sel.append(`<option value="${n.categoryId}">${"&nbsp;".repeat(depth*4)}${n.categoryName}</option>`);
                     if (n.subCategories) walk(n.subCategories, depth + 1);
                 });
             };
-            walk(Array.isArray(data) ? data : []);
-
-            options.forEach(c => {
-                const indent = "&nbsp;".repeat(c.depth * 4);
-                sel.append(`<option value="${c.id}">${indent}${c.name}</option>`);
-            });
-        } catch (e) { console.warn('loadCategoriesIntoForm failed:', e.message); }
+            walk(data);
+        } catch (e) {}
     },
 
     loadAuthors: async () => {
         try {
             const res = await api.get('/authors');
-            const data = res.data || res;
-            const sel = $('#maTacGia').length ? $('#maTacGia') : $('#authorId');
-            if (!sel.length) return;
+            const sel = $('#maTacGia, #authorId');
             sel.empty().append('<option value="">-- Chọn tác giả --</option>');
-            (Array.isArray(data) ? data : []).forEach(a => {
-                sel.append(`<option value="${a.authorId}">${a.authorName}</option>`);
-            });
-        } catch (e) { console.error("loadAuthors error:", e); }
+            (res.data || res).forEach(a => sel.append(`<option value="${a.authorId}">${a.authorName}</option>`));
+        } catch (e) {}
     },
 
     loadPublishers: async () => {
         try {
             const res = await api.get('/publishers');
-            const data = res.data || res;
-            const sel = $('#maNxb').length ? $('#maNxb') : $('#publisherId');
-            if (!sel.length) return;
+            const sel = $('#maNxb, #publisherId');
             sel.empty().append('<option value="">-- Chọn NXB --</option>');
-            (Array.isArray(data) ? data : []).forEach(p => {
-                sel.append(`<option value="${p.publisherId}">${p.publisherName}</option>`);
-            });
-        } catch (e) { console.error("loadPublishers error:", e); }
+            (res.data || res).forEach(p => sel.append(`<option value="${p.publisherId}">${p.publisherName}</option>`));
+        } catch (e) {}
     },
 
     adminSearch: (query) => {
-        const grid = $("#books-admin-list");
-        if (!grid.length) return;
-
-        const rows = grid.find("tr");
-        rows.each(function () {
-            const row = $(this);
-            const text = row.text().toLowerCase();
-            if (text.includes(query.toLowerCase())) {
-                row.show();
-            } else {
-                row.hide();
-            }
+        $("#books-admin-list tr").each(function () {
+            $(this).toggle($(this).text().toLowerCase().includes(query.toLowerCase()));
         });
-    },
-
-    toggleAdvancedFilters: () => {
-        api.showToast("Tính năng lọc nâng cao đang được phát triển", "info");
     },
 
     renderGrid: (selector, itemList) => {
@@ -602,24 +474,9 @@ const books = {
         container.empty();
         $("#product-count").text(itemList ? itemList.length : 0);
         if (!itemList || itemList.length === 0) {
-            container.html('<div class="col-12 text-center py-5"><p class="text-muted">Không tìm thấy sản phẩm nào.</p></div>');
-            return;
+            return container.html('<div class="col-12 text-center py-5"><p class="text-muted">Không tìm thấy sản phẩm nào.</p></div>');
         }
-        itemList.forEach(book => {
-            const imagePath = book.coverImage ? `assets/images/${book.coverImage}` : 'assets/images/product-item1.jpg';
-            container.append(`
-                <div class="col-xl-3 col-lg-4 col-sm-6 mb-4">
-                    <div class="product-item bg-white p-3 rounded-4 shadow-sm h-100 text-center transition-all hvr-float">
-                        <a href="javascript:void(0)" onclick="layout.render('Books', 'Details', '${book.isbn}')" class="d-block image-holder mb-3 overflow-hidden rounded-3 bg-light p-2">
-                            <img src="${imagePath}" class="img-fluid" style="height:200px;object-fit:contain;">
-                        </a>
-                        <h6 class="fw-bold mb-1">${book.title}</h6>
-                        <div class="text-accent mb-2">${api.formatCurrency(book.price)}</div>
-                        <button class="btn btn-outline-dark btn-sm rounded-pill" onclick="cart.add('${book.isbn}', 1)">+ Giỏ hàng</button>
-                    </div>
-                </div>
-            `);
-        });
+        itemList.forEach(book => container.append(books._createBookCardHtml(book)));
     }
 };
 
