@@ -34,7 +34,6 @@ public class InventoryController {
     public ResponseEntity<ApiResponse<List<LowStockAlertDTO>>> getLowStockItems() {
         List<LowStockAlertDTO> alerts = inventoryService.getLowStockAlerts();
 
-        // Đã bọc ApiResponse
         ApiResponse<List<LowStockAlertDTO>> response = new ApiResponse<>(200, "Lấy danh sách cảnh báo thành công", alerts);
         return ResponseEntity.ok(response);
     }
@@ -44,7 +43,6 @@ public class InventoryController {
     public ResponseEntity<ApiResponse<PurchaseOrderResponseDTO>> importInventory(@RequestBody PurchaseOrderRequestDTO request) {
         PurchaseOrderResponseDTO result = inventoryService.importStock(request);
 
-        // Đã bọc ApiResponse
         ApiResponse<PurchaseOrderResponseDTO> response = new ApiResponse<>(200, "Lập phiếu nhập thành công", result);
         return ResponseEntity.ok(response);
     }
@@ -54,19 +52,20 @@ public class InventoryController {
     public ResponseEntity<ApiResponse<String>> exportInventory(@RequestBody ExportOrderRequestDTO request) {
         String message = inventoryService.exportStock(request);
 
-        // Đã bọc ApiResponse
         ApiResponse<String> response = new ApiResponse<>(200, "Xuất kho thành công", message);
         return ResponseEntity.ok(response);
     }
+
     @GetMapping("/all")
     @Operation(summary = "Lấy toàn bộ danh sách tồn kho")
-    public ApiResponse<List<InventoryDetailDTO>> getAllInventory() {
-        // Hàm này trong Service bạn viết query lấy toàn bộ kho ra map vào DTO nhé
-        return ApiResponse.success(inventoryService.getAllInventory());
+    public ResponseEntity<ApiResponse<List<InventoryDetailDTO>>> getAllInventory() {
+        List<InventoryDetailDTO> result = inventoryService.getAllInventory();
+        ApiResponse<List<InventoryDetailDTO>> response = new ApiResponse<>(200, "Lấy danh sách tồn kho thành công", result);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/adjust")
-    @Operation(summary = "Điều chỉnh tồn kho", description = "Cập nhật số lượng tồn kho thủ phòng lý do cụ thể")
+    @Operation(summary = "Điều chỉnh tồn kho", description = "Cập nhật số lượng tồn kho thủ công với lý do cụ thể")
     public ResponseEntity<String> adjustInventory(@RequestBody InventoryAdjustmentRequest request) {
         inventoryService.adjustStock(request.getIsbn(), request.getNewQuantity(), request.getReason(), request.getStaffId());
         return ResponseEntity.ok("Stock adjusted successfully!");
