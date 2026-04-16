@@ -19,11 +19,9 @@ public class PublisherService {
     }
 
     @Transactional(readOnly = true)
-    public List<PublisherDTO> getAllPublishers() {
-        return publisherRepository.findAll()
-                .stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+    public org.springframework.data.domain.Page<PublisherDTO> getAllPublishers(org.springframework.data.domain.Pageable pageable) {
+        return publisherRepository.findAll(pageable)
+                .map(this::convertToDTO);
     }
 
     @Transactional

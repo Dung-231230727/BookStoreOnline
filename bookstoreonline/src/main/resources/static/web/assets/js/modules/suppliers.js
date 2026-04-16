@@ -4,7 +4,7 @@
 const suppliers = {
     loadList: async () => {
         try {
-            const res = await api.get('/api/admin/suppliers');
+            const res = await api.get('/admin/suppliers');
             const list = res.data || [];
             const tbody = $("#suppliers-list");
             if (!tbody.length) return;
@@ -47,10 +47,10 @@ const suppliers = {
 
         try {
             if (id) {
-                await api.put(`/api/admin/suppliers/${id}`, dto);
+                await api.put(`/admin/suppliers/${id}`, dto);
                 api.showToast("Đã cập nhật nhà cung cấp thành công");
             } else {
-                await api.post('/api/admin/suppliers', dto);
+                await api.post('/admin/suppliers', dto);
                 api.showToast("Đã thêm nhà cung cấp mới");
             }
             layout.render('Suppliers/Admin', 'Index');
@@ -62,7 +62,7 @@ const suppliers = {
     loadDetail: async (id) => {
         if (!id) return;
         try {
-            const res = await api.get(`/api/admin/suppliers`);
+            const res = await api.get(`/admin/suppliers`);
             const list = res.data || [];
             const s = list.find(item => item.supplierId == id);
             if (s) {
@@ -76,7 +76,7 @@ const suppliers = {
     delete: async (id) => {
         if (!confirm("Bạn có chắc chắn muốn xóa nhà cung cấp này không?")) return;
         try {
-            await api.delete(`/api/admin/suppliers/${id}`);
+            await api.delete(`/admin/suppliers/${id}`);
             api.showToast("Đã xóa bản ghi nhà cung cấp thành công");
             suppliers.loadList();
         } catch (e) { api.showToast("Không thể xóa nhà cung cấp", "error"); }

@@ -1,5 +1,6 @@
 package com.bookstore.entity;
 
+import com.bookstore.enums.InventoryStatus;
 import jakarta.persistence.*;
 
 @Entity
@@ -23,6 +24,10 @@ public class Inventory {
     @Column(name = "alert_threshold")
     private Integer alertThreshold = 5;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20)
+    private InventoryStatus status = InventoryStatus.AVAILABLE;
+
     public Inventory() {}
 
     public Integer getInventoryId() { return inventoryId; }
@@ -35,4 +40,6 @@ public class Inventory {
     public void setShelfLocation(String shelfLocation) { this.shelfLocation = shelfLocation; }
     public Integer getAlertThreshold() { return alertThreshold; }
     public void setAlertThreshold(Integer alertThreshold) { this.alertThreshold = alertThreshold; }
+    public InventoryStatus getStatus() { return status; }
+    public void setStatus(InventoryStatus status) { this.status = status; }
 }

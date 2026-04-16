@@ -24,4 +24,10 @@ public class Supplier {
     public void setSupplierName(String supplierName) { this.supplierName = supplierName; }
     public String getContactInfo() { return contactInfo; }
     public void setContactInfo(String contactInfo) { this.contactInfo = contactInfo; }
+
+    @Column(name = "deleted_at")
+    private java.time.LocalDateTime deletedAt;
+
+    public java.time.LocalDateTime getDeletedAt() { return deletedAt; }
+    public void setDeletedAt(java.time.LocalDateTime deletedAt) { this.deletedAt = deletedAt; }
 }

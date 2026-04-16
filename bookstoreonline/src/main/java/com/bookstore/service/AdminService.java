@@ -6,6 +6,7 @@ import com.bookstore.dto.AccountProfileDTO;
 import com.bookstore.entity.Customer;
 import com.bookstore.entity.Staff;
 import com.bookstore.entity.Account;
+import com.bookstore.enums.AccountStatus;
 import com.bookstore.repository.StaffRepository;
 import com.bookstore.repository.AccountRepository;
 import com.bookstore.repository.CustomerRepository;
@@ -48,7 +49,7 @@ public class AdminService {
         account.setUsername(request.getUsername());
         account.setPassword(passwordEncoder.encode(request.getPassword()));
         account.setRole(request.getRole().toUpperCase());
-        account.setIsActive(true);
+        account.setStatus(AccountStatus.ACTIVE);
         accountRepository.save(account);
 
         // 3. Automatically determine department based on role
@@ -71,7 +72,7 @@ public class AdminService {
         AdminUserResponseDTO response = new AdminUserResponseDTO();
         response.setUsername(account.getUsername());
         response.setRole(account.getRole());
-        response.setIsActive(account.getIsActive());
+        response.setStatus(account.getStatus());
         response.setCreatedAt(account.getCreatedAt());
         response.setDepartment(staff.getDepartment());
         return response;
@@ -133,7 +134,7 @@ public class AdminService {
         Account account = accountRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found: " + username));
         
-        account.setIsActive(status);
+        account.setStatus(status ? AccountStatus.ACTIVE : AccountStatus.DISABLED);
         accountRepository.save(account);
     }
 

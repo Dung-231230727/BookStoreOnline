@@ -82,9 +82,7 @@ public class ChatbotService {
         // ── AI Dynamic Book SEARCH ───────────────────────────────────────────
         // Chạy qua thuật toán NLP thay vì hardcode
         try {
-            // Giả lập cho AI "suy nghĩ chút" theo đúng mong muốn của người dùng
-            Thread.sleep(800); 
-            
+            // NLP search
             List<BookDTO> foundBooks = aiSearchService.searchByNaturalLanguage(message);
             
             if (foundBooks != null && !foundBooks.isEmpty()) {

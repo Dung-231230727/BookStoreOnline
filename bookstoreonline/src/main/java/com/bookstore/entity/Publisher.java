@@ -24,4 +24,10 @@ public class Publisher {
     public void setPublisherName(String publisherName) { this.publisherName = publisherName; }
     public java.util.Set<Book> getBooks() { return books; }
     public void setBooks(java.util.Set<Book> books) { this.books = books; }
+
+    @Column(name = "deleted_at")
+    private java.time.LocalDateTime deletedAt;
+
+    public java.time.LocalDateTime getDeletedAt() { return deletedAt; }
+    public void setDeletedAt(java.time.LocalDateTime deletedAt) { this.deletedAt = deletedAt; }
 }

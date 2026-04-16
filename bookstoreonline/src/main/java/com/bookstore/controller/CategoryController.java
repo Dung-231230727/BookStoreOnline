@@ -27,7 +27,7 @@ public class CategoryController {
     @GetMapping("/categories")
     @Operation(summary = "Lấy cây danh mục đa cấp", description = "Trả về cấu trúc cây danh mục phục vụ Menu của Frontend")
     public ResponseEntity<ApiResponse<List<CategoryDTO>>> getAllCategories() {
-        List<CategoryDTO> categories = categoryService.getAllCategories();
+        List<CategoryDTO> categories = categoryService.getCategoryTree();
         return ResponseEntity.ok(ApiResponse.success(categories));
     }
 

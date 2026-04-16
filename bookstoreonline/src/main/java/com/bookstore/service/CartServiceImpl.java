@@ -1,6 +1,7 @@
 package com.bookstore.service;
 
 import com.bookstore.dto.CartDTO;
+import com.bookstore.dto.CartAdminResponseDTO;
 import com.bookstore.entity.Cart;
 import com.bookstore.entity.Customer;
 import com.bookstore.entity.Book;
@@ -8,6 +9,8 @@ import com.bookstore.entity.CartId;
 import com.bookstore.repository.CartRepository;
 import com.bookstore.repository.CustomerRepository;
 import com.bookstore.repository.BookRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -93,6 +96,11 @@ public class CartServiceImpl implements CartService {
     @Transactional(readOnly = true)
     public List<Cart> getAllActiveCarts() {
         return cartRepository.findAll();
+    }
+
+    @Override
+    public Page<CartAdminResponseDTO> getAllActiveCartsDTO(Pageable pageable) {
+        return cartRepository.findAllAdminDTO(pageable);
     }
 
     private CartDTO toDTO(Cart entity) {

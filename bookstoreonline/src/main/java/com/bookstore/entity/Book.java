@@ -1,5 +1,6 @@
 package com.bookstore.entity;
 
+import com.bookstore.enums.BookStatus;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -45,8 +46,9 @@ public class Book {
     )
     private Set<Author> authors;
 
-    @Column(name = "is_deleted")
-    private Boolean isDeleted = false;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20)
+    private BookStatus status = BookStatus.ACTIVE;
 
     @CreationTimestamp
     @Column(name = "created_at")
@@ -79,8 +81,8 @@ public class Book {
     public void setCoverAlt(String coverAlt) { this.coverAlt = coverAlt; }
     public Set<Author> getAuthors() { return authors; }
     public void setAuthors(Set<Author> authors) { this.authors = authors; }
-    public Boolean getIsDeleted() { return isDeleted; }
-    public void setIsDeleted(Boolean isDeleted) { this.isDeleted = isDeleted; }
+    public BookStatus getStatus() { return status; }
+    public void setStatus(BookStatus status) { this.status = status; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }

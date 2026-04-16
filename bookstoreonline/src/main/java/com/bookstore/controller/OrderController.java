@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -31,9 +30,11 @@ public class OrderController {
     }
 
     @GetMapping("/history")
-    @Operation(summary = "Xem lịch sử đơn của khách", description = "Lấy danh sách đơn hàng đã đặt của người dùng hiện tại")
-    public ApiResponse<List<OrderResponseDTO>> getHistory(@RequestParam String username) {
-        return ApiResponse.success(orderService.getOrderHistory(username));
+    @Operation(summary = "Xem lịch sử đơn của khách", description = "Lấy danh sách đơn hàng đã đặt của người dùng hiện tại (Phân trang)")
+    public ApiResponse<java.util.List<OrderResponseDTO>> getHistory(
+            java.security.Principal principal,
+            @org.springframework.data.web.PageableDefault(size = 10, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) org.springframework.data.domain.Pageable pageable) {
+        return ApiResponse.successPage(orderService.getOrderHistory(principal.getName(), pageable));
     }
 
     @GetMapping("/{id}")
@@ -51,9 +52,10 @@ public class OrderController {
 
     @GetMapping("/admin")
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
-    @Operation(summary = "[STAFF] Quản lý đơn hàng", description = "Admin xem toàn bộ danh sách đơn hàng trong hệ thống")
-    public ApiResponse<List<OrderResponseDTO>> getAllOrders() {
-        return ApiResponse.success(orderService.getAllOrders());
+    @Operation(summary = "[STAFF] Quản lý đơn hàng", description = "Admin xem toàn bộ danh sách đơn hàng trong hệ thống (Phân trang)")
+    public ApiResponse<java.util.List<OrderResponseDTO>> getAllOrders(
+            @org.springframework.data.web.PageableDefault(size = 20) org.springframework.data.domain.Pageable pageable) {
+        return ApiResponse.successPage(orderService.getAllOrders(pageable));
     }
 
     @PutMapping("/admin/{id}/status")

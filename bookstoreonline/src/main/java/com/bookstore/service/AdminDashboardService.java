@@ -4,6 +4,9 @@ import com.bookstore.dto.AuditLogDTO;
 import com.bookstore.dto.BookRankingDTO;
 import com.bookstore.dto.RevenueReportDTO;
 import com.bookstore.entity.Book;
+import com.bookstore.enums.AccountStatus;
+import com.bookstore.enums.OrderStatus;
+import com.bookstore.enums.SupportStatus;
 import com.bookstore.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,31 +50,29 @@ public class AdminDashboardService {
         Map<String, Object> stats = new HashMap<>();
         
         // Requirement: Active Customer Count (account.is_active = 1)
-        stats.put("customerCount", accountRepository.countByIsActiveTrue());
+        stats.put("customerCount", accountRepository.countByStatus(AccountStatus.ACTIVE));
         
         // Total Books
         stats.put("totalBooks", bookRepository.count());
         
         // Low Stock Count (stock_quantity <= alert_threshold)
-        long lowStock = inventoryRepository.findAll().stream()
-                .filter(inv -> inv.getStockQuantity() <= inv.getAlertThreshold())
-                .count();
+        long lowStock = inventoryRepository.findLowStockItems().size();
         stats.put("lowStockCount", lowStock);
         
         // Total Revenue (status = COMPLETED)
-        stats.put("totalRevenue", orderRepository.sumTotalAmountByStatusCode("COMPLETED"));
+        stats.put("totalRevenue", orderRepository.sumTotalAmountByStatus(OrderStatus.COMPLETED));
         
         // Open Tickets (status = OPEN)
-        stats.put("openTickets", supportTicketRepository.countByStatusCode("OPEN"));
+        stats.put("openTickets", supportTicketRepository.countByStatus(SupportStatus.OPEN));
         
         return stats;
     }
 
     @Transactional(readOnly = true)
     public RevenueReportDTO getRevenueReport() {
-        BigDecimal revenue = orderRepository.sumTotalAmountByStatusCode("COMPLETED");
-        long count = orderRepository.countByStatusCode("COMPLETED");
-        return new RevenueReportDTO(revenue, count, "COMPLETED");
+        BigDecimal revenue = orderRepository.sumTotalAmountByStatus(OrderStatus.COMPLETED);
+        long count = orderRepository.countByStatus(OrderStatus.COMPLETED);
+        return new RevenueReportDTO(revenue, count, OrderStatus.COMPLETED.name());
     }
 
     @Transactional(readOnly = true)
@@ -111,9 +112,7 @@ public class AdminDashboardService {
     @Transactional(readOnly = true)
     public Object getAuditStats() {
         long totalLogs = auditLogRepository.count();
-        long loginCount = auditLogRepository.findAll().stream()
-                .filter(log -> "LOGIN".equalsIgnoreCase(log.getAction()))
-                .count();
+        long loginCount = auditLogRepository.countByActionIgnoreCase("LOGIN");
         
         Map<String, Object> stats = new HashMap<>();
         stats.put("totalLogs", totalLogs);

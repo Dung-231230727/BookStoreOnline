@@ -1,7 +1,10 @@
 package com.bookstore.controller;
 
+import com.bookstore.dto.CartAdminResponseDTO;
+import org.springframework.data.domain.Pageable;
 import com.bookstore.dto.ApiResponse;
 import com.bookstore.dto.CartDTO;
+import com.bookstore.entity.Cart;
 import com.bookstore.service.CartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,52 +24,59 @@ public class CartController {
         this.cartService = cartService;
     }
 
+    @Deprecated
     @GetMapping("/admin/all")
     @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Lấy tất cả giỏ hàng (ADMIN)", description = "Admin theo dõi danh sách tất cả các giỏ hàng đang hoạt động trong hệ thống.")
-    public ApiResponse<java.util.List<com.bookstore.entity.Cart>> getAllCarts() {
-        return ApiResponse.success(cartService.getAllActiveCarts());
+    @Operation(summary = "Lấy tất cả giỏ hàng (LEGACY - SAFE)", description = "Đã được DTO hóa để tránh LazyLoading. Khuyến nghị dùng /admin/list")
+    public ApiResponse<List<CartAdminResponseDTO>> getAllCarts() {
+        // Return a list version of the DTOs for backward compatibility
+        return ApiResponse.success(cartService.getAllActiveCartsDTO(org.springframework.data.domain.Pageable.unpaged()).getContent());
     }
 
-    @GetMapping("/{username}")
-    @Operation(summary = "Lấy giỏ hàng", description = "Xem danh sách các sản phẩm đang có trong giỏ hàng của người dùng")
-    public ApiResponse<List<CartDTO>> getCart(@PathVariable String username) {
-        return ApiResponse.success(cartService.getCart(username));
+    @GetMapping("/admin/list")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Lấy danh sách giỏ hàng DTO", description = "Admin xem tất cả giỏ hàng (Phân trang)")
+    public ApiResponse<java.util.List<CartAdminResponseDTO>> getAdminCartList(Pageable pageable) {
+        return ApiResponse.successPage(cartService.getAllActiveCartsDTO(pageable));
+    }
+
+    @GetMapping
+    @Operation(summary = "Lấy giỏ hàng của tôi", description = "Xem danh sách các sản phẩm trong giỏ hàng của người dùng hiện tại")
+    public ApiResponse<List<CartDTO>> getCart(java.security.Principal principal) {
+        return ApiResponse.success(cartService.getCart(principal.getName()));
     }
 
     @PostMapping("/add")
-    @Operation(summary = "Thêm vào giỏ", description = "Thêm một cuốn sách vào giỏ hàng hoặc tăng số lượng nếu đã tồn tại")
+    @Operation(summary = "Thêm vào giỏ", description = "Sử dụng Principal thay vì username param")
     public ApiResponse<String> addToCart(
-            @RequestParam String username,
+            java.security.Principal principal,
             @RequestParam String isbn,
             @RequestParam Integer quantity) {
-        cartService.addToCart(username, isbn, quantity);
+        cartService.addToCart(principal.getName(), isbn, quantity);
         return ApiResponse.success("Đã thêm vào giỏ hàng thành công", null);
     }
 
     @PutMapping("/update")
-    @Operation(summary = "Cập nhật số lượng", description = "Thay đổi số lượng của một mục trong giỏ hàng bằng ISBN")
     public ApiResponse<String> updateQuantity(
-            @RequestParam String username,
+            java.security.Principal principal,
             @RequestParam String isbn,
             @RequestParam Integer quantity) {
-        cartService.updateQuantity(username, isbn, quantity);
+        cartService.updateQuantity(principal.getName(), isbn, quantity);
         return ApiResponse.success("Đã cập nhật số lượng", null);
     }
 
     @DeleteMapping("/remove")
-    @Operation(summary = "Xóa một mục", description = "Xóa bỏ hoàn toàn một cuốn sách khỏi giỏ hàng bằng ISBN")
     public ApiResponse<String> removeItem(
-            @RequestParam String username, 
+            java.security.Principal principal, 
             @RequestParam String isbn) {
-        cartService.removeFromCart(username, isbn);
+        cartService.removeFromCart(principal.getName(), isbn);
         return ApiResponse.success("Đã xóa khỏi giỏ hàng", null);
     }
 
-    @DeleteMapping("/clear/{username}")
-    @Operation(summary = "Dọn sạch giỏ hàng", description = "Xóa toàn bộ các sản phẩm trong giỏ hàng của người dùng")
-    public ApiResponse<String> clearCart(@PathVariable String username) {
-        cartService.clearCart(username);
+    @DeleteMapping("/clear")
+    @Operation(summary = "Dọn sạch giỏ hàng của tôi")
+    public ApiResponse<String> clearCart(java.security.Principal principal) {
+        cartService.clearCart(principal.getName());
         return ApiResponse.success("Đã dọn sạch giỏ hàng", null);
     }
 }

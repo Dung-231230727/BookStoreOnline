@@ -2,6 +2,7 @@ package com.bookstore.config;
 
 import com.bookstore.entity.Staff;
 import com.bookstore.entity.Account;
+import com.bookstore.enums.AccountStatus;
 import com.bookstore.repository.StaffRepository;
 import com.bookstore.repository.AccountRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -29,20 +30,18 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         // Initialize or update the root ADMIN account
         Account adminAccount = accountRepository.findById("admin").orElse(null);
-        
         if (adminAccount == null) {
             System.out.println(">>> Creating Root Admin account...");
             adminAccount = new Account();
             adminAccount.setUsername("admin");
             adminAccount.setRole("ADMIN");
-            adminAccount.setIsActive(true);
+            adminAccount.setStatus(AccountStatus.ACTIVE);
+            adminAccount.setPassword(passwordEncoder.encode("admin123"));
+            accountRepository.save(adminAccount);
+            System.out.println(">>> Root Admin created: admin / admin123");
         } else {
-            System.out.println(">>> Resetting Root Admin password...");
+            System.out.println(">>> Root Admin already exists. Skipping creation.");
         }
-
-        // Always update password to admin123 to ensure access
-        adminAccount.setPassword(passwordEncoder.encode("admin123"));
-        accountRepository.save(adminAccount);
 
         if (staffRepository.findByAccount_Username("admin").isEmpty()) {
              System.out.println(">>> Creating Admin profile...");

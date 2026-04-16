@@ -29,7 +29,7 @@ public class FileStorageService {
         }
 
         // Create a unique file name to avoid collisions
-        String fileName = UUID.randomUUID().toString() + "_" + System.currentTimeMillis() + extension;
+        String fileName = UUID.randomUUID().toString() + extension;
 
         try {
             // Check if the file's name contains invalid characters

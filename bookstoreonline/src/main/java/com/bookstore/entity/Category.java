@@ -32,4 +32,10 @@ public class Category {
     public void setParent(Category parent) { this.parent = parent; }
     public List<Category> getChildren() { return children; }
     public void setChildren(List<Category> children) { this.children = children; }
+
+    @Column(name = "deleted_at")
+    private java.time.LocalDateTime deletedAt;
+
+    public java.time.LocalDateTime getDeletedAt() { return deletedAt; }
+    public void setDeletedAt(java.time.LocalDateTime deletedAt) { this.deletedAt = deletedAt; }
 }

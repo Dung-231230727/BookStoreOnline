@@ -333,12 +333,18 @@
 </style>
 
 <script>
-// Update total badge after render
-const _catOriginalRender = categories._renderTable;
-categories._renderTable = function() {
-    _catOriginalRender.call(categories);
-    const total = categories._flatList.length;
-    const roots = categories._flatList.filter(c => c._depth === 0).length;
-    $('#cat-total-badge').text(`${total} items · ${roots} roots`);
-};
+// Update total badge after render - wrapped to prevent duplicate declarations
+(function() {
+    // Only initialize once
+    if (window._catRenderInitialized) return;
+    window._catRenderInitialized = true;
+    
+    const _catOriginalRender = categories._renderTable;
+    categories._renderTable = function() {
+        _catOriginalRender.call(categories);
+        const total = categories._flatList.length;
+        const roots = categories._flatList.filter(c => c._depth === 0).length;
+        $('#cat-total-badge').text(`${total} items · ${roots} roots`);
+    };
+})();
 </script>

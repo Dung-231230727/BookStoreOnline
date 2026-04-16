@@ -1,6 +1,7 @@
 package com.bookstore.service;
 
 import com.bookstore.dto.BookDTO;
+import com.bookstore.enums.BookStatus;
 import com.bookstore.repository.*;
 import com.bookstore.dto.BookCreateRequest;
 import com.bookstore.dto.BookUpdateRequest;
@@ -10,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -21,28 +21,30 @@ public class BookService {
     private final AuthorRepository authorRepository;
     private final PhysicalBookRepository physicalBookRepository;
     private final EBookRepository eBookRepository;
+    private final InventoryRepository inventoryRepository;
 
     public BookService(BookRepository bookRepository,
             CategoryRepository categoryRepository,
             PublisherRepository publisherRepository,
             AuthorRepository authorRepository,
             PhysicalBookRepository physicalBookRepository,
-            EBookRepository eBookRepository) {
+            EBookRepository eBookRepository,
+            InventoryRepository inventoryRepository) {
         this.bookRepository = bookRepository;
         this.categoryRepository = categoryRepository;
         this.publisherRepository = publisherRepository;
         this.authorRepository = authorRepository;
         this.physicalBookRepository = physicalBookRepository;
         this.eBookRepository = eBookRepository;
+        this.inventoryRepository = inventoryRepository;
     }
 
     @Transactional(readOnly = true)
-    public List<BookDTO> searchAndFilterBooks(String keyword, String categoryName, String publisherName,
-            BigDecimal minPrice, BigDecimal maxPrice) {
-        return bookRepository.searchAndFilterBooks(keyword, categoryName, publisherName, minPrice, maxPrice)
-                .stream()
-                .map(BookDTO::fromEntity)
-                .collect(Collectors.toList());
+    public org.springframework.data.domain.Page<BookDTO> searchAndFilterBooks(
+            String keyword, Long categoryId, com.bookstore.enums.BookStatus status,
+            java.math.BigDecimal minPrice, java.math.BigDecimal maxPrice, org.springframework.data.domain.Pageable pageable) {
+        return bookRepository.searchAndFilterBooks(keyword, categoryId, status, minPrice, maxPrice, pageable)
+                .map(this::convertToDTO);
     }
 
     @Transactional(readOnly = true)
@@ -50,16 +52,16 @@ public class BookService {
         Book book = bookRepository.findById(java.util.Objects.requireNonNull(isbn))
                 .orElseThrow(() -> new IllegalArgumentException("Book not found with ISBN: " + isbn));
         
-        if (Boolean.TRUE.equals(book.getIsDeleted())) {
+        if (book.getStatus() == null || book.getStatus() != BookStatus.ACTIVE) {
              throw new IllegalArgumentException("This book has been deleted from the system");
         }
-        return BookDTO.fromEntity(book);
+        return convertToDTO(book);
     }
 
     @Transactional
     public BookDTO createBook(BookCreateRequest request) {
         if (bookRepository.existsById(java.util.Objects.requireNonNull(request.getIsbn()))) {
-            throw new IllegalArgumentException("Book with this ISBN already exists: " + request.getIsbn());
+            throw new IllegalArgumentException("Mã ISBN " + request.getIsbn() + " đã tồn tại trong hệ thống. Vui lòng nhập mã khác.");
         }
 
         Book book = new Book();
@@ -104,7 +106,7 @@ public class BookService {
             eBookRepository.save(ebook);
         }
 
-        return BookDTO.fromEntity(savedBook);
+        return convertToDTO(savedBook);
     }
 
     @Transactional
@@ -112,7 +114,7 @@ public class BookService {
         Book book = bookRepository.findById(java.util.Objects.requireNonNull(isbn))
                 .orElseThrow(() -> new IllegalArgumentException("Book not found with ISBN: " + isbn));
 
-        if (Boolean.TRUE.equals(book.getIsDeleted())) {
+        if (book.getStatus() == null || book.getStatus() != BookStatus.ACTIVE) {
             throw new IllegalArgumentException("This book has been deleted and cannot be modified");
         }
 
@@ -163,7 +165,7 @@ public class BookService {
             eBookRepository.save(ebook);
         }
 
-        return BookDTO.fromEntity(savedBook);
+        return convertToDTO(savedBook);
     }
 
     @Transactional
@@ -171,12 +173,51 @@ public class BookService {
         Book book = bookRepository.findById(java.util.Objects.requireNonNull(isbn))
                 .orElseThrow(() -> new IllegalArgumentException("Book not found with ISBN: " + isbn));
         
-        if (Boolean.TRUE.equals(book.getIsDeleted())) {
+        if (book.getStatus() == null || book.getStatus() != BookStatus.ACTIVE) {
              throw new IllegalArgumentException("This book was already deleted");
         }
         
-        book.setIsDeleted(true);
+        book.setStatus(BookStatus.INACTIVE);
         book.setDeletedAt(java.time.LocalDateTime.now());
         bookRepository.save(book);
+    }
+
+    private BookDTO convertToDTO(Book book) {
+        BookDTO dto = BookDTO.fromEntity(book);
+        
+        // Populate Subtype Info
+        physicalBookRepository.findById(book.getIsbn()).ifPresent(pb -> {
+            dto.setBookType("PHYSICAL");
+            dto.setWeight(pb.getWeight());
+        });
+        
+        eBookRepository.findById(book.getIsbn()).ifPresent(eb -> {
+            dto.setBookType("EBOOK");
+            dto.setFileSize(eb.getFileSize());
+            dto.setDownloadUrl(eb.getDownloadUrl());
+        });
+
+        if (book != null && book.getIsbn() != null && inventoryRepository != null) {
+            inventoryRepository.findByBook_Isbn(book.getIsbn()).ifPresent(inv -> {
+                dto.setStockQuantity(inv.getStockQuantity());
+                dto.setInventoryStatus(inv.getStatus() != null ? inv.getStatus().name() : null);
+            });
+        }
+        return dto;
+    }
+
+    @Transactional
+    public BookDTO updateStatus(String isbn, com.bookstore.enums.BookStatus status) {
+        Book book = bookRepository.findById(java.util.Objects.requireNonNull(isbn))
+                .orElseThrow(() -> new IllegalArgumentException("Book not found with ISBN: " + isbn));
+        
+        book.setStatus(status);
+        if (status == com.bookstore.enums.BookStatus.INACTIVE) {
+            book.setDeletedAt(java.time.LocalDateTime.now());
+        } else {
+            book.setDeletedAt(null);
+        }
+        
+        return convertToDTO(bookRepository.save(book));
     }
 }

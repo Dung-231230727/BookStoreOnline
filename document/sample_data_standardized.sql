@@ -50,14 +50,14 @@ DBCC CHECKIDENT ('[dbo].[inventory]', RESEED, 0);
 GO
 
 -- 1. ACCOUNTS (Default Password: admin123)
-INSERT INTO [dbo].[accounts] ([username], [password], [role], [is_active], [created_at]) VALUES
-('admin', '$2a$10$hn.nR/A4Jw0/sgMHZfu4UeIv5owT5mTcpLVHgnHj4xMK4CT1z0YOu', 'ADMIN', 1, GETDATE()),
-('staff1', '$2a$10$hn.nR/A4Jw0/sgMHZfu4UeIv5owT5mTcpLVHgnHj4xMK4CT1z0YOu', 'STAFF', 1, GETDATE()),
-('staff2', '$2a$10$hn.nR/A4Jw0/sgMHZfu4UeIv5owT5mTcpLVHgnHj4xMK4CT1z0YOu', 'STAFF', 1, GETDATE()),
-('kho1', '$2a$10$hn.nR/A4Jw0/sgMHZfu4UeIv5owT5mTcpLVHgnHj4xMK4CT1z0YOu', 'STOREKEEPER', 1, GETDATE()),
-('customer1', '$2a$10$hn.nR/A4Jw0/sgMHZfu4UeIv5owT5mTcpLVHgnHj4xMK4CT1z0YOu', 'CUSTOMER', 1, GETDATE()),
-('customer2', '$2a$10$hn.nR/A4Jw0/sgMHZfu4UeIv5owT5mTcpLVHgnHj4xMK4CT1z0YOu', 'CUSTOMER', 1, GETDATE()),
-('customer3', '$2a$10$hn.nR/A4Jw0/sgMHZfu4UeIv5owT5mTcpLVHgnHj4xMK4CT1z0YOu', 'CUSTOMER', 0, GETDATE());
+INSERT INTO [dbo].[accounts] ([username], [password], [role], [status], [created_at]) VALUES
+('admin', '$2a$10$hn.nR/A4Jw0/sgMHZfu4UeIv5owT5mTcpLVHgnHj4xMK4CT1z0YOu', 'ADMIN', 'ACTIVE', GETDATE()),
+('staff1', '$2a$10$hn.nR/A4Jw0/sgMHZfu4UeIv5owT5mTcpLVHgnHj4xMK4CT1z0YOu', 'STAFF', 'ACTIVE', GETDATE()),
+('staff2', '$2a$10$hn.nR/A4Jw0/sgMHZfu4UeIv5owT5mTcpLVHgnHj4xMK4CT1z0YOu', 'STAFF', 'ACTIVE', GETDATE()),
+('kho1', '$2a$10$hn.nR/A4Jw0/sgMHZfu4UeIv5owT5mTcpLVHgnHj4xMK4CT1z0YOu', 'STOREKEEPER', 'ACTIVE', GETDATE()),
+('customer1', '$2a$10$hn.nR/A4Jw0/sgMHZfu4UeIv5owT5mTcpLVHgnHj4xMK4CT1z0YOu', 'CUSTOMER', 'ACTIVE', GETDATE()),
+('customer2', '$2a$10$hn.nR/A4Jw0/sgMHZfu4UeIv5owT5mTcpLVHgnHj4xMK4CT1z0YOu', 'CUSTOMER', 'ACTIVE', GETDATE()),
+('customer3', '$2a$10$hn.nR/A4Jw0/sgMHZfu4UeIv5owT5mTcpLVHgnHj4xMK4CT1z0YOu', 'CUSTOMER', 'DISABLED', GETDATE());
 GO
 
 -- 2. STAFF (staff_id)
@@ -110,13 +110,13 @@ SET IDENTITY_INSERT [dbo].[authors] OFF;
 GO
 
 -- 7. BOOKS
-INSERT INTO [dbo].[books] ([isbn], [title], [price], [category_id], [publisher_id], [description], [cover_image], [is_deleted]) VALUES
-('9786041123456', N'Cho Toi Xin Mot Ve Di Tuoi Tho', 85000, 2, 2, N'Childhood memories.', 'chotoixinmotvedituoitho.jpg', 0),
-('9780062315007', N'The Alchemist', 79000, 2, 5, N'Journey of destiny.', 'nhagiakim.jpg', 0),
-('9786045612345', N'How to Win Friends and Influence People', 95000, 6, 4, N'Art of dealing with people.', 'dacnhantam.jpg', 0),
-('9781234567890', N'Basic Economics', 150000, 4, 3, N'General economics.', 'kinhtehoccoban.jpg', 0),
-('9780987654321', N'Sherlock Holmes Collection', 250000, 5, 5, N'Classic detective.', 'sherlockholmestoantap.jpg', 0),
-('9781111111111', N'Outdated Book', 50000, 1, 1, N'Discontinued.', 'sachculoithoi.jpg', 1);
+INSERT INTO [dbo].[books] ([isbn], [title], [price], [category_id], [publisher_id], [description], [cover_image], [status]) VALUES
+('9786041123456', N'Cho Toi Xin Mot Ve Di Tuoi Tho', 85000, 2, 2, N'Childhood memories.', 'chotoixinmotvedituoitho.jpg', 'ACTIVE'),
+('9780062315007', N'The Alchemist', 79000, 2, 5, N'Journey of destiny.', 'nhagiakim.jpg', 'ACTIVE'),
+('9786045612345', N'How to Win Friends and Influence People', 95000, 6, 4, N'Art of dealing with people.', 'dacnhantam.jpg', 'ACTIVE'),
+('9781234567890', N'Basic Economics', 150000, 4, 3, N'General economics.', 'kinhtehoccoban.jpg', 'ACTIVE'),
+('9780987654321', N'Sherlock Holmes Collection', 250000, 5, 5, N'Classic detective.', 'sherlockholmestoantap.jpg', 'ACTIVE'),
+('9781111111111', N'Outdated Book', 50000, 1, 1, N'Discontinued.', 'sachculoithoi.jpg', 'INACTIVE');
 GO
 
 -- 8. PHYSICAL & EBOOKS
@@ -140,9 +140,12 @@ SET IDENTITY_INSERT [dbo].[suppliers] OFF;
 GO
 
 -- 11. INVENTORY
-INSERT INTO [dbo].[inventory] ([isbn], [stock_quantity], [shelf_location], [alert_threshold]) VALUES
-('9786041123456', 100, 'A-12', 10), ('9780062315007', 50, 'B-05', 5), ('9786045612345', 3, 'A-01', 5),
-('9781234567890', 200, 'C-01', 20), ('9780987654321', 30, 'B-10', 5);
+INSERT INTO [dbo].[inventory] ([isbn], [stock_quantity], [shelf_location], [alert_threshold], [status]) VALUES
+('9786041123456', 100, 'A-12', 10, 'AVAILABLE'), 
+('9780062315007', 50, 'B-05', 5, 'AVAILABLE'), 
+('9786045612345', 3, 'A-01', 5, 'AVAILABLE'),
+('9781234567890', 200, 'C-01', 20, 'AVAILABLE'), 
+('9780987654321', 30, 'B-10', 5, 'AVAILABLE');
 GO
 
 -- 12. VOUCHERS
@@ -152,7 +155,7 @@ INSERT INTO [dbo].[vouchers] ([voucher_code], [discount_value], [min_condition],
 GO
 
 -- 13. ORDERS & DETAILS
-INSERT INTO [dbo].[orders] ([order_id], [customer_id], [voucher_code], [created_at], [total_items_price], [shipping_fee], [total_payment], [status_code], [shipping_address]) VALUES
+INSERT INTO [dbo].[orders] ([order_id], [customer_id], [voucher_code], [created_at], [total_items_price], [shipping_fee], [total_payment], [status], [shipping_address]) VALUES
 ('ORD-001', 1, 'SALE20K', GETDATE(), 250000, 30000, 260000, 'COMPLETED', N'Room 502, HCM'),
 ('ORD-002', 2, NULL, GETDATE(), 85000, 20000, 105000, 'SHIPPING', N'Alley 12/4, HCM'),
 ('ORD-003', 1, 'FREESHIP', GETDATE(), 520000, 0, 520000, 'NEW', N'Office HCM'),
@@ -165,7 +168,7 @@ INSERT INTO [dbo].[order_details] ([order_id], [isbn], [quantity], [final_price]
 GO
 
 -- 14. PAYMENTS
-INSERT INTO [dbo].[payments] ([payment_id], [order_id], [payment_method], [status_code], [payment_date], [transaction_reference]) VALUES
+INSERT INTO [dbo].[payments] ([payment_id], [order_id], [payment_method], [status], [payment_date], [transaction_reference]) VALUES
 ('PAY001', 'ORD-001', 'COD', 'SUCCESS', GETDATE(), NULL),
 ('PAY002', 'ORD-002', 'MOMO', 'SUCCESS', GETDATE(), 'MOMO_01'),
 ('PAY003', 'ORD-003', 'VNPAY', 'PENDING', NULL, NULL);
@@ -187,7 +190,7 @@ GO
 
 -- 17. SUPPORT_TICKETS
 SET IDENTITY_INSERT [dbo].[support_tickets] ON;
-INSERT INTO [dbo].[support_tickets] ([ticket_id], [customer_id], [title], [content], [status_code], [created_at]) VALUES
+INSERT INTO [dbo].[support_tickets] ([ticket_id], [customer_id], [title], [content], [status], [created_at]) VALUES
 (1, 1, N'Order Inquiry', N'When will it arrive?', 'OPEN', GETDATE());
 SET IDENTITY_INSERT [dbo].[support_tickets] OFF;
 GO

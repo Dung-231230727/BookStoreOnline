@@ -14,7 +14,7 @@ const cart = {
         }
         try {
             // Updated to use /api/cart/add with English param names
-            await api.post(`/cart/add?username=${user.username}&isbn=${isbn}&quantity=${quantity}`);
+            await api.post(`/cart/add?isbn=${isbn}&quantity=${quantity}`);
             api.showToast("Added to cart!");
             cart.updateCounter();
         } catch (error) {
@@ -26,8 +26,8 @@ const cart = {
         const user = api.getUser();
         if (!user) { cart.render([]); return; }
         try {
-            const result = await api.get(`/cart/${user.username}`);
-            const items = result.data || [];
+            const result = await api.get('/cart');
+            const items = api.parseResponse(result) || [];
             cart.render(items);
         } catch (error) {
             console.error("Cart load failed", error);
@@ -39,8 +39,8 @@ const cart = {
         const user = api.getUser();
         if (!user) { $("#cart-count").text(0); return; }
         try {
-            const result = await api.get(`/cart/${user.username}`);
-            const items = result.data || [];
+            const result = await api.get('/cart');
+            const items = api.parseResponse(result) || [];
             $("#cart-count").text(items.length);
         } catch (error) {
             $("#cart-count").text(0);
@@ -123,7 +123,7 @@ const cart = {
         const user = api.getUser();
         if (!user) return;
         try {
-            await api.put(`/cart/update?username=${user.username}&isbn=${isbn}&quantity=${quantity}`);
+            await api.put(`/cart/update?isbn=${isbn}&quantity=${quantity}`);
             cart.load();
             cart.updateCounter();
         } catch (e) {
@@ -136,7 +136,7 @@ const cart = {
         const user = api.getUser();
         if (!user) return;
         try {
-            await api.delete(`/cart/remove?username=${user.username}&isbn=${isbn}`);
+            await api.delete(`/cart/remove?isbn=${isbn}`);
             api.showToast("Removed from cart");
             cart.load();
             cart.updateCounter();
@@ -159,10 +159,11 @@ const cart = {
         }
     },
 
-    loadAdminCarts: async () => {
+    loadAdminCarts: async (page = 0, size = 10) => {
         try {
-            const res = await api.get(`/cart/admin/all`);
-            const carts = res.data || res;
+            const res = await api.get(`/cart/admin/list?page=${page}&size=${size}`);
+            // Spring Page structure: res.data.content
+            const carts = res.data?.content || [];
             const tbody = $("#cart-admin-list-body");
             if (!tbody.length) return;
             tbody.empty();
@@ -173,33 +174,35 @@ const cart = {
             }
 
             carts.forEach(item => {
-                const username = item.customer?.account?.username || 'Guest';
-                const bookTitle = item.book?.title || 'Unknown Book';
-                const unitPrice = item.book?.price || 0;
-                const total = unitPrice * (item.quantity || 1);
+                // Using flattened DTO fields
+                const username = item.username || 'Guest';
+                const bookTitle = item.bookTitle || 'Unknown Book';
+                const unitPrice = item.unitPrice || 0;
+                const total = item.totalPrice || (unitPrice * item.quantity);
 
                 tbody.append(`
                     <tr>
                         <td class="ps-4">
-                            <div class="fw-bold">${username}</div>
-                            <div class="small text-muted">Customer ID: ${item.customer?.customerId}</div>
+                            <div class="fw-bold text-dark">${username}</div>
+                            <div class="small text-muted">Customer ID: ${item.customerId || '---'}</div>
                         </td>
                         <td>
-                            <div class="fw-medium">${bookTitle}</div>
-                            <div class="extra-small text-muted">ISBN: ${item.book?.isbn}</div>
+                            <div class="fw-medium text-dark">${bookTitle}</div>
+                            <div class="extra-small text-muted">ISBN: ${item.isbn}</div>
                         </td>
                         <td class="text-center">
                             <span class="badge bg-light text-dark border rounded-pill px-3">${item.quantity}</span>
                         </td>
                         <td class="text-end fw-bold text-accent">${api.formatCurrency(total)}</td>
                         <td class="text-end pe-4">
-                             <span class="badge bg-info bg-opacity-10 text-info">Monitoring</span>
+                             <span class="badge bg-info bg-opacity-10 text-info px-3 rounded-pill">Monitoring</span>
                         </td>
                     </tr>
                 `);
             });
         } catch (e) {
-            api.showToast("Failed to load active carts: " + e.message, "error");
+            console.error("Cart Admin Load Error:", e);
+            api.showToast("Failed to load active carts", "error");
         }
     }
 };

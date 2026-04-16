@@ -7,7 +7,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, String> {
@@ -16,15 +15,16 @@ public interface BookRepository extends JpaRepository<Book, String> {
            "LEFT JOIN b.category c " +
            "LEFT JOIN b.publisher p " +
            "LEFT JOIN b.authors a " +
-           "WHERE (b.isDeleted = false OR b.isDeleted IS NULL) AND " +
-           "(:keyword IS NULL OR :keyword = '' OR LOWER(b.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(b.description) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND " +
-           "(:categoryName IS NULL OR :categoryName = '' OR c.categoryName = :categoryName) AND " +
-           "(:publisherName IS NULL OR :publisherName = '' OR p.publisherName = :publisherName) AND " +
+           "WHERE (:status IS NULL OR b.status = :status) AND " +
+           "(:keyword IS NULL OR :keyword = '' OR LOWER(b.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(b.description) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(b.isbn) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND " +
+           "(:categoryId IS NULL OR c.id = :categoryId) AND " +
            "(:minPrice IS NULL OR b.price >= :minPrice) AND " +
            "(:maxPrice IS NULL OR b.price <= :maxPrice)")
-    List<Book> searchAndFilterBooks(@Param("keyword") String keyword,
-                                    @Param("categoryName") String categoryName,
-                                    @Param("publisherName") String publisherName,
+    org.springframework.data.domain.Page<Book> searchAndFilterBooks(
+                                    @Param("keyword") String keyword,
+                                    @Param("categoryId") Long categoryId,
+                                    @Param("status") com.bookstore.enums.BookStatus status,
                                     @Param("minPrice") BigDecimal minPrice,
-                                    @Param("maxPrice") BigDecimal maxPrice);
+                                    @Param("maxPrice") BigDecimal maxPrice,
+                                    org.springframework.data.domain.Pageable pageable);
 }

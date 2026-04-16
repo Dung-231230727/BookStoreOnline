@@ -16,9 +16,15 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOriginPattern("*");   // Cho phép mọi Origin (Dev mode)
+        config.setAllowedOrigins(java.util.List.of(
+            "http://localhost:8080",
+            "http://localhost:3000",
+            "http://127.0.0.1:5500",
+            "http://localhost:5500"
+        ));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
+        config.setExposedHeaders(java.util.List.of("Content-Disposition", "Authorization"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/api/**", config);

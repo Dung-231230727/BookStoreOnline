@@ -29,4 +29,10 @@ public class Author {
     public void setBiography(String biography) { this.biography = biography; }
     public java.util.Set<Book> getBooks() { return books; }
     public void setBooks(java.util.Set<Book> books) { this.books = books; }
+
+    @Column(name = "deleted_at")
+    private java.time.LocalDateTime deletedAt;
+
+    public java.time.LocalDateTime getDeletedAt() { return deletedAt; }
+    public void setDeletedAt(java.time.LocalDateTime deletedAt) { this.deletedAt = deletedAt; }
 }

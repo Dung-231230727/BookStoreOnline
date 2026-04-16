@@ -2,6 +2,8 @@ package com.bookstore.service;
 
 import com.bookstore.dto.*;
 import com.bookstore.entity.*;
+import com.bookstore.enums.InventoryStatus;
+import com.bookstore.enums.OrderStatus;
 import com.bookstore.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,7 +73,8 @@ public class InventoryService {
                 isbn,
                 inventory.getBook().getTitle(),
                 inventory.getStockQuantity(),
-                inventory.getShelfLocation()
+                inventory.getShelfLocation(),
+                inventory.getStatus() != null ? inventory.getStatus().name() : null
         );
     }
 
@@ -136,7 +139,10 @@ public class InventoryService {
 
             purchaseOrderDetailRepository.save(detail);
             
-            // Log the change
+            // 1. Update Physical Inventory Stock (Replacing Trigger trg_update_stock_import)
+            updateStock(book, item.getQuantity());
+
+            // 2. Log the change
             logInventoryChange(book, staff, "IMPORT", item.getQuantity(), "Purchased via " + purchaseOrderId);
         }
 
@@ -174,11 +180,15 @@ public class InventoryService {
                 ExportOrderDetail exportDetail = new ExportOrderDetail(detailId, detail.getQuantity());
                 exportOrderDetailRepository.save(exportDetail);
                 
+                // 1. Update Physical Inventory Stock (Replacing Trigger trg_update_stock_export)
+                updateStock(detail.getBook(), -detail.getQuantity());
+
+                // 2. Log the change
                 logInventoryChange(detail.getBook(), null, "EXPORT", -detail.getQuantity(), "Exported for Order " + orderId);
             }
         }
 
-        order.setStatusCode("AWAITING_SHIPMENT");
+        order.setStatus(OrderStatus.AWAITING_SHIPMENT);
         orderRepository.save(order);
 
         return "Stock exported successfully for order " + orderId + ". Export ID: " + exportOrderId;
@@ -195,7 +205,7 @@ public class InventoryService {
         int diff = newQuantity - oldQty;
         
         inv.setStockQuantity(newQuantity);
-        inventoryRepository.save(inv);
+        updateAndSaveStatus(inv);
         
         logInventoryChange(inv.getBook(), staff, "ADJUST", diff, reason);
         
@@ -205,6 +215,43 @@ public class InventoryService {
                     inv.getBook().getTitle(), isbn, oldQty, newQuantity, reason);
             auditLogService.log(staff.getAccount(), "STOCK_ADJUSTMENT", details);
         }
+    }
+
+    public void updateStock(Book book, int quantityChange) {
+        Inventory inv = inventoryRepository.findByBook_Isbn(book.getIsbn())
+                .orElseGet(() -> {
+                    Inventory newInv = new Inventory();
+                    newInv.setBook(book);
+                    newInv.setStockQuantity(0);
+                    return newInv;
+                });
+        
+        int newQty = inv.getStockQuantity() + quantityChange;
+        if (newQty < 0) {
+            throw new RuntimeException("Stock Error: Insufficient inventory quantity for book: " + book.getTitle());
+        }
+        
+        inv.setStockQuantity(newQty);
+        updateAndSaveStatus(inv);
+    }
+
+    private void updateAndSaveStatus(Inventory inventory) {
+        if (InventoryStatus.DISCONTINUED.equals(inventory.getStatus())) {
+            inventoryRepository.save(inventory); // Just save updated qty
+            return;
+        }
+
+        int qty = inventory.getStockQuantity();
+        int threshold = inventory.getAlertThreshold();
+
+        if (qty <= 0) {
+            inventory.setStatus(InventoryStatus.OUT_OF_STOCK);
+        } else if (qty <= threshold) {
+            inventory.setStatus(InventoryStatus.LOW_STOCK);
+        } else {
+            inventory.setStatus(InventoryStatus.AVAILABLE);
+        }
+        inventoryRepository.save(inventory);
     }
 
     private void logInventoryChange(Book book, Staff staff, String type, int change, String notes) {

@@ -48,7 +48,13 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<CategoryDTO> getAllCategories() {
+    public org.springframework.data.domain.Page<CategoryDTO> getAllCategories(org.springframework.data.domain.Pageable pageable) {
+        return categoryRepository.findAll(pageable)
+                .map(this::convertToDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CategoryDTO> getCategoryTree() {
         return categoryRepository.findByParentIsNull()
                 .stream()
                 .map(this::convertToDTO)

@@ -12,23 +12,8 @@ USE nha_sach_online;
 GO
 
 /* =============================================================================
-   1. LOOKUP TABLES (STATUS TABLES)
+   1. LOOKUP TABLES (REMOVED - MOVED TO JAVA ENUMS)
 ============================================================================= */
-CREATE TABLE order_status (status_code NVARCHAR(50) PRIMARY KEY);
-INSERT INTO order_status VALUES 
-(N'NEW'), (N'CONFIRMED'), (N'PICKING'), (N'SHIPPING'), (N'COMPLETED'), (N'CANCELLED');
-
-CREATE TABLE payment_status (status_code NVARCHAR(50) PRIMARY KEY);
-INSERT INTO payment_status VALUES 
-(N'PENDING'), (N'SUCCESS'), (N'FAILED');
-
-CREATE TABLE payment_methods (method_code NVARCHAR(50) PRIMARY KEY);
-INSERT INTO payment_methods VALUES 
-(N'COD'), (N'MOMO'), (N'VNPAY');
-
-CREATE TABLE support_status (status_code NVARCHAR(50) PRIMARY KEY);
-INSERT INTO support_status VALUES 
-(N'OPEN'), (N'PROCESSING'), (N'CLOSED');
 
 /* =============================================================================
    2. ACCOUNTS (RBAC)
@@ -38,7 +23,7 @@ CREATE TABLE accounts (
     password NVARCHAR(255) NOT NULL,
     role NVARCHAR(50) NOT NULL 
         CHECK (role IN (N'ADMIN', N'STAFF', N'STOREKEEPER', N'CUSTOMER')),
-    is_active BIT DEFAULT 1,
+    status NVARCHAR(20) DEFAULT 'ACTIVE',
     created_at DATETIME DEFAULT GETDATE(),
     updated_at DATETIME NULL,
     deleted_at DATETIME NULL,
@@ -81,12 +66,14 @@ CREATE TABLE categories (
     category_id INT IDENTITY PRIMARY KEY,
     category_name NVARCHAR(100) NOT NULL,
     parent_id INT NULL,
+    deleted_at DATETIME NULL,
     FOREIGN KEY (parent_id) REFERENCES categories(category_id)
 );
 
 CREATE TABLE publishers (
     publisher_id INT IDENTITY PRIMARY KEY,
-    publisher_name NVARCHAR(150) NOT NULL
+    publisher_name NVARCHAR(150) NOT NULL,
+    deleted_at DATETIME NULL
 );
 
 CREATE TABLE books (
@@ -97,7 +84,7 @@ CREATE TABLE books (
     publisher_id INT,
     description NVARCHAR(MAX),
     cover_image NVARCHAR(255),
-    is_deleted BIT DEFAULT 0,
+    status NVARCHAR(20) DEFAULT 'ACTIVE',
     created_at DATETIME DEFAULT GETDATE(),
     updated_at DATETIME NULL,
     deleted_at DATETIME NULL,
@@ -108,7 +95,8 @@ CREATE TABLE books (
 CREATE TABLE authors (
     author_id INT IDENTITY PRIMARY KEY,
     author_name NVARCHAR(100) NOT NULL,
-    biography NVARCHAR(MAX)
+    biography NVARCHAR(MAX),
+    deleted_at DATETIME NULL
 );
 
 CREATE TABLE book_authors (
@@ -138,7 +126,8 @@ CREATE TABLE physical_books (
 CREATE TABLE suppliers (
     supplier_id INT IDENTITY PRIMARY KEY,
     supplier_name NVARCHAR(150) NOT NULL,
-    contact_info NVARCHAR(MAX)
+    contact_info NVARCHAR(MAX),
+    deleted_at DATETIME NULL
 );
 
 CREATE TABLE inventory (
@@ -147,6 +136,7 @@ CREATE TABLE inventory (
     stock_quantity INT DEFAULT 0 CHECK (stock_quantity >= 0),
     shelf_location NVARCHAR(50),
     alert_threshold INT DEFAULT 5,
+    status NVARCHAR(20) DEFAULT 'AVAILABLE',
     FOREIGN KEY (isbn) REFERENCES books(isbn)
 );
 
@@ -177,7 +167,8 @@ CREATE TABLE vouchers (
     voucher_code NVARCHAR(20) PRIMARY KEY,
     discount_value DECIMAL(10,2) NOT NULL CHECK (discount_value >= 0),
     min_condition DECIMAL(12,2) DEFAULT 0,
-    expiry_date DATETIME NOT NULL
+    expiry_date DATETIME NOT NULL,
+    deleted_at DATETIME NULL
 );
 
 CREATE TABLE orders (
@@ -188,11 +179,10 @@ CREATE TABLE orders (
     total_items_price DECIMAL(12,2) DEFAULT 0,
     shipping_fee DECIMAL(10,2) DEFAULT 0 CHECK (shipping_fee >= 0),
     total_payment DECIMAL(15,2) DEFAULT 0,
-    status_code NVARCHAR(50) DEFAULT N'NEW',
+    status NVARCHAR(20) DEFAULT 'NEW',
     shipping_address NVARCHAR(MAX),
     FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
-    FOREIGN KEY (voucher_code) REFERENCES vouchers(voucher_code),
-    FOREIGN KEY (status_code) REFERENCES order_status(status_code)
+    FOREIGN KEY (voucher_code) REFERENCES vouchers(voucher_code)
 );
 
 CREATE TABLE order_details (
@@ -231,12 +221,10 @@ CREATE TABLE payments (
     payment_id NVARCHAR(50) PRIMARY KEY,
     order_id NVARCHAR(20) NOT NULL,
     payment_method NVARCHAR(50) NOT NULL,
-    status_code NVARCHAR(50) DEFAULT N'PENDING',
+    status NVARCHAR(20) DEFAULT 'PENDING',
     payment_date DATETIME,
     transaction_reference NVARCHAR(100),
-    FOREIGN KEY (order_id) REFERENCES orders(order_id),
-    FOREIGN KEY (payment_method) REFERENCES payment_methods(method_code),
-    FOREIGN KEY (status_code) REFERENCES payment_status(status_code)
+    FOREIGN KEY (order_id) REFERENCES orders(order_id)
 );
 
 CREATE TABLE shipments (
@@ -278,10 +266,9 @@ CREATE TABLE support_tickets (
     customer_id BIGINT NOT NULL,
     title NVARCHAR(200) NOT NULL,
     content NVARCHAR(MAX),
-    status_code NVARCHAR(50) DEFAULT N'OPEN',
+    status NVARCHAR(20) DEFAULT 'OPEN',
     created_at DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
-    FOREIGN KEY (status_code) REFERENCES support_status(status_code)
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
 );
 
 CREATE TABLE audit_logs (
@@ -317,94 +304,8 @@ CREATE INDEX IX_inventory_isbn ON inventory(isbn);
 CREATE INDEX IX_audit_username ON audit_logs(username);
 
 /* =============================================================================
-   11. TRIGGERS
+   11. TRIGGERS (REMOVED - BUSINESS LOGIC MOVED TO JAVA SERVICE LAYER)
 ============================================================================= */
-GO
-
--- 11.1 Trigger for Purchase/Import Stock Update
-CREATE TRIGGER trg_update_stock_import
-ON purchase_order_details
-AFTER INSERT
-AS
-BEGIN
-    SET NOCOUNT ON;
-    MERGE inventory AS target
-    USING (
-        SELECT isbn, SUM(quantity) AS total_qty 
-        FROM inserted 
-        GROUP BY isbn
-    ) AS source
-    ON target.isbn = source.isbn
-    WHEN MATCHED THEN
-        UPDATE SET stock_quantity = target.stock_quantity + source.total_qty
-    WHEN NOT MATCHED THEN
-        INSERT (isbn, stock_quantity) VALUES (source.isbn, source.total_qty);
-        
-    -- Update Purchase Order total
-    UPDATE po
-    SET total_amount = (
-        SELECT SUM(quantity * purchase_price) 
-        FROM purchase_order_details 
-        WHERE purchase_order_id = po.purchase_order_id
-    )
-    FROM purchase_orders po
-    JOIN (SELECT DISTINCT purchase_order_id FROM inserted) i ON po.purchase_order_id = i.purchase_order_id;
-END
-GO
-
--- 11.2 Trigger for Export Stock Update
-CREATE TRIGGER trg_update_stock_export
-ON export_order_details
-AFTER INSERT
-AS
-BEGIN
-    SET NOCOUNT ON;
-    
-    UPDATE i
-    SET stock_quantity = i.stock_quantity - e.total_qty
-    FROM inventory i
-    JOIN (
-        SELECT isbn, SUM(quantity) AS total_qty
-        FROM inserted
-        GROUP BY isbn
-    ) e ON i.isbn = e.isbn;
-
-    IF EXISTS (SELECT 1 FROM inventory WHERE stock_quantity < 0)
-    BEGIN
-        THROW 50001, N'Stock Error: Insufficient inventory quantity!', 1;
-    END
-END
-GO
-
--- 11.3 Trigger for Order Pricing Calculation
-CREATE TRIGGER trg_calculate_order_totals
-ON order_details
-AFTER INSERT, UPDATE, DELETE
-AS
-BEGIN
-    SET NOCOUNT ON;
-    DECLARE @AffectedOrders TABLE (order_id NVARCHAR(20));
-    
-    INSERT INTO @AffectedOrders (order_id)
-    SELECT order_id FROM inserted 
-    UNION 
-    SELECT order_id FROM deleted;
-
-    UPDATE ord
-    SET 
-        total_items_price = ISNULL(t.total, 0),
-        total_payment = CASE 
-            WHEN (ISNULL(t.total, 0) + ISNULL(ord.shipping_fee, 0) - ISNULL(v.discount_value, 0)) < 0 
-            THEN 0
-            ELSE (ISNULL(t.total, 0) + ISNULL(ord.shipping_fee, 0) - ISNULL(v.discount_value, 0))
-        END
-    FROM orders ord
-    LEFT JOIN (
-        SELECT order_id, SUM(quantity * final_price) AS total
-        FROM order_details
-        GROUP BY order_id
-    ) t ON ord.order_id = t.order_id
-    LEFT JOIN vouchers v ON ord.voucher_code = v.voucher_code
-    WHERE ord.order_id IN (SELECT order_id FROM @AffectedOrders);
-END
-GO
+-- Triggers have been moved to:
+-- - OrderService (Calculation logic)
+-- - InventoryService (Stock update logic)

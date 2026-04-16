@@ -20,8 +20,8 @@ const orders = {
         const user = api.getUser();
         let cartData = [];
         if (user) {
-             const res = await api.get(`/cart/${user.username}`);
-             cartData = res.data || [];
+             const res = await api.get('/cart');
+             cartData = api.parseResponse(res) || [];
         }
         
         const container = $("#checkout-summary");
@@ -85,8 +85,8 @@ const orders = {
         const user = api.getUser();
         if (!user) return;
         
-        const cartRes = await api.get(`/cart/${user.username}`);
-        const cartData = cartRes.data || [];
+        const cartRes = await api.get('/cart');
+        const cartData = api.parseResponse(cartRes) || [];
         
         if (cartData.length === 0) {
             api.showToast("Giỏ hàng của bạn đang trống!", "error");
@@ -103,8 +103,7 @@ const orders = {
 
         api.showToast("Đang tạo đơn hàng...", "info");
         try {
-            const res = await api.post('/orders/checkout', orderData);
-            const orderInfo = res.data;
+            const orderInfo = api.parseResponse(res);
             const orderId = orderInfo.orderId;
 
             // Cleanup session
@@ -144,8 +143,8 @@ const orders = {
         `);
 
         try {
-            const res = await api.get(`/orders/history?username=${user.username}`);
-            const list = res.data || [];
+            const res = await api.get('/orders/history');
+            const list = api.parseResponse(res) || [];
             tbody.empty();
 
             if (list.length === 0) {
@@ -184,7 +183,7 @@ const orders = {
 
         try {
             const res = await api.get(`/orders/${orderId}`);
-            const o = res.data;
+            const o = api.parseResponse(res);
 
             // Header info
             $("#invoice-id").text(`#${o.orderId}`);
@@ -241,7 +240,7 @@ const orders = {
     loadAdminOrders: async () => {
         try {
             const res = await api.get('/orders/admin');
-            const list = res.data || [];
+            const list = api.parseResponse(res) || [];
             const tbody = $("#admin-orders-list");
             if (!tbody.length) return;
             tbody.empty();
@@ -303,7 +302,7 @@ const orders = {
 
         try {
             const res = await api.get(`/orders/${orderId}`);
-            const o = res.data;
+            const o = api.parseResponse(res);
             if (!o) {
                 api.showToast('Không tìm thấy đơn hàng #' + orderId, 'error');
                 return;
@@ -349,7 +348,7 @@ const orders = {
         api.showToast('Đang xuất dữ liệu...', 'info');
         try {
             const res = await api.get('/orders/admin');
-            const list = res.data || [];
+            const list = api.parseResponse(res) || [];
 
             const data = list.map(o => ({
                 id: o.orderId,

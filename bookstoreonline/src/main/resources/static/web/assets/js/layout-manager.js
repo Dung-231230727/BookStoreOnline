@@ -54,6 +54,11 @@ const layout = {
         const contentPath = area === '' ? `${view}.html` : `${area}/${view}.html`;
         const cacheBust = "?v=" + new Date().getTime();
         
+        // Update state BEFORE loading so that scripts in the view can access it
+        layout.current = { area, view, id: id || null };
+        if (id) sessionStorage.setItem('current_render_id', id);
+        console.log(`Layout state updated: area=${area}, view=${view}, id=${id}`);
+
         return new Promise((resolve) => {
             $("#render-body").load(contentPath + cacheBust, function(response, status, xhr) {
                 if (status == "error") {
@@ -62,7 +67,6 @@ const layout = {
                     return;
                 }
 
-                layout.current = { area, view, id: id || null };
                 layout.initViewLogic(area, view, id);
 
                 if (typeof initBooksawTheme === 'function') {
@@ -298,11 +302,8 @@ const layout = {
                 books.loadPublishers && books.loadPublishers();
                 break;
             case 'Books/Admin/Edit':
-                // Edit.html uses its own IIFE to load book data (avoids overriding books.loadDetail)
-                // Dropdowns still need to be populated
-                books.loadCategoriesIntoForm && books.loadCategoriesIntoForm();
-                books.loadAuthors && books.loadAuthors();
-                books.loadPublishers && books.loadPublishers();
+                // Edit.html handles its own initialization via IIFE in script tag
+                // It will load dropdowns and book data automatically
                 break;
             case 'Inventory/Admin/Index':
                 inventory.loadList();

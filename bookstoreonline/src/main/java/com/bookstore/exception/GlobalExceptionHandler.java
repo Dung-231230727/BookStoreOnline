@@ -1,6 +1,7 @@
 package com.bookstore.exception;
 
 import com.bookstore.dto.ApiResponse;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -13,6 +14,13 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    // Xử lý lỗi Không tìm thấy thực thể (404)
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNotFound(EntityNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(404, ex.getMessage()));
+    }
 
     // Xử lý lỗi Validation (Ví dụ: @NotBlank, @Min...)
     @ExceptionHandler(MethodArgumentNotValidException.class)

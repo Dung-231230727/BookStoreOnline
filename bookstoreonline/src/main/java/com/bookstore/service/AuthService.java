@@ -5,6 +5,7 @@ import com.bookstore.dto.ForgotPasswordRequest;
 import com.bookstore.dto.LoginRequest;
 import com.bookstore.dto.LoginResponse;
 import com.bookstore.entity.Account;
+import com.bookstore.enums.AccountStatus;
 import com.bookstore.repository.AccountRepository;
 import com.bookstore.repository.CustomerRepository;
 import com.bookstore.repository.StaffRepository;
@@ -89,7 +90,7 @@ public class AuthService {
         account.setUsername(request.getUsername());
         account.setPassword(passwordEncoder.encode(request.getPassword()));
         account.setRole("CUSTOMER");
-        account.setIsActive(true);
+        account.setStatus(AccountStatus.ACTIVE);
 
         // 3. Save to database
         accountRepository.save(account);

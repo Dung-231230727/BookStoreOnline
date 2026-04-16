@@ -1,6 +1,7 @@
 package com.bookstore.security;
 
 import com.bookstore.entity.Account;
+import com.bookstore.enums.AccountStatus;
 import com.bookstore.repository.AccountRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -28,7 +29,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new User(
                 account.getUsername(),
                 account.getPassword(),
-                account.getIsActive(), // enabled: If false, login will be denied
+                account.getStatus() == AccountStatus.ACTIVE, // enabled: If false, login will be denied
                 true, // accountNonExpired
                 true, // credentialsNonExpired
                 true, // accountNonLocked

@@ -1,5 +1,6 @@
 package com.bookstore.entity;
 
+import com.bookstore.enums.OrderStatus;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -31,8 +32,9 @@ public class Order {
     @Column(name = "total_payment", precision = 15, scale = 2, nullable = false)
     private BigDecimal totalPayment;
 
-    @Column(name = "status_code", length = 50)
-    private String statusCode = "NEW";
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20)
+    private OrderStatus status = OrderStatus.NEW;
 
     @Column(name = "shipping_address", columnDefinition = "NVARCHAR(MAX)")
     private String shippingAddress;
@@ -53,8 +55,8 @@ public class Order {
     public void setShippingFee(BigDecimal shippingFee) { this.shippingFee = shippingFee; }
     public BigDecimal getTotalPayment() { return totalPayment; }
     public void setTotalPayment(BigDecimal totalPayment) { this.totalPayment = totalPayment; }
-    public String getStatusCode() { return statusCode; }
-    public void setStatusCode(String statusCode) { this.statusCode = statusCode; }
+    public OrderStatus getStatus() { return status; }
+    public void setStatus(OrderStatus status) { this.status = status; }
     public String getShippingAddress() { return shippingAddress; }
     public void setShippingAddress(String shippingAddress) { this.shippingAddress = shippingAddress; }
 }

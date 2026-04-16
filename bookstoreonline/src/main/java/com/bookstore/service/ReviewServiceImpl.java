@@ -7,10 +7,10 @@ import com.bookstore.entity.Book;
 import com.bookstore.repository.ReviewRepository;
 import com.bookstore.repository.CustomerRepository;
 import com.bookstore.repository.BookRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @SuppressWarnings("null")
@@ -20,8 +20,8 @@ public class ReviewServiceImpl implements ReviewService {
     private final CustomerRepository customerRepository;
     private final BookRepository bookRepository;
 
-    public ReviewServiceImpl(ReviewRepository reviewRepository, 
-                              CustomerRepository customerRepository, 
+    public ReviewServiceImpl(ReviewRepository reviewRepository,
+                              CustomerRepository customerRepository,
                               BookRepository bookRepository) {
         this.reviewRepository = reviewRepository;
         this.customerRepository = customerRepository;
@@ -29,22 +29,23 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<ReviewDTO> getAllReviews() {
-        return reviewRepository.findAll().stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+    @Transactional(readOnly = true)
+    public Page<ReviewDTO> getAllReviews(Pageable pageable) {
+        return reviewRepository.findAll(pageable)
+                .map(this::toDTO);
     }
 
     @Override
-    public List<ReviewDTO> getReviewsByBook(String isbn) {
-        return reviewRepository.findByBook_Isbn(isbn).stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+    @Transactional(readOnly = true)
+    public Page<ReviewDTO> getReviewsByBook(String isbn, Pageable pageable) {
+        return reviewRepository.findByBook_Isbn(isbn, pageable)
+                .map(this::toDTO);
     }
 
     @Override
-    public void submitReview(String username, String isbn, Integer rating, String comment) {
-        Customer customer = customerRepository.findByAccount_Username(username)
+    @Transactional
+    public void submitReview(java.security.Principal principal, String isbn, Integer rating, String comment) {
+        Customer customer = customerRepository.findByAccount_Username(principal.getName())
                 .orElseThrow(() -> new RuntimeException("Logged in customer not found"));
         Book book = bookRepository.findById(isbn)
                 .orElseThrow(() -> new RuntimeException("Book does not exist"));
@@ -58,6 +59,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Transactional
     public void deleteReview(Long reviewId) {
         reviewRepository.deleteById(reviewId);
     }

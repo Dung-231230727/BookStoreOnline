@@ -5,14 +5,16 @@ public class InventoryDetailDTO {
     private String title;
     private int stockQuantity;
     private String shelfLocation;
+    private String status;
 
     public InventoryDetailDTO() {}
 
-    public InventoryDetailDTO(String isbn, String title, int stockQuantity, String shelfLocation) {
+    public InventoryDetailDTO(String isbn, String title, int stockQuantity, String shelfLocation, String status) {
         this.isbn = isbn;
         this.title = title;
         this.stockQuantity = stockQuantity;
         this.shelfLocation = shelfLocation;
+        this.status = status;
     }
 
     public String getIsbn() { return isbn; }
@@ -23,4 +25,6 @@ public class InventoryDetailDTO {
     public void setStockQuantity(int stockQuantity) { this.stockQuantity = stockQuantity; }
     public String getShelfLocation() { return shelfLocation; }
     public void setShelfLocation(String shelfLocation) { this.shelfLocation = shelfLocation; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }

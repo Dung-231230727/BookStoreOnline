@@ -1,5 +1,7 @@
 package com.bookstore.entity;
 
+import com.bookstore.enums.PaymentMethod;
+import com.bookstore.enums.PaymentStatus;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -14,11 +16,13 @@ public class Payment {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @Column(name = "payment_method", nullable = false, length = 50)
-    private String paymentMethod;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_method", nullable = false, length = 20)
+    private PaymentMethod paymentMethod;
 
-    @Column(name = "status_code", length = 50)
-    private String statusCode = "PENDING";
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20)
+    private PaymentStatus status = PaymentStatus.PENDING;
 
     @Column(name = "payment_date")
     private LocalDateTime paymentDate;
@@ -32,10 +36,10 @@ public class Payment {
     public void setPaymentId(String paymentId) { this.paymentId = paymentId; }
     public Order getOrder() { return order; }
     public void setOrder(Order order) { this.order = order; }
-    public String getPaymentMethod() { return paymentMethod; }
-    public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
-    public String getStatusCode() { return statusCode; }
-    public void setStatusCode(String statusCode) { this.statusCode = statusCode; }
+    public PaymentMethod getPaymentMethod() { return paymentMethod; }
+    public void setPaymentMethod(PaymentMethod paymentMethod) { this.paymentMethod = paymentMethod; }
+    public PaymentStatus getStatus() { return status; }
+    public void setStatus(PaymentStatus status) { this.status = status; }
     public LocalDateTime getPaymentDate() { return paymentDate; }
     public void setPaymentDate(LocalDateTime paymentDate) { this.paymentDate = paymentDate; }
     public String getTransactionReference() { return transactionReference; }

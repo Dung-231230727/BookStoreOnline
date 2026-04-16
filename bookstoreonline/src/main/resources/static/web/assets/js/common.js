@@ -44,7 +44,7 @@ const common = {
 };
 
 const api = {
-    baseUrl: 'http://localhost:8080/api', 
+    baseUrl: '/api', 
     
     getToken: () => localStorage.getItem('access_token'),
     setToken: (token) => localStorage.setItem('access_token', token),
@@ -56,123 +56,148 @@ const api = {
 
     /**
      * Standardized API Request Handler
-     * Handles ApiResponse<T> { status, message, data }
      */
     request: async (endpoint, options = {}) => {
         const token = api.getToken();
+        let cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+        cleanEndpoint = cleanEndpoint.replace(/^\/api\/api\//, '/api/');
+
         const headers = { 'Content-Type': 'application/json', ...options.headers };
         if (token) headers['Authorization'] = `Bearer ${token}`;
 
-        const method = options.method || 'GET';
+        const fetchOptions = { ...options, headers };
         
-        // Debug group for tracking requests during refactor
-        console.groupCollapsed(`%c API ${method} %c ${endpoint}`, "color:white; background:#C5A992; padding:2px 5px; border-radius:3px;", "color:#2F2F2F; font-weight:bold;");
-        if (options.body) {
-            try { console.log("Payload:", JSON.parse(options.body)); } catch(e) { console.log("Payload (raw):", options.body); }
+        // Handle FormData (FileUpload)
+        if (options.body instanceof FormData) {
+            delete headers['Content-Type']; 
+            fetchOptions.body = options.body;
+        } else if (options.body && typeof options.body === 'string') {
+            fetchOptions.body = options.body;
+        } else if (options.body) {
+            fetchOptions.body = JSON.stringify(options.body);
         }
 
         try {
-            const response = await fetch(`${api.baseUrl}${endpoint}`, { ...options, headers });
-            
-            if (response.status === 204) {
-                console.log("Response: No Content (204)");
-                console.groupEnd();
-                return { status: 200, data: true };
-            }
+            const response = await fetch(`${api.baseUrl}${cleanEndpoint}`, fetchOptions);
+            if (response.status === 204) return { status: 200, data: true };
 
-            const result = await response.json();
-            console.log("Response:", result);
+            const contentType = response.headers.get("content-type");
+            let result;
+            if (contentType && contentType.includes("application/json")) {
+                result = await response.json();
+            } else {
+                const text = await response.text();
+                try { result = JSON.parse(text); } catch(e) { result = { message: text }; }
+            }
 
             if (!response.ok) {
                 if (response.status === 401) { api.clearToken(); api.clearUser(); }
-                throw new Error(result.message || 'Error from server');
+                const errMsg = result.message || result.error || (typeof result === 'string' ? result : 'Lỗi từ máy chủ');
+                throw new Error(errMsg);
             }
-
-            console.groupEnd();
             return result;
         } catch (error) {
             console.error("API Call Failed:", error);
-            console.groupEnd();
             throw error;
         }
     },
 
     get: (endpoint) => api.request(endpoint, { method: 'GET' }),
-    post: (endpoint, data) => api.request(endpoint, { method: 'POST', body: JSON.stringify(data) }),
-    put: (endpoint, data) => api.request(endpoint, { method: 'PUT', body: JSON.stringify(data) }),
+    post: (endpoint, data) => api.request(endpoint, { method: 'POST', body: data }),
+    put: (endpoint, data) => api.request(endpoint, { method: 'PUT', body: data }),
     delete: (endpoint) => api.request(endpoint, { method: 'DELETE' }),
 
+    /**
+     * Global System Alerts
+     */
     showToast: (message, type = 'success') => {
-        const toastEl = document.getElementById('appToast');
-        if (!toastEl) { console.warn('[Toast]', message); return; }
+        console.log(`[ALERT] ${type.toUpperCase()}: ${message}`);
+        const alertEl = document.getElementById('systemAlert');
+        if (!alertEl) { 
+            console.error('systemAlert not found!'); 
+            if (type === 'error') alert(message); 
+            return; 
+        }
 
         const configs = {
-            success: { icon: '✓', title: 'Thành công', iconColor: '#C5A992', iconBg: '#f5f0eb' },
-            error:   { icon: '✕', title: 'Lỗi',        iconColor: '#a07060', iconBg: '#f5eeeb' },
-            warning: { icon: '!', title: 'Cảnh báo',   iconColor: '#b08050', iconBg: '#f5eedf' },
-            info:    { icon: 'i', title: 'Thông tin',  iconColor: '#7090a0', iconBg: '#eaf0f5' },
+            success: { icon: '✓', title: 'Thành công', color: '#C5A992', bg: '#f5f0eb' },
+            error:   { icon: '✕', title: 'Lỗi',        color: '#d63031', bg: '#fab1a0' },
+            warning: { icon: '!', title: 'Cảnh báo',   color: '#fdcb6e', bg: '#ffeaa7' },
+            info:    { icon: 'i', title: 'Thông tin',  color: '#0984e3', bg: '#74b9ff' },
         };
         const cfg = configs[type] || configs.success;
 
-        // Update elements
-        const set = (id, prop, val) => { const el = document.getElementById(id); if (el) el[prop] = val; };
-        const style = (id, prop, val) => { const el = document.getElementById(id); if (el) el.style[prop] = val; };
+        // Populate Content
+        const el = (id) => document.getElementById(id);
+        if (el('alertIcon')) { el('alertIcon').textContent = cfg.icon; el('alertIcon').style.color = cfg.color; }
+        if (el('alertIconWrap')) el('alertIconWrap').style.background = cfg.bg;
+        if (el('alertTitle')) el('alertTitle').textContent = cfg.title;
+        if (el('alertMessage')) el('alertMessage').textContent = message;
+        if (el('alertProgress')) { el('alertProgress').style.background = cfg.color; el('alertProgress').style.width = '100%'; }
 
-        set('toastIcon',    'textContent', cfg.icon);
-        set('toastTitle',   'textContent', cfg.title);
-        set('toastMessage', 'textContent', message);
-        style('toastTitle',    'color',      '#2f2f2f');
-        style('toastIcon',     'color',      cfg.iconColor);
-        style('toastIcon',     'fontWeight', '700');
-        style('toastIconWrap', 'background', cfg.iconBg);
-        style('toastProgress', 'background', cfg.iconColor);
-        style('toastProgress', 'width',      '100%');
-        style('toastProgress', 'transition', 'none');
+        // Trigger Visibility
+        alertEl.style.display = 'block';
+        alertEl.style.opacity = '1';
 
-        // Slide in from left
-        toastEl.style.display    = 'block';
-        toastEl.style.opacity    = '0';
-        toastEl.style.transform  = 'translateX(-24px) scale(0.97)';
-        toastEl.style.transition = 'opacity 0.28s cubic-bezier(0.22,1,0.36,1), transform 0.28s cubic-bezier(0.22,1,0.36,1)';
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-            toastEl.style.opacity   = '1';
-            toastEl.style.transform = 'translateX(0) scale(1)';
-        }));
-
-        // Shrink progress bar
-        const duration = 3800;
-        setTimeout(() => {
-            style('toastProgress', 'transition', `width ${duration}ms linear`);
-            style('toastProgress', 'width', '0%');
-        }, 80);
-
-        if (api._toastTimer) clearTimeout(api._toastTimer);
-        api._toastTimer = setTimeout(() => api.hideToast(), duration + 300);
+        if (api._alertTimer) clearTimeout(api._alertTimer);
+        api._alertTimer = setTimeout(() => api.hideToast(), 4000);
     },
 
     hideToast: () => {
-        const toastEl = document.getElementById('appToast');
-        if (!toastEl) return;
-        toastEl.style.transition = 'opacity 0.22s ease, transform 0.22s ease';
-        toastEl.style.opacity   = '0';
-        toastEl.style.transform = 'translateX(-20px) scale(0.97)';
-        setTimeout(() => { toastEl.style.display = 'none'; }, 240);
-        if (api._toastTimer) { clearTimeout(api._toastTimer); api._toastTimer = null; }
+        const alertEl = document.getElementById('systemAlert');
+        if (alertEl) alertEl.style.display = 'none';
+        if (api._alertTimer) { clearTimeout(api._alertTimer); api._alertTimer = null; }
+    },
+
+    /**
+     * Modern Confirm Dialog (Promise based)
+     */
+    confirm: (message, title = 'Xác nhận xóa?') => {
+        return new Promise((resolve) => {
+            const modal = document.getElementById('systemConfirmModal');
+            if (!modal) { resolve(confirm(message)); return; }
+
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            modal.style.display = 'flex';
+
+            const cleanup = (result) => {
+                modal.style.display = 'none';
+                document.getElementById('btn-confirm-proceed').onclick = null;
+                document.getElementById('btn-confirm-cancel').onclick = null;
+                resolve(result);
+            };
+
+            document.getElementById('btn-confirm-proceed').onclick = () => cleanup(true);
+            document.getElementById('btn-confirm-cancel').onclick = () => cleanup(false);
+        });
     },
 
     formatCurrency: (amount) => {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount || 0);
     },
 
-    /**
-     * Standardized response parser for ApiResponse<T> handling
-     * Handles both wrapped { data: T } and direct T responses
-     */
     parseResponse: (response) => {
         if (!response) return null;
-        if (response.data !== undefined) return response.data;
-        if (Array.isArray(response)) return response;
-        return response;
+        api.lastMeta = response.meta || null;
+        let baseData = (response.data !== undefined) ? response.data : response;
+        if (baseData && typeof baseData === 'object' && Array.isArray(baseData.content)) {
+            if (!api.lastMeta) {
+                api.lastMeta = {
+                    totalElements: baseData.totalElements,
+                    totalPages: baseData.totalPages,
+                    pageNumber: baseData.number,
+                    pageSize: baseData.size
+                };
+            }
+            return baseData.content;
+        }
+        return baseData;
+    },
+
+    normalizeList: (response) => {
+        const data = api.parseResponse(response);
+        return Array.isArray(data) ? data : [];
     }
 };
 

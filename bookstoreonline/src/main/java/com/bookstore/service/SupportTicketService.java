@@ -1,6 +1,7 @@
 package com.bookstore.service;
 
 import com.bookstore.dto.SupportTicketDTO;
+import com.bookstore.enums.SupportStatus;
 import java.util.List;
 
 public interface SupportTicketService {
@@ -8,5 +9,5 @@ public interface SupportTicketService {
     List<SupportTicketDTO> getTicketsByCustomer(String username);
     void submitTicket(String username, String subject, String content);
     void updateStatus(Long id, String status);
-    void respondToTicket(Long id, String reply, String internalNote, String statusCode);
+    void respondToTicket(Long id, String reply, String internalNote, SupportStatus status);
 }

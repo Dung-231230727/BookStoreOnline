@@ -30,4 +30,10 @@ public class Voucher {
     public void setMinCondition(BigDecimal minCondition) { this.minCondition = minCondition; }
     public LocalDateTime getExpiryDate() { return expiryDate; }
     public void setExpiryDate(LocalDateTime expiryDate) { this.expiryDate = expiryDate; }
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    public LocalDateTime getDeletedAt() { return deletedAt; }
+    public void setDeletedAt(LocalDateTime deletedAt) { this.deletedAt = deletedAt; }
 }

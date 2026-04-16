@@ -24,26 +24,26 @@ public class ReviewController {
 
     @GetMapping("/book/{isbn}")
     @Operation(summary = "Xem đánh giá theo sách", description = "Lấy danh sách các nhận xét và điểm số đánh giá của một cuốn sách cụ thể")
-    public ApiResponse<List<ReviewDTO>> getReviewsByBook(@PathVariable String isbn) {
-        return ApiResponse.success(reviewService.getReviewsByBook(isbn));
+    public ApiResponse<List<ReviewDTO>> getReviewsByBook(@PathVariable String isbn, org.springframework.data.domain.Pageable pageable) {
+        return ApiResponse.successPage(reviewService.getReviewsByBook(isbn, pageable));
     }
 
     @PostMapping("/submit")
     @Operation(summary = "Gửi đánh giá mới", description = "Khách hàng gửi điểm số (1-5 sao) và nhận xét cho cuốn sách đã mua")
     public ApiResponse<String> submitReview(
-            @RequestParam String username,
+            java.security.Principal principal,
             @RequestParam String isbn,
             @RequestParam Integer rating,
             @RequestParam String comment) {
-        reviewService.submitReview(username, isbn, rating, comment);
+        reviewService.submitReview(principal, isbn, rating, comment);
         return ApiResponse.success("Cảm ơn bạn đã gửi đánh giá!", null);
     }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Operation(summary = "Danh sách toàn bộ đánh giá (Admin)", description = "Lấy toàn bộ danh sách đánh giá trên hệ thống để kiểm duyệt")
-    public ApiResponse<List<ReviewDTO>> getAllReviews() {
-        return ApiResponse.success(reviewService.getAllReviews());
+    public ApiResponse<List<ReviewDTO>> getAllReviews(org.springframework.data.domain.Pageable pageable) {
+        return ApiResponse.successPage(reviewService.getAllReviews(pageable));
     }
 
     @DeleteMapping("/{id}")

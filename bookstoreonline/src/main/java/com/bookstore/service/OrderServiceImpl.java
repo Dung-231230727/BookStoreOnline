@@ -6,6 +6,7 @@ import com.bookstore.dto.CheckoutRequest;
 import com.bookstore.dto.OrderDetailDTO;
 import com.bookstore.dto.OrderResponseDTO;
 import com.bookstore.entity.*;
+import com.bookstore.enums.*;
 import com.bookstore.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,8 +31,8 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentRepository paymentRepository;
     private final AuditLogRepository auditLogRepository;
     private final AccountRepository accountRepository;
-    private final InventoryRepository inventoryRepository;
     private final InventoryLogRepository inventoryLogRepository;
+    private final InventoryService inventoryService;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             OrderDetailRepository orderDetailRepository,
@@ -42,8 +43,8 @@ public class OrderServiceImpl implements OrderService {
                             AuditLogRepository auditLogRepository,
                             AccountRepository accountRepository,
                             BookRepository bookRepository,
-                            InventoryRepository inventoryRepository,
-                            InventoryLogRepository inventoryLogRepository) {
+                            InventoryLogRepository inventoryLogRepository,
+                            InventoryService inventoryService) {
         this.orderRepository = orderRepository;
         this.orderDetailRepository = orderDetailRepository;
         this.customerRepository = customerRepository;
@@ -53,8 +54,8 @@ public class OrderServiceImpl implements OrderService {
         this.auditLogRepository = auditLogRepository;
         this.accountRepository = accountRepository;
         this.bookRepository = bookRepository;
-        this.inventoryRepository = inventoryRepository;
         this.inventoryLogRepository = inventoryLogRepository;
+        this.inventoryService = inventoryService;
     }
 
     @Override
@@ -100,7 +101,7 @@ public class OrderServiceImpl implements OrderService {
         order.setTotalItemsPrice(subtotal);
         order.setShippingFee(shippingFee);
         order.setTotalPayment(totalPayment);
-        order.setStatusCode("NEW");
+        order.setStatus(OrderStatus.NEW);
         order.setShippingAddress(request.getShippingAddress());
 
         orderRepository.save(order);
@@ -129,8 +130,8 @@ public class OrderServiceImpl implements OrderService {
         Payment payment = new Payment();
         payment.setPaymentId("PAY-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         payment.setOrder(order);
-        payment.setPaymentMethod(request.getPaymentMethod());
-        payment.setStatusCode("PENDING");
+        payment.setPaymentMethod(PaymentMethod.valueOf(request.getPaymentMethod().toUpperCase()));
+        payment.setStatus(PaymentStatus.PENDING);
         paymentRepository.save(payment);
 
         return mapToResponseDTO(order, detailDTOs);
@@ -138,11 +139,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<OrderResponseDTO> getOrderHistory(String username) {
-        return orderRepository.findAllByCustomer_Account_UsernameOrderByCreatedAtDesc(username)
-                .stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+    public org.springframework.data.domain.Page<OrderResponseDTO> getOrderHistory(String username, org.springframework.data.domain.Pageable pageable) {
+        return orderRepository.findAllByCustomer_Account_UsernameOrderByCreatedAtDesc(username, pageable)
+                .map(this::mapToDTO);
     }
 
     @Override
@@ -159,11 +158,11 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
         
-        if (!"NEW".equals(order.getStatusCode()) && !"CONFIRMED".equals(order.getStatusCode())) {
-            throw new RuntimeException("Cannot cancel order in status: " + order.getStatusCode());
+        if (order.getStatus() != OrderStatus.NEW && order.getStatus() != OrderStatus.CONFIRMED) {
+            throw new RuntimeException("Cannot cancel order in status: " + order.getStatus());
         }
         
-        order.setStatusCode("CANCELLED");
+        order.setStatus(OrderStatus.CANCELLED);
         orderRepository.save(order);
 
         restockInventory(order);
@@ -173,25 +172,12 @@ public class OrderServiceImpl implements OrderService {
         String orderId = order.getOrderId();
         List<OrderDetail> details = orderDetailRepository.findByOrder(order);
         for (OrderDetail detail : details) {
-            Book book = detail.getBook();
-            Inventory inventory = inventoryRepository.findByBook_Isbn(book.getIsbn())
-                    .orElseGet(() -> {
-                        Inventory newInventory = new Inventory();
-                        newInventory.setBook(book);
-                        newInventory.setStockQuantity(0);
-                        return newInventory;
-                    });
+            inventoryService.updateStock(detail.getBook(), detail.getQuantity());
             
-            int restockQuantity = detail.getQuantity();
-            int oldStock = inventory.getStockQuantity();
-            inventory.setStockQuantity(oldStock + restockQuantity);
-            inventoryRepository.save(inventory);
-
             InventoryLog log = new InventoryLog();
-            log.setBook(book);
+            log.setBook(detail.getBook());
             log.setChangeType("RETURN");
-            log.setQuantityChanged(restockQuantity);
-            log.setQuantityAfter(oldStock + restockQuantity);
+            log.setQuantityChanged(detail.getQuantity());
             log.setNotes("Restock from cancelled order: " + orderId);
             inventoryLogRepository.save(log);
         }
@@ -225,13 +211,14 @@ public class OrderServiceImpl implements OrderService {
         order.setTotalItemsPrice(subtotal);
         order.setShippingFee(shippingFee);
         order.setTotalPayment(totalPayment);
-        order.setStatusCode("CONFIRMED");
+        order.setStatus(OrderStatus.CONFIRMED);
         order.setShippingAddress(request.getShippingAddress());
 
         orderRepository.save(order);
 
         for (AdminOrderRequest.AdminOrderItemRequest item : request.getOrderDetails()) {
-            Book book = bookRepository.findById(item.getIsbn()).get();
+            Book book = bookRepository.findById(item.getIsbn())
+                    .orElseThrow(() -> new RuntimeException("Book not found: " + item.getIsbn()));
             
             OrderDetail detail = new OrderDetail();
             detail.setId(new OrderDetailId(orderId, book.getIsbn()));
@@ -253,8 +240,8 @@ public class OrderServiceImpl implements OrderService {
         Payment payment = new Payment();
         payment.setPaymentId("PAY-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         payment.setOrder(order);
-        payment.setPaymentMethod(request.getPaymentMethod());
-        payment.setStatusCode("PENDING");
+        payment.setPaymentMethod(PaymentMethod.valueOf(request.getPaymentMethod().toUpperCase()));
+        payment.setStatus(PaymentStatus.PENDING);
         paymentRepository.save(payment);
 
         return mapToResponseDTO(order, detailDTOs);
@@ -262,24 +249,23 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<OrderResponseDTO> getAllOrders() {
-        return orderRepository.findAll()
-                .stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+    public org.springframework.data.domain.Page<OrderResponseDTO> getAllOrders(org.springframework.data.domain.Pageable pageable) {
+        return orderRepository.findAll(pageable)
+                .map(this::mapToDTO);
     }
 
     @Override
     @Transactional
-    public void updateOrderStatus(String orderId, String status) {
+    public void updateOrderStatus(String orderId, String statusName) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
         
-        String oldStatus = order.getStatusCode();
-        order.setStatusCode(status);
+        OrderStatus status = OrderStatus.valueOf(statusName.toUpperCase());
+        OrderStatus oldStatus = order.getStatus();
+        order.setStatus(status);
         orderRepository.save(order);
 
-        if ("CANCELLED".equals(status) && !"CANCELLED".equals(oldStatus)) {
+        if (OrderStatus.CANCELLED.equals(status) && oldStatus != OrderStatus.CANCELLED) {
             restockInventory(order);
         }
 
@@ -323,7 +309,7 @@ public class OrderServiceImpl implements OrderService {
         res.setSubtotal(order.getTotalItemsPrice());
         res.setShippingFee(order.getShippingFee());
         res.setTotalAmount(order.getTotalPayment());
-        res.setStatus(order.getStatusCode());
+        res.setStatus(order.getStatus() != null ? order.getStatus().name() : null);
         res.setShippingAddress(order.getShippingAddress());
         res.setVoucherId(order.getVoucher() != null ? order.getVoucher().getVoucherCode() : null);
         res.setOrderDetails(detailList);

@@ -23,14 +23,24 @@ const users = {
             const roleBadge = { ADMIN: 'bg-danger', STAFF: 'bg-primary', STOREKEEPER: 'bg-warning text-dark', CUSTOMER: 'bg-secondary' };
 
             data.forEach(user => {
-                const isActive = user.isActive === true; // Aligned with AccountDTO isActive
+                const isActive = (user.status === 'ACTIVE');
+                let statusBadgeClass = 'bg-success';
+                let statusText = 'Hoạt động';
+
+                if (user.status === 'LOCKED') {
+                    statusBadgeClass = 'bg-warning text-dark';
+                    statusText = 'Bị khóa';
+                } else if (user.status === 'DISABLED') {
+                    statusBadgeClass = 'bg-danger';
+                    statusText = 'Vô hiệu hóa';
+                }
                 tbody.append(`
                     <tr>
                         <td class="ps-4 fw-bold text-dark">${user.username}</td>
                         <td>${user.fullName || '---'}</td>
                         <td><span class="badge ${roleBadge[user.role] || 'bg-secondary'} rounded-pill px-3">${user.role}</span></td>
                         <td>${user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB') : '---'}</td>
-                        <td><span class="badge ${isActive ? 'bg-success' : 'bg-danger'} bg-opacity-15 ${isActive ? 'text-success' : 'text-danger'} rounded-pill px-3">${isActive ? 'Hoạt động' : 'Bị khóa'}</span></td>
+                        <td><span class="badge ${statusBadgeClass} bg-opacity-15 ${user.status === 'ACTIVE' ? 'text-success' : (user.status === 'LOCKED' ? 'text-warning' : 'text-danger')} rounded-pill px-3">${statusText}</span></td>
                         <td class="text-end pe-4 d-flex gap-2 justify-content-end">
                             <select class="form-select form-select-sm rounded-pill" style="width: auto"
                                 onchange="users.changeRole('${user.username}', this.value)">

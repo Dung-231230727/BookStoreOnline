@@ -42,9 +42,22 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // Public Endpoints
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, 
+                                "/api/books/**", "/api/categories/**", "/api/publishers/**").permitAll()
                         .requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .anyRequest().permitAll()
+                        .requestMatchers("/web/**", "/css/**", "/js/**", "/images/**").permitAll()
+                        
+                        // Protected Modules (Requires Authentication)
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/cart/**").authenticated()
+                        .requestMatchers("/api/orders/**").authenticated()
+                        .requestMatchers("/api/support/**").authenticated()
+                        .requestMatchers("/api/payments/**").permitAll() // VNPay Callback is public but verified by checksum
+                        
+                        // Default
+                        .anyRequest().authenticated()
                 );
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

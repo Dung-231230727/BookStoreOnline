@@ -3,10 +3,12 @@ package com.bookstore.service;
 import com.bookstore.dto.SupportTicketDTO;
 import com.bookstore.entity.SupportTicket;
 import com.bookstore.entity.Customer;
+import com.bookstore.enums.SupportStatus;
 import com.bookstore.repository.SupportTicketRepository;
 import com.bookstore.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,22 +51,25 @@ public class SupportTicketServiceImpl implements SupportTicketService {
     }
 
     @Override
-    public void updateStatus(Long id, String statusCode) {
+    public void updateStatus(Long id, String statusName) {
         SupportTicket ticket = supportTicketRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
-        ticket.setStatusCode(statusCode);
+        ticket.setStatus(SupportStatus.valueOf(statusName.toUpperCase()));
         supportTicketRepository.save(ticket);
     }
 
     @Override
-    public void respondToTicket(Long id, String reply, String internalNote, String statusCode) {
+    @Transactional
+    public void respondToTicket(Long id, String reply, String internalNote, SupportStatus status) {
         SupportTicket ticket = supportTicketRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
-        
+
         if (reply != null) ticket.setAdminReply(reply);
         if (internalNote != null) ticket.setInternalNote(internalNote);
-        if (statusCode != null) ticket.setStatusCode(statusCode);
-        
+        if (status != null) {
+            ticket.setStatus(status);
+        }
+
         supportTicketRepository.save(ticket);
     }
 
@@ -74,7 +79,7 @@ public class SupportTicketServiceImpl implements SupportTicketService {
         dto.setCustomerName(ticket.getCustomer().getFullName());
         dto.setTitle(ticket.getTitle());
         dto.setContent(ticket.getContent());
-        dto.setStatusCode(ticket.getStatusCode());
+        dto.setStatus(ticket.getStatus() != null ? ticket.getStatus().name() : null);
         dto.setAdminReply(ticket.getAdminReply());
         dto.setInternalNote(ticket.getInternalNote());
         dto.setCreatedAt(ticket.getCreatedAt());

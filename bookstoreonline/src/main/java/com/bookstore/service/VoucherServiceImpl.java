@@ -3,10 +3,10 @@ package com.bookstore.service;
 import com.bookstore.dto.VoucherDTO;
 import com.bookstore.entity.Voucher;
 import com.bookstore.repository.VoucherRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @SuppressWarnings("null")
@@ -19,13 +19,14 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public List<VoucherDTO> getAllVouchers() {
-        return voucherRepository.findAll().stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+    @Transactional(readOnly = true)
+    public Page<VoucherDTO> getAllVouchers(Pageable pageable) {
+        return voucherRepository.findAll(pageable)
+                .map(this::toDTO);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public VoucherDTO getVoucherByCode(String code) {
         return voucherRepository.findById(code)
                 .map(this::toDTO)
@@ -33,18 +34,22 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
+    @Transactional
     public VoucherDTO saveVoucher(VoucherDTO dto) {
-        Voucher entity = new Voucher();
+        // BUG-12 fix: Proper upsert — find existing or create new
+        Voucher entity = voucherRepository.findById(dto.getVoucherCode())
+                .orElse(new Voucher());
         entity.setVoucherCode(dto.getVoucherCode());
         entity.setDiscountValue(dto.getDiscountValue());
         entity.setMinCondition(dto.getMinCondition());
         entity.setExpiryDate(dto.getExpiryDate());
-        
+
         Voucher saved = voucherRepository.save(entity);
         return toDTO(saved);
     }
 
     @Override
+    @Transactional
     public void deleteVoucher(String code) {
         voucherRepository.deleteById(code);
     }
@@ -58,3 +63,4 @@ public class VoucherServiceImpl implements VoucherService {
         return dto;
     }
 }
+

@@ -54,7 +54,7 @@ const review = {
         }
 
         try {
-            const res = await api.post(`/reviews/submit?username=${user.username}&isbn=${isbn}&diem=${diem}&nhanXet=${encodeURIComponent(noidung)}`);
+            const res = await api.post(`/reviews/submit?username=${user.username}&isbn=${isbn}&rating=${diem}&comment=${encodeURIComponent(noidung)}`);
 
             if (res.status === 200) {
                 api.showToast("Cảm ơn đánh giá của bạn!");

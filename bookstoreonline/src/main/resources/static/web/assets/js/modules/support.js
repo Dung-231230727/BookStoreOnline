@@ -79,14 +79,14 @@ const support = {
     // 2. Admin Ticket List
     loadAdminTickets: async () => {
         try {
-            const res = await api.get('/api/support');
-            const data = Array.isArray(res) ? res : (res.data || []);
+            const res = await api.get('/support');
+            const data = api.parseResponse(res) || [];
             const tbody = $("#support-list-body");
             if (!tbody.length) return;
             tbody.empty();
 
             data.forEach(t => {
-                const statusBadge = support.getStatusBadge(t.statusCode);
+                const statusBadge = support.getStatusBadge(t.status);
                 tbody.append(`
                     <tr onclick="layout.render('Support/Admin', 'Details', '${t.ticketId}')" style="cursor:pointer">
                         <td class="ps-4 fw-bold">#${t.ticketId}</td>
@@ -107,12 +107,8 @@ const support = {
     loadTicketDetails: async (id) => {
         currentTicketId = id;
         try {
-            // Re-fetch all to find the one (assuming GET /api/support returns all including details)
-            // Or if backend has GET /api/support/{id}, use that. It doesn't yet based on Controller check.
-            // Wait, Controller has no GET /{id}. Let's assume we use the list for now or I should have added it.
-            // Actually, I'll update the controller to add GET /{id} for efficiency.
-            const res = await api.get('/api/support');
-            const list = Array.isArray(res) ? res : (res.data || []);
+            const res = await api.get('/support');
+            const list = api.parseResponse(res) || [];
             const t = list.find(x => x.ticketId == id);
             
             if (t) {
@@ -123,9 +119,9 @@ const support = {
                 $("#ticket-created-date").text(new Date(t.createdAt).toLocaleString());
                 
                 const badge = $("#ticket-status-badge");
-                badge.text(t.statusCode).removeClass().addClass(`badge rounded-pill px-3 py-2 ${support.getStatusClass(t.statusCode)}`);
+                badge.text(t.status).removeClass().addClass(`badge rounded-pill px-3 py-2 ${support.getStatusClass(t.status)}`);
                 
-                $("#target-status").val(t.statusCode);
+                $("#target-status").val(t.status);
                 $("#admin-reply").val(t.adminReply || '');
                 $("#internal-note").val(t.internalNote || '');
 
@@ -166,8 +162,7 @@ const support = {
 
         api.showToast("Đang cập nhật...", "info");
         try {
-            // POST /api/support/{id}/respond?reply=...&internalNote=...&statusCode=...
-            await api.post(`/api/support/${id}/respond?reply=${encodeURIComponent(reply)}&internalNote=${encodeURIComponent(note)}&statusCode=${status}`);
+            await api.post(`/support/${id}/respond?reply=${encodeURIComponent(reply)}&internalNote=${encodeURIComponent(note)}&status=${status}`);
             api.showToast("✓ Cập nhật hồ sơ thành công!", "success");
             support.loadTicketDetails(id);
         } catch (e) {

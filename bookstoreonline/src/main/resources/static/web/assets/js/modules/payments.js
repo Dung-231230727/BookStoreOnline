@@ -6,6 +6,7 @@ const payments = {
     /**
      * Load admin payments list with filters
      */
+    loadAdminPayments: async () => payments.loadAdminList(),
     loadAdminList: async () => {
         try {
             const res = await api.get(`/payments/admin/all`);

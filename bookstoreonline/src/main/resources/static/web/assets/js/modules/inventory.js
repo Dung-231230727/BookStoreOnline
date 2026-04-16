@@ -73,8 +73,29 @@ const inventory = {
         }
 
         data.forEach(item => {
-            const bgClass = item.isLowStock ? 'bg-danger bg-opacity-10' : '';
-            const statusBadge = item.isLowStock ? '<span class="badge bg-danger">Sắp hết hàng</span>' : '<span class="badge bg-success">Còn hàng</span>';
+            const inventoryStatus = item.book.inventoryStatus || 'AVAILABLE';
+            let statusBadge = '';
+            let bgClass = '';
+
+            switch(inventoryStatus) {
+                case 'AVAILABLE': 
+                    statusBadge = '<span class="badge bg-success">Còn hàng</span>'; 
+                    break;
+                case 'LOW_STOCK': 
+                    statusBadge = '<span class="badge bg-warning text-dark">Sắp hết hàng</span>'; 
+                    bgClass = 'bg-warning bg-opacity-10';
+                    break;
+                case 'OUT_OF_STOCK': 
+                    statusBadge = '<span class="badge bg-danger">Hết hàng</span>'; 
+                    bgClass = 'bg-danger bg-opacity-10';
+                    break;
+                case 'DISCONTINUED': 
+                    statusBadge = '<span class="badge bg-dark">Ngừng kinh doanh</span>'; 
+                    bgClass = 'bg-secondary bg-opacity-10';
+                    break;
+                default: 
+                    statusBadge = `<span class="badge bg-light text-dark border">${inventoryStatus}</span>`;
+            }
             const price = api.formatCurrency(item.book.price);
 
             tbody.append(`
@@ -84,7 +105,7 @@ const inventory = {
                         <div class="small text-muted">ISBN: ${item.book.isbn}</div>
                     </td>
                     <td class="text-center">
-                        <span class="badge ${item.isLowStock ? 'bg-danger' : 'bg-dark'} rounded-pill px-3 fs-6">
+                        <span class="badge ${inventoryStatus === 'AVAILABLE' ? 'bg-dark' : (inventoryStatus === 'LOW_STOCK' ? 'bg-warning text-dark' : 'bg-danger')} rounded-pill px-3 fs-6">
                             ${item.book.stockQuantity || 0}
                         </span>
                     </td>

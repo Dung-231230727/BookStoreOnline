@@ -52,18 +52,43 @@
         </div>
     </div>
 
-    <!-- Global Toast Notification -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-        <div id="appToast" class="toast border-0 shadow-lg rounded-4" role="alert" aria-live="assertive"
-            aria-atomic="true">
-            <div class="toast-header bg-accent text-white border-0 rounded-top-4">
-                <i class="icon icon-clipboard me-2"></i>
-                <strong class="me-auto">Thông báo hệ thống</strong>
-                <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="toast"
-                    aria-label="Close"></button>
+    <!-- Global System Alert (Forced Visibility Version) -->
+    <div class="position-fixed bottom-0 end-0 p-4" style="z-index: 99999;">
+        <div id="systemAlert" class="shadow-lg rounded-4 overflow-hidden border" 
+             style="display: none; width: 350px; background: #ffffff; border: 2px solid #C5A992 !important;">
+            <div class="d-flex align-items-center p-3">
+                <div id="alertIconWrap" class="rounded-circle d-flex align-items-center justify-content-center me-3" 
+                     style="width: 40px; height: 40px; background: #f5f0eb;">
+                    <span id="alertIcon" style="font-weight: bold; color: #C5A992;">?</span>
+                </div>
+                <div class="flex-grow-1">
+                    <div id="alertTitle" class="fw-bold mb-0" style="font-size: 0.9rem; color: #212529;">Thông báo</div>
+                    <div id="alertMessage" class="text-secondary" style="font-size: 0.85rem;"></div>
+                </div>
+                <button type="button" class="btn-close ms-2 shadow-none" style="font-size: 0.6rem;" 
+                        onclick="api.hideToast()"></button>
             </div>
-            <div class="toast-body bg-white rounded-bottom-4 fw-medium" id="toastMessage">
-                <!-- Message injected here -->
+            <div id="alertProgress" style="height: 4px; background: #C5A992; width: 100%;"></div>
+        </div>
+    </div>
+
+    <!-- Global System Confirm Modal (Premium Popup) -->
+    <div id="systemConfirmModal" class="position-fixed top-0 start-0 w-100 h-100 align-items-center justify-content-center" 
+         style="display: none; z-index: 100000; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);">
+        <div class="bg-white rounded-5 shadow-lg p-5 text-center" style="width: 420px; border: 1px solid #eee;">
+            <div class="mb-4 d-flex justify-content-center">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" 
+                     style="width: 80px; height: 80px; background: #fff5f5; border: 2px solid #fee2e2;">
+                    <span style="font-size: 2.5rem; color: #dc2626;">⚠</span>
+                </div>
+            </div>
+            <h4 id="confirmTitle" class="fw-bold mb-3" style="color: #1a1a1a;">Xác nhận xóa?</h4>
+            <p id="confirmMessage" class="text-muted mb-5 px-3" style="font-size: 0.95rem; line-height: 1.6;">
+                Hành động này không thể hoàn tác. Bạn có chắc chắn muốn xóa không?
+            </p>
+            <div class="d-flex gap-2 justify-content-center">
+                <button id="btn-confirm-cancel" class="btn btn-light rounded-pill px-4 fw-bold text-muted border" style="min-width: 120px;">Hủy bỏ</button>
+                <button id="btn-confirm-proceed" class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm" style="min-width: 120px; background: #dc2626;">Đồng ý</button>
             </div>
         </div>
     </div>

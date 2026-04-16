@@ -1,5 +1,6 @@
 package com.bookstore.entity;
 
+import com.bookstore.enums.AccountStatus;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -17,8 +18,9 @@ public class Account {
     @Column(nullable = false)
     private String role; 
 
-    @Column(name = "is_active")
-    private Boolean isActive = true;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20)
+    private AccountStatus status = AccountStatus.ACTIVE;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -43,8 +45,8 @@ public class Account {
     public void setPassword(String password) { this.password = password; }
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
-    public Boolean getIsActive() { return isActive; }
-    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
+    public AccountStatus getStatus() { return status; }
+    public void setStatus(AccountStatus status) { this.status = status; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }

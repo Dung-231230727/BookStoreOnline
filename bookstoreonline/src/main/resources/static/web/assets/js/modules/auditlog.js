@@ -6,6 +6,7 @@ const auditlog = {
     /**
      * Load audit logs with filters
      */
+    loadLogs: async () => auditlog.loadList(),
     loadList: async () => {
         try {
             const username = $("#audit-username").val() || "";

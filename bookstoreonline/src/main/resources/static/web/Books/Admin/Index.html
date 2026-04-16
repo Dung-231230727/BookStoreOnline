@@ -26,7 +26,46 @@
                 </div>
             </div>
             <div class="col-md-4 ms-auto text-end">
-                <button class="btn btn-outline-dark rounded-pill px-4" onclick="books.toggleAdvancedFilters()">Bộ lọc nâng cao</button>
+                <button class="btn btn-outline-dark rounded-pill px-4" onclick="books.toggleAdvancedFilters()">
+                    <i class="icon icon-settings me-1"></i> Bộ lọc nâng cao
+                </button>
+            </div>
+        </div>
+
+        <!-- Advanced Filter Panel (Hidden by default) -->
+        <div id="advanced-filter-panel" class="mt-4 pt-3 border-top" style="display: none;">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label extra-small text-uppercase fw-bold text-muted">Danh mục</label>
+                    <select id="filter-category" class="form-select rounded-pill border-0 bg-light">
+                        <option value="">Tất cả danh mục</option>
+                        <!-- Loaded via JS -->
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label extra-small text-uppercase fw-bold text-muted">Trạng thái</label>
+                    <select id="filter-status" class="form-select rounded-pill border-0 bg-light">
+                        <option value="">-- Tất cả trạng thái --</option>
+                        <option value="ACTIVE" selected>Đang hoạt động</option>
+                        <option value="INACTIVE">Ngừng kinh doanh</option>
+                        <option value="DRAFT">Bản nháp</option>
+                        <option value="OUT_OF_STOCK">Hết hàng</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label extra-small text-uppercase fw-bold text-muted">Khoảng giá (VND)</label>
+                    <div class="input-group">
+                        <input type="number" id="filter-min-price" class="form-control rounded-start-pill border-0 bg-light" placeholder="Từ">
+                        <span class="input-group-text border-0 bg-light text-muted">-</span>
+                        <input type="number" id="filter-max-price" class="form-control rounded-end-pill border-0 bg-light" placeholder="Đến">
+                    </div>
+                </div>
+                <div class="col-md-2 d-flex align-items-end gap-2 text-end">
+                    <button class="btn btn-dark rounded-pill flex-grow-1 fw-bold" onclick="books.applyFilters()">Lọc</button>
+                    <button class="btn btn-outline-secondary rounded-circle" onclick="books.resetFilters()" title="Đặt lại">
+                        <i class="icon icon-refresh"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

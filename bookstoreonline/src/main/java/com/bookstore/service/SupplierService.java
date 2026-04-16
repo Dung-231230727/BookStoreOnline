@@ -4,6 +4,7 @@ import com.bookstore.dto.SupplierDTO;
 import com.bookstore.entity.Supplier;
 import com.bookstore.repository.SupplierRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,16 +19,17 @@ public class SupplierService {
         this.supplierRepository = supplierRepository;
     }
 
-    public List<SupplierDTO> getAllSuppliers() {
-        return supplierRepository.findAll().stream()
+    @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<SupplierDTO> getAllSuppliers(org.springframework.data.domain.Pageable pageable) {
+        return supplierRepository.findAll(pageable)
                 .map(supplier -> new SupplierDTO(
                         supplier.getSupplierId(),
                         supplier.getSupplierName(),
                         supplier.getContactInfo()
-                ))
-                .collect(Collectors.toList());
+                ));
     }
 
+    @Transactional
     public SupplierDTO addSupplier(SupplierDTO dto) {
         Supplier supplier = new Supplier();
         supplier.setSupplierName(dto.getSupplierName());
@@ -37,6 +39,7 @@ public class SupplierService {
         return new SupplierDTO(saved.getSupplierId(), saved.getSupplierName(), saved.getContactInfo());
     }
 
+    @Transactional
     public SupplierDTO updateSupplier(Integer id, SupplierDTO dto) {
         Supplier supplier = supplierRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Supplier not found!"));

@@ -7,7 +7,7 @@ public class SupportTicketDTO {
     private String customerName;
     private String title;
     private String content;
-    private String statusCode;
+    private String status;
     private String adminReply;
     private String internalNote;
     private LocalDateTime createdAt;
@@ -22,8 +22,8 @@ public class SupportTicketDTO {
     public void setTitle(String title) { this.title = title; }
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }
-    public String getStatusCode() { return statusCode; }
-    public void setStatusCode(String statusCode) { this.statusCode = statusCode; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
     public String getAdminReply() { return adminReply; }
     public void setAdminReply(String adminReply) { this.adminReply = adminReply; }
     public String getInternalNote() { return internalNote; }

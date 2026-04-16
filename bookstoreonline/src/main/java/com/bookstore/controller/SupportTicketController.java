@@ -2,10 +2,12 @@ package com.bookstore.controller;
 
 import com.bookstore.dto.ApiResponse;
 import com.bookstore.dto.SupportTicketDTO;
+import com.bookstore.enums.SupportStatus;
 import com.bookstore.service.ChatbotService;
 import com.bookstore.service.SupportTicketService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -58,14 +60,14 @@ public class SupportTicketController {
     }
 
     @PostMapping("/{id}/respond")
-    @Operation(summary = "Phản hồi/Ghi chú cho yêu cầu")
-    public ApiResponse<String> respondToTicket(
+    @Operation(summary = "Admin respond to ticket")
+    public ResponseEntity<ApiResponse<String>> respondToTicket(
             @PathVariable Long id,
-            @RequestParam(required = false) String reply,
+            @RequestParam String reply,
             @RequestParam(required = false) String internalNote,
-            @RequestParam(required = false) String statusCode) {
-        supportTicketService.respondToTicket(id, reply, internalNote, statusCode);
-        return ApiResponse.success("Đã tiếp nhận phản hồi/ghi chú", null);
+            @RequestParam(required = false) SupportStatus status) {
+        supportTicketService.respondToTicket(id, reply, internalNote, status);
+        return ResponseEntity.ok(ApiResponse.success("Response sent", null));
     }
 
     @PostMapping("/ai-chat")

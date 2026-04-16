@@ -31,15 +31,34 @@ public class BookController {
     }
 
     @GetMapping("/books")
-    @Operation(summary = "Lấy danh sách và tìm kiếm sách", description = "Lấy danh sách tất cả sách công khai hoặc tìm kiếm, lọc theo tên, mô tả, khoảng giá, danh mục, NXB.")
-    public ResponseEntity<ApiResponse<List<BookDTO>>> getAllBooks(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String categoryName,
-            @RequestParam(required = false) String publisherName,
+    @Operation(summary = "Lấy danh sách và tìm kiếm sách", description = "Tìm kiếm và lọc sách theo từ khóa, danh mục (ID), khoảng giá và trạng thái.")
+    public ApiResponse<java.util.List<BookDTO>> getAllBooks(
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) String status,
             @RequestParam(required = false) BigDecimal minPrice,
-            @RequestParam(required = false) BigDecimal maxPrice) {
-        List<BookDTO> books = bookService.searchAndFilterBooks(keyword, categoryName, publisherName, minPrice, maxPrice);
-        return ResponseEntity.ok(ApiResponse.success("Lấy danh sách sách thành công", books));
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @org.springframework.data.web.PageableDefault(size = 50) org.springframework.data.domain.Pageable pageable) {
+        
+        // Default to ACTIVE for non-admin search if status is null or hidden
+        com.bookstore.enums.BookStatus bookStatus = null;
+        if (status != null && !status.isEmpty()) {
+            bookStatus = com.bookstore.enums.BookStatus.valueOf(status.toUpperCase());
+        }
+        
+        return ApiResponse.successPage(bookService.searchAndFilterBooks(query, categoryId, bookStatus, minPrice, maxPrice, pageable));
+    }
+
+    @GetMapping("/books/search")
+    @Operation(summary = "Tìm kiếm sách nâng cao (Alias)", description = "Sử dụng cho các chức năng lọc nâng cao từ Frontend.")
+    public ApiResponse<java.util.List<BookDTO>> searchBooks(
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @org.springframework.data.web.PageableDefault(size = 50) org.springframework.data.domain.Pageable pageable) {
+        return getAllBooks(query, categoryId, status, minPrice, maxPrice, pageable);
     }
 
     @PostMapping("/books/ai-search")
@@ -84,5 +103,15 @@ public class BookController {
             @PathVariable String isbn) {
         bookService.softDeleteBook(isbn);
         return ResponseEntity.ok(ApiResponse.success("Xoa sách thành công", null));
+    }
+
+    @PatchMapping("/admin/books/{isbn}/status")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Cập nhật trạng thái nhanh (ADMIN)", description = "Chỉnh sửa nhanh trạng thái sách (ACTIVE, INACTIVE, etc.) từ danh sách admin.")
+    public ResponseEntity<ApiResponse<BookDTO>> updateBookStatus(
+            @PathVariable String isbn,
+            @RequestParam String status) {
+        BookDTO updated = bookService.updateStatus(isbn, com.bookstore.enums.BookStatus.valueOf(status.toUpperCase()));
+        return ResponseEntity.ok(ApiResponse.success("Cập nhật trạng thái thành công", updated));
     }
 }

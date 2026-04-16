@@ -1,6 +1,7 @@
 package com.bookstore.dto;
 
 import com.bookstore.entity.Book;
+import com.bookstore.enums.BookStatus;
 import java.math.BigDecimal;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,6 +18,14 @@ public class BookDTO {
     private String coverAlt;
     private Set<String> authorNames;
     private String description;
+    private BookStatus status;
+    private Integer stockQuantity;
+    private String inventoryStatus;
+    private String bookType;
+    private BigDecimal weight;
+    private BigDecimal fileSize;
+    private String downloadUrl;
+    private Set<Integer> authorIds;
 
     public BookDTO() {}
 
@@ -40,7 +49,11 @@ public class BookDTO {
             dto.setAuthorNames(book.getAuthors().stream()
                 .map(author -> author.getAuthorName())
                 .collect(Collectors.toSet()));
+            dto.setAuthorIds(book.getAuthors().stream()
+                .map(author -> author.getAuthorId())
+                .collect(Collectors.toSet()));
         }
+        dto.setStatus(book.getStatus());
         return dto;
     }
 
@@ -66,4 +79,25 @@ public class BookDTO {
     public void setAuthorNames(Set<String> authorNames) { this.authorNames = authorNames; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+    public BookStatus getStatus() { return status; }
+    public void setStatus(BookStatus status) { this.status = status; }
+    public Integer getStockQuantity() { return stockQuantity; }
+    public void setStockQuantity(Integer stockQuantity) { this.stockQuantity = stockQuantity; }
+    public String getInventoryStatus() { return inventoryStatus; }
+    public void setInventoryStatus(String inventoryStatus) { this.inventoryStatus = inventoryStatus; }
+
+    public String getBookType() { return bookType; }
+    public void setBookType(String bookType) { this.bookType = bookType; }
+
+    public BigDecimal getWeight() { return weight; }
+    public void setWeight(BigDecimal weight) { this.weight = weight; }
+
+    public BigDecimal getFileSize() { return fileSize; }
+    public void setFileSize(BigDecimal fileSize) { this.fileSize = fileSize; }
+
+    public String getDownloadUrl() { return downloadUrl; }
+    public void setDownloadUrl(String downloadUrl) { this.downloadUrl = downloadUrl; }
+
+    public Set<Integer> getAuthorIds() { return authorIds; }
+    public void setAuthorIds(Set<Integer> authorIds) { this.authorIds = authorIds; }
 }

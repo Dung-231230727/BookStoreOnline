@@ -23,9 +23,9 @@ public class PublisherController {
 
     @GetMapping
     @Operation(summary = "Lấy danh sách nhà xuất bản", description = "Lấy danh sách tất cả các nhà xuất bản hiện có.")
-    public ResponseEntity<ApiResponse<List<PublisherDTO>>> getAllPublishers() {
-        List<PublisherDTO> publishers = publisherService.getAllPublishers();
-        return ResponseEntity.ok(ApiResponse.success("Lấy danh sách nhà xuất bản thành công", publishers));
+    public ResponseEntity<ApiResponse<List<PublisherDTO>>> getAllPublishers(org.springframework.data.domain.Pageable pageable) {
+        org.springframework.data.domain.Page<PublisherDTO> publishers = publisherService.getAllPublishers(pageable);
+        return ResponseEntity.ok(ApiResponse.successPage(publishers));
     }
 
     @PostMapping

@@ -3,6 +3,7 @@ package com.bookstore.service;
 import com.bookstore.dto.BookDTO;
 import com.bookstore.repository.CategoryRepository;
 import com.bookstore.repository.PublisherRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -106,7 +107,7 @@ public class AiSearchService {
 
     public List<BookDTO> searchByNaturalLanguage(String query) {
         if (query == null || query.isBlank()) {
-            return bookService.searchAndFilterBooks(null, null, null, null, null);
+            return bookService.searchAndFilterBooks(null, null, null, null, null, PageRequest.of(0, 50)).getContent();
         }
 
         String lowerQuery = query.toLowerCase().trim();
@@ -195,7 +196,7 @@ public class AiSearchService {
                                    .trim();
         if (keyword.length() < 2) keyword = null;
 
-        return bookService.searchAndFilterBooks(keyword, categoryName, publisherName, minPrice, maxPrice);
+        return bookService.searchAndFilterBooks(keyword, categoryName, publisherName, minPrice, maxPrice, PageRequest.of(0, 50)).getContent();
     }
 
     private BigDecimal parsePrice(String numberStr, String unit) {

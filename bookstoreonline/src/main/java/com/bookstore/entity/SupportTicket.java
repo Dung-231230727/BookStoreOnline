@@ -1,5 +1,6 @@
 package com.bookstore.entity;
 
+import com.bookstore.enums.SupportStatus;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -21,8 +22,9 @@ public class SupportTicket {
     @Column(name = "content", columnDefinition = "NVARCHAR(MAX)")
     private String content;
 
-    @Column(name = "status_code", length = 50)
-    private String statusCode = "OPEN";
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20)
+    private SupportStatus status = SupportStatus.OPEN;
 
     @Column(name = "admin_reply", columnDefinition = "NVARCHAR(MAX)")
     private String adminReply;
@@ -43,8 +45,8 @@ public class SupportTicket {
     public void setTitle(String title) { this.title = title; }
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }
-    public String getStatusCode() { return statusCode; }
-    public void setStatusCode(String statusCode) { this.statusCode = statusCode; }
+    public SupportStatus getStatus() { return status; }
+    public void setStatus(SupportStatus status) { this.status = status; }
     public String getAdminReply() { return adminReply; }
     public void setAdminReply(String adminReply) { this.adminReply = adminReply; }
     public String getInternalNote() { return internalNote; }

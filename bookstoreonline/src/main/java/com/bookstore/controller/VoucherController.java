@@ -23,8 +23,8 @@ public class VoucherController {
 
     @GetMapping
     @Operation(summary = "Danh sách Voucher", description = "Lấy toàn bộ danh sách các mã giảm giá hiện có trên hệ thống")
-    public ApiResponse<List<VoucherDTO>> getAllVouchers() {
-        return ApiResponse.success(voucherService.getAllVouchers());
+    public ApiResponse<List<VoucherDTO>> getAllVouchers(org.springframework.data.domain.Pageable pageable) {
+        return ApiResponse.successPage(voucherService.getAllVouchers(pageable));
     }
 
     @GetMapping("/{code}")

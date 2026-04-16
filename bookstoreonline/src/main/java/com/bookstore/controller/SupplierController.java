@@ -22,8 +22,8 @@ public class SupplierController {
 
     @GetMapping
     @Operation(summary = "Lấy danh sách nhà cung cấp")
-    public ApiResponse<List<SupplierDTO>> getAllSuppliers() {
-        return ApiResponse.success(supplierService.getAllSuppliers());
+    public ApiResponse<List<SupplierDTO>> getAllSuppliers(org.springframework.data.domain.Pageable pageable) {
+        return ApiResponse.successPage(supplierService.getAllSuppliers(pageable));
     }
 
     @PostMapping
