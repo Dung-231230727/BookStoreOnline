@@ -77,9 +77,8 @@ a:hover {
     border-bottom: none;
 }
 
-/* Push content below fixed header */
+/* Push content below header (now handled by sticky positioning) */
 body {
-    /* padding-top: 90px; */
 }
 
 .top-content {

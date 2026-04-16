@@ -62,7 +62,9 @@ const layout = {
                     return;
                 }
 
-                layout.current = { area, view, id: id || null };
+                layout.current.area = area;
+                layout.current.view = view;
+                layout.current.id = id || null;
 
                 // Persist current view state for reload recovery
                 sessionStorage.setItem('last_area', area || '');
@@ -176,7 +178,7 @@ const layout = {
             ">
                 <i class="icon icon-user" style="font-size:0.85rem; line-height: 1;"></i>
                 <span style="max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; line-height: 1;">
-                    ${user.username}
+                    ${displayName}
                 </span>
                 <span style="font-size:0.5rem; opacity:0.5; margin-left: -1px; line-height: 1;">▼</span>
             </a>

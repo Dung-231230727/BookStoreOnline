@@ -495,7 +495,7 @@ const users = {
                 } else {
                     current.department = data.department;
                 }
-                localStorage.setItem('user', JSON.stringify(current));
+                api.setUser(current);
                 layout.updateUserHeader();
             }
         } catch (e) {
@@ -522,7 +522,11 @@ const users = {
         }
 
         try {
-            await api.put('/users/profile/change-password', { oldPassword: oldPass, newPassword: newPass });
+            await api.put('/users/profile/change-password', { 
+                oldPassword: oldPass, 
+                newPassword: newPass,
+                confirmPassword: confirm2
+            });
             api.showToast("Đã thay đổi mật khẩu thành công!");
             ["#pw-old","#pw-new","#pw-confirm"].forEach(id => $(id).val(''));
         } catch (e) {

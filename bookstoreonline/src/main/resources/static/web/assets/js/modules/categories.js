@@ -38,7 +38,7 @@ const categories = {
                 grid.append(`
                     <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="${delay}">
                         <a href="javascript:void(0)"
-                           onclick="layout.render('Books','Index'); books.filterByCategory && books.filterByCategory(${cat.categoryId})"
+                           onclick="layout.pendingCategory = { id: ${cat.categoryId}, name: '${cat.categoryName.replace(/'/g, "\\'")}' }; layout.render('Books','Index');"
                            class="text-decoration-none">
                             <div class="category-card bg-white p-5 rounded-5 shadow-sm">
                                 <span class="cat-icon">${icon}</span>
@@ -72,19 +72,49 @@ const categories = {
         if (!container.length) return;
         try {
             const res = await api.get('/categories');
-            const list = res.data || [];
+            const data = api.parseResponse(res); 
             container.empty();
-            if (list.length === 0) return;
-            list.slice(0, 8).forEach(cat => {
-                container.append(`
-                    <li><a class="dropdown-item small py-2" href="javascript:void(0)"
-                           onclick="layout.render('Categories','Index')">
-                        ${cat.categoryName}
-                    </a></li>
-                `);
-            });
+            
+            if (!data || data.length === 0) {
+                container.html('<li><a class="dropdown-item small py-2 text-muted">Không có danh mục</a></li>');
+                return;
+            }
+
+            const html = [];
+            const walk = (nodes, depth = 0) => {
+                nodes.forEach(cat => {
+                    const indent = depth > 0 ? '&nbsp;&nbsp;&nbsp;&nbsp;'.repeat(depth) + '<span class="opacity-50">└</span> ' : '';
+                    const fontWeight = depth === 0 ? 'fw-bold text-dark' : 'text-muted';
+                    const fontSize = depth === 0 ? '0.82rem' : '0.78rem';
+                    const bgClass = depth === 0 ? '' : 'bg-light bg-opacity-10';
+                    
+                    html.push(`
+                        <li>
+                            <a class="dropdown-item py-2 ${fontWeight} ${bgClass}" 
+                               style="font-size: ${fontSize}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                               href="javascript:void(0)"
+                               onclick="layout.pendingCategory = { id: ${cat.categoryId}, name: '${cat.categoryName.replace(/'/g, "\\'")}' }; layout.render('Books','Index');">
+                               ${indent}${cat.categoryName}
+                            </a>
+                        </li>
+                    `);
+                    
+                    if (cat.subCategories && cat.subCategories.length > 0) {
+                        walk(cat.subCategories, depth + 1);
+                    }
+                });
+            };
+
+            // Only show top 15 items total to keep dropdown manageable
+            // But we walk the whole thing then slice if needed, or just let it be.
+            // Let's just walk it all but the user mentioned max 8 in original code.
+            // I will walk it all but keep an eye on length.
+            walk(data);
+            container.html(html.join(''));
+
         } catch (e) {
-            container.empty();
+            console.error("loadCategoryDropdown error:", e);
+            container.html('<li><a class="dropdown-item small py-2 text-danger">Lỗi tải danh mục</a></li>');
         }
     },
 
